@@ -12,7 +12,6 @@ const tabs=ref([
 
 
 
-
 const payment_status=ref([
 {item:'Revenue Generated',value:'Shs 50 M',icon:'ni-coins'},
 {item:'Pending Payment',value:'50/2000',icon:'ni-clock'},
