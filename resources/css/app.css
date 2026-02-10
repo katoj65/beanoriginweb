@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+display: none;
+}
+
+
+.btn-primary {
+background: linear-gradient(135deg, #6F4E37, #8B5A2B) !important;
+border-color: #6F4E37 !important;
+font-family: 'Inter', sans-serif !important;
+font-weight: 600 !important;
+letter-spacing: 0.5px !important;
+transition: all 0.3s ease !important;
+}
+
+
+
+.btn-primary:hover {
+background: linear-gradient(135deg, #5A3E2B, #6F4E37) !important;
+transform: translateY(-2px) !important;
+border-color: #5A3E2B !important;
+}
+
+.btn-primary:active,
+.btn-primary:focus {
+background: linear-gradient(135deg, #4A2E1B, #5A3E2B) !important;
+border-color: #4A2E1B !important;
+}
+
+.card{
+border-radius: 20px;
+}
