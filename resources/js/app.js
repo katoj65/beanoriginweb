@@ -14,14 +14,12 @@ import '../temp/assets/css/theme.css';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 
-
-
+//chart
+import VueChartkick from 'vue-chartkick';
+import 'chartkick/chart.js';
 
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
-
-
-
 createInertiaApp({
 title: (title) => `${title} - ${appName}`,
 resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
@@ -30,6 +28,7 @@ return createApp({ render: () => h(App, props) })
 .use(plugin)
 .use(ZiggyVue)
 .use(ElementPlus)
+.use(VueChartkick)
 .mount(el);
 },
 progress: {

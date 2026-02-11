@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import TableDefault from '@/Tables/TableDefault.vue';
+import FarmersTable from '@/Tables/FarmersTable.vue';
 import { reactive,ref } from 'vue';
 
 const tabs=ref([
@@ -24,10 +25,32 @@ const payment_status=ref([
 
 
 
+const trend={
+'Jan':20,
+'Feb':30,
+'Mar':20,
+'Apr':50,
+'May':30,
+'Jun':40,
+'Jul':60,
+'Aug':50,
+'Sep':10,
+'Oct':50,
+'Nov':80,
+'Dec':100
+};
 
 
 
 
+
+const coffee_types=[
+{name:'Arabica coffee',value:50},
+{name:'Robusta',value:80},
+{name:'Lberica',value:20},
+{name:'Tuzza',value:10}
+
+];
 
 
 
@@ -136,210 +159,133 @@ const payment_status=ref([
 
 
 <div class="row mt-4">
-<div class="col-12 col-md-4">
+<div class="col-12 col-md-8">
 
 <div class="card card-bordered h-100">
 <div class="card-inner">
 <div class="card-title-group align-start mb-3">
 <div class="card-title">
 <h6 class="title">Coffee Market Overview</h6>
-<p>In last 15 days buy and sells overview. <a href="#" class="link link-sm">Detailed Stats</a></p>
+<p>Market overview in since Jan 2026</p>
 </div>
 </div><!-- .card-title-group -->
+<div>
+
+<line-chart :data="trend"></line-chart>
 
 
-
-
-
-
-
+</div>
 </div><!-- .card-inner -->
 </div>
-
-
-
-
-
-
-
-
-</div>
-
-
-
-<div class="col-12 col-md-4">
-<div class="card card-bordered card-full">
-<div class="card-inner-group">
-<div class="card-inner">
-<div class="card-title-group">
-<div class="card-title">
-<h6 class="title">Orders Overview</h6>
-<p>In last 15 days buy and sells overview.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="card-body">
-<div class="text-align">
-<el-progress type="circle" :percentage="25" />
-<el-progress type="circle" :percentage="80" class="ml-5" status="success" />
-</div>
-
-
-
-
-
-
-
-</div>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </div>
 <div class="col-12 col-md-4">
 
-<div class="card card-bordered card-full">
-<div class="card-inner-group">
-<div class="card-inner">
-<div class="card-title-group">
+
+<div class="card card-bordered h-100">
+<div class="card-inner pb-0">
+<div class="card-title-group pt-1">
 <div class="card-title">
-<h6 class="title">New Users</h6>
+<h6 class="title">EMI Overview</h6>
 </div>
 <div class="card-tools">
-<a href="html/user-list-regular.html" class="link">View All</a>
+<a href="html/loan/loan-details.html" class="link">See Details</a>
 </div>
 </div>
 </div>
-<div class="card-inner card-inner-md">
-<div class="user-card">
-<div class="user-avatar bg-primary-dim">
-<span>AB</span>
+<div class="card-inner pt-0">
+<div class="invest-ov gy-1">
+<div class="subtitle">Activated Loan EMI</div>
+<div class="invest-ov-details">
+<div class="invest-ov-stats">
+<div><span class="amount d-flex align-items-end text-primary">52<span class="sub-text ps-1"> Weeks</span></span></div>
+<div class="title">Total EMI</div>
 </div>
-<div class="user-info">
-<span class="lead-text">Abu Bin Ishtiyak</span>
-<span class="sub-text">info@softnio.com</span>
-</div>
-<div class="user-action">
-<div class="drodown">
-<a href="#" class="dropdown-toggle btn btn-icon btn-trigger me-n1" data-bs-toggle="dropdown" aria-expanded="false"><em class="icon ni ni-more-h"></em></a>
-<div class="dropdown-menu dropdown-menu-end">
-<ul class="link-list-opt no-bdr">
-<li><a href="#"><em class="icon ni ni-setting"></em><span>Action Settings</span></a></li>
-<li><a href="#"><em class="icon ni ni-notify"></em><span>Push Notification</span></a></li>
-</ul>
+<div class="invest-ov-info">
+<div class="amount">3560.395 <span class="currency currency-usd">USD</span></div>
+<div class="title">Amount</div>
 </div>
 </div>
 </div>
+<div class="invest-ov gy-1">
+<div class="subtitle">EMI Status</div>
+<div class="invest-ov-details">
+<div class="invest-ov-info">
+<div><span class="amount text-success">39</span></div>
+<div class="title">Paid</div>
 </div>
+<div class="invest-ov-info">
+<div><span class="amount text-warning">13</span></div>
+<div class="title">Due</div>
 </div>
-<div class="card-inner card-inner-md">
-<div class="user-card">
-<div class="user-avatar bg-pink-dim">
-<span>SW</span>
-</div>
-<div class="user-info">
-<span class="lead-text">Sharon Walker</span>
-<span class="sub-text">sharon-90@example.com</span>
-</div>
-<div class="user-action">
-<div class="drodown">
-<a href="#" class="dropdown-toggle btn btn-icon btn-trigger me-n1" data-bs-toggle="dropdown" aria-expanded="false"><em class="icon ni ni-more-h"></em></a>
-<div class="dropdown-menu dropdown-menu-end">
-<ul class="link-list-opt no-bdr">
-<li><a href="#"><em class="icon ni ni-setting"></em><span>Action Settings</span></a></li>
-<li><a href="#"><em class="icon ni ni-notify"></em><span>Push Notification</span></a></li>
-</ul>
+<div class="invest-ov-info">
+<div><span class="date">13-05-2021</span></div>
+<div class="title">Next EMI Date</div>
 </div>
 </div>
 </div>
-</div>
-</div>
-<div class="card-inner card-inner-md">
-<div class="user-card">
-<div class="user-avatar bg-warning-dim">
-<span>GO</span>
-</div>
-<div class="user-info">
-<span class="lead-text">Gloria Oliver</span>
-<span class="sub-text">gloria_72@example.com</span>
-</div>
-<div class="user-action">
-<div class="drodown">
-<a href="#" class="dropdown-toggle btn btn-icon btn-trigger me-n1" data-bs-toggle="dropdown" aria-expanded="false"><em class="icon ni ni-more-h"></em></a>
-<div class="dropdown-menu dropdown-menu-end">
-<ul class="link-list-opt no-bdr">
-<li><a href="#"><em class="icon ni ni-setting"></em><span>Action Settings</span></a></li>
-<li><a href="#"><em class="icon ni ni-notify"></em><span>Push Notification</span></a></li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="card-inner card-inner-md">
-<div class="user-card">
-<div class="user-avatar bg-success-dim">
-<span>PS</span>
-</div>
-<div class="user-info">
-<span class="lead-text">Phillip Sullivan</span>
-<span class="sub-text">phillip-85@example.com</span>
-</div>
-<div class="user-action">
-<div class="drodown">
-<a href="#" class="dropdown-toggle btn btn-icon btn-trigger me-n1" data-bs-toggle="dropdown" aria-expanded="false"><em class="icon ni ni-more-h"></em></a>
-<div class="dropdown-menu dropdown-menu-end">
-<ul class="link-list-opt no-bdr">
-<li><a href="#"><em class="icon ni ni-setting"></em><span>Action Settings</span></a></li>
-<li><a href="#"><em class="icon ni ni-notify"></em><span>Push Notification</span></a></li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="card-inner card-inner-md">
-<div class="user-card">
-<div class="user-avatar bg-danger-dim">
-<span>TB</span>
-</div>
-<div class="user-info">
-<span class="lead-text">Thomas Barry</span>
-<span class="sub-text">thomas-85@example.com</span>
-</div>
-<div class="user-action">
-<div class="drodown">
-<a href="#" class="dropdown-toggle btn btn-icon btn-trigger me-n1" data-bs-toggle="dropdown" aria-expanded="false"><em class="icon ni ni-more-h"></em></a>
-<div class="dropdown-menu dropdown-menu-end">
-<ul class="link-list-opt no-bdr">
-<li><a href="#"><em class="icon ni ni-setting"></em><span>Action Settings</span></a></li>
-<li><a href="#"><em class="icon ni ni-notify"></em><span>Push Notification</span></a></li>
-</ul>
-</div>
-</div>
-</div>
+<div class="invest-ov">
+<div class="subtitle">EMI Status</div>
+<div class="progress progress-lg mt-3">
+<div class="progress-bar progress-bar-striped progress-bar-animated bg-success" data-progress="65" style="width: 65%;">65%</div>
 </div>
 </div>
 </div>
 </div>
 
+
+
+
+
 </div>
 </div>
 
+
+
+
+
+
+<div class="row mt-4">
+<div class="col-12 col-md-7">
+<div class="card border h-100">
+<div class="card-header bg-white p-0">
+<div class="card-title border-bottom p-2">
+<h6>Farmers</h6>
+</div>
+</div>
+
+<div class="card-body p-0">
+<farmers-table/>
+</div>
+
+</div>
+</div>
+<div class="col-12 col-md-5">
+
+<div class="card border h-100">
+<div class="card-header bg-white p-0 mb-0">
+<div class="card-title border-bottom p-2 mb-0">
+<h6>Statistics</h6>
+</div>
+</div>
+
+<div class="card-body p-0">
+<div class="pl-4 pr-4 py-2 border-bottom" v-for="(m,key) in coffee_types" :key="key">
+<div class="row">
+<div class="col-12 col-md-4">{{ m.name }}</div>
+<div class="col-12 col-md-8">
+<el-progress :percentage="m.value" color="green" :stroke-width="8" />
+</div>
+</div>
+</div>
+
+
+
+</div>
+
+</div>
+
+</div>
+</div>
 
 
 
