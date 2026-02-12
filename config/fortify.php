@@ -2,6 +2,7 @@
 
 use Laravel\Fortify\Features;
 
+
 return [
 
     /*
@@ -73,7 +74,7 @@ return [
     |
     */
 
-    'home' => '/dashboard',
+    'home' =>'/dashboard',
 
     /*
     |--------------------------------------------------------------------------

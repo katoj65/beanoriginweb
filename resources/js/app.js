@@ -10,6 +10,12 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import '../temp/assets/css/dashlite.css';
 import '../temp/assets/css/dashlite.min.css';
 import '../temp/assets/css/theme.css';
+// template 2
+import '../temp2/assets/css/dashlite.css';
+import '../temp2/assets/css/dashlite.min.css';
+import '../temp2/assets/css/theme.css';
+
+
 
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
