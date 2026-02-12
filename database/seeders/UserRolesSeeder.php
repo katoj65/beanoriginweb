@@ -15,7 +15,7 @@ class UserRolesSeeder extends Seeder
     {
         //
 
-$data=['admin','cooperative','farmer','exporter','buyer','financier','business'];
+$data=['admin','cooperative','farmer','exporter','buyer','financier','business','user'];
 foreach($data as $item){
 UserRoles::create(['role'=>$item]);
 }
