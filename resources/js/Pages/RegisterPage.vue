@@ -1,6 +1,31 @@
 <script setup>
+import { Link, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
+
+const form = useForm({
+fname:'',
+lname:'',
+email:'',
+password:'',
+password_confirmation: '',
+terms:false
+});
+
+
+
+
+const submit=()=>{
+form.post(route('register'), {
+// onFinish: () => form.reset('password', 'password_confirmation'),
+});
+
+
+}
+
 
 </script>
+
+
 <template>
 <div class="nk-body bg-white npc-general pg-auth">
 <div class="nk-app-root">
@@ -27,43 +52,66 @@
 
 
 
-
+{{ form}}
 
 
 
 
 <!-- .nk-block-head -->
-<form action="html/pages/auths/auth-success.html">
+<form @submit.prevent="submit">
 <div class="form-group">
-<label class="form-label" for="name">Name</label>
+<label class="form-label" for="name">First name</label>
 <div class="form-control-wrap">
-<input type="text" class="form-control form-control-lg" id="name" placeholder="Enter your name">
+<input type="text" class="form-control form-control-lg" id="name" placeholder="Enter your name" v-model="form.fname">
 </div>
 </div>
+
+
 <div class="form-group">
-<label class="form-label" for="email">Email or Username</label>
+<label class="form-label" for="lname">Last name</label>
 <div class="form-control-wrap">
-<input type="text" class="form-control form-control-lg" id="email" placeholder="Enter your email address or username">
+<input type="text" class="form-control form-control-lg" id="lname" placeholder="Enter your name" v-model="form.lname">
 </div>
 </div>
+
+
+
 <div class="form-group">
-<label class="form-label" for="password">Passcode</label>
+<label class="form-label" for="email">Email</label>
 <div class="form-control-wrap">
-<a tabindex="-1" href="#" class="form-icon form-icon-right passcode-switch lg" data-target="password">
-<em class="passcode-icon icon-show icon ni ni-eye"></em>
-<em class="passcode-icon icon-hide icon ni ni-eye-off"></em>
-</a>
-<input type="password" class="form-control form-control-lg" id="password" placeholder="Enter your passcode">
+<input type="text" class="form-control form-control-lg" id="email" placeholder="Enter your email address" v-model="form.email">
 </div>
 </div>
+
+
+<div class="form-group">
+<label class="form-label" for="password">Password</label>
+<div class="form-control-wrap">
+<input type="password" class="form-control form-control-lg" id="password" placeholder="Enter your password" v-model="form.password">
+</div>
+</div>
+
+
+<div class="form-group">
+<label class="form-label" for="password">Confirm Password</label>
+<div class="form-control-wrap">
+<input type="password" class="form-control form-control-lg" id="password" placeholder="Enter your password" v-model="form.password_confirmation">
+</div>
+</div>
+
+
 <div class="form-group">
 <div class="custom-control custom-control-xs custom-checkbox">
-<input type="checkbox" class="custom-control-input" id="checkbox">
+<input type="checkbox" class="custom-control-input" id="checkbox" v-model="form.terms">
 <label class="custom-control-label" for="checkbox">I agree to Bean Origin <a tabindex="-1" href="html/pages/terms-policy.html">Privacy Policy</a> &amp; <a tabindex="-1" href="html/pages/terms-policy.html">Terms of Service</a></label>
 </div>
 </div>
+
+
+
+
 <div class="form-group">
-<button class="btn btn-lg btn-primary btn-block">Register</button>
+<button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
 </div>
 </form>
 <!-- form -->
@@ -74,8 +122,13 @@
 
 
 
-<div class="form-note-s2 pt-4"> Already have an account ? <a href="html/pages/auths/auth-login.html"><strong>Sign in instead</strong></a>
+<div class="form-note-s2 pt-4"> Already have an account ?
+    <Link href="/login"><strong>Sign in instead</strong></Link>
 </div>
+
+
+
+
 <div class="text-center pt-4 pb-3">
 <h6 class="overline-title overline-title-sap"><span>OR</span></h6>
 </div>

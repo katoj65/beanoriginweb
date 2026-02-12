@@ -1,10 +1,13 @@
 <script setup>
+import { Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 
-const form=ref({
+
+const form=useForm({
 email:'',
-password:''
+password:'',
+remember:false
 });
 
 
@@ -18,6 +21,9 @@ remember: form.remember ? 'on' : '',
 })).post(route('login'), {
 onFinish: () => form.reset('password'),
 });
+
+
+
 }
 
 
@@ -32,7 +38,7 @@ onFinish: () => form.reset('password'),
 </div>
 <div class="nk-block nk-block-middle nk-auth-body">
 <div class="brand-logo pb-0">
-<a href="html/index.html" class="logo-link">
+<a href="/" class="logo-link">
 <img class="" src="../../images/logo.png" srcset="" alt="logo-dark" style="width:200px;">
 </a>
 </div>
@@ -68,7 +74,7 @@ onFinish: () => form.reset('password'),
 </div>
 </div>
 <div class="form-group">
-<button class="btn btn-lg btn-primary btn-block">Login</button>
+<button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
 </div>
 </form>
 <!-- form -->
@@ -77,8 +83,14 @@ onFinish: () => form.reset('password'),
 
 
 
-<div class="form-note-s2 pt-4"> Already have an account ? <a href="html/pages/auths/auth-login.html"><strong>Sign in instead</strong></a>
+<div class="form-note-s2 pt-4"> Don't have an account ?
+<Link href="/register"><strong>Sign up instead</strong></Link>
 </div>
+
+
+
+
+
 <div class="text-center pt-4 pb-3">
 <h6 class="overline-title overline-title-sap"><span>OR</span></h6>
 </div>
@@ -87,6 +99,9 @@ onFinish: () => form.reset('password'),
 <li class="nav-item"><a class="link link-primary fw-normal py-2 px-3" href="#">Google</a></li>
 </ul>
 </div><!-- .nk-block -->
+
+
+
 <div class="nk-block nk-auth-footer">
 <div class="nk-block-between">
 <ul class="nav nav-sm">
