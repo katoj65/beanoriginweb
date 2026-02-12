@@ -10,6 +10,17 @@ password:''
 
 
 
+
+const submit=()=>{
+form.transform(data => ({
+...data,
+remember: form.remember ? 'on' : '',
+})).post(route('login'), {
+onFinish: () => form.reset('password'),
+});
+}
+
+
 </script>
 <template>
 <div class="nk-body bg-white npc-general pg-auth">
@@ -43,7 +54,7 @@ password:''
 
 
 <!-- .nk-block-head -->
-<form>
+<form @submit.prevent="submit">
 <div class="form-group">
 <label class="form-label" for="email">Email</label>
 <div class="form-control-wrap">
@@ -57,12 +68,10 @@ password:''
 </div>
 </div>
 <div class="form-group">
-<button class="btn btn-lg btn-primary btn-block">Register</button>
+<button class="btn btn-lg btn-primary btn-block">Login</button>
 </div>
 </form>
 <!-- form -->
-
-
 
 
 
