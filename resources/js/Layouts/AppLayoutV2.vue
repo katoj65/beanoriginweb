@@ -16,8 +16,8 @@
 <div class="nk-apps-sidebar is-silver">
 <div class="nk-apps-brand">
 <a href="html/index.html" class="logo-link">
-<img class="logo-light logo-img" src=""  alt="logo">
-<img class="logo-dark logo-img" src=""  alt="logo-dark">
+<img class="logo-light logo-img" src="../../images/logo.png"  alt="logo" style="border-radius:20px;">
+<img class="logo-dark logo-img" src="../../images/logo.png"  alt="logo-dark" style="border-radius:20px;">
 </a>
 </div>
 <div class="nk-sidebar-element">
@@ -102,20 +102,21 @@
 </div>
 </div>
 <div class="nk-sidebar-profile nk-sidebar-profile-fixed dropdown">
-<a href="#" class="toggle" data-target="profileDD">
-<div class="user-avatar">
-<span>AB</span>
+<a href="#" class="toggle sidebar-profile-trigger" data-target="profileDD" aria-label="Open profile menu">
+<div class="user-avatar sidebar-profile-avatar">
+<span>JO</span>
 </div>
+<span class="sidebar-profile-caret"><em class="icon ni ni-chevron-up"></em></span>
 </a>
-<div class="dropdown-menu dropdown-menu-md m-1 nk-sidebar-profile-dropdown" data-content="profileDD">
+<div class="dropdown-menu dropdown-menu-md m-1 nk-sidebar-profile-dropdown sidebar-profile-menu" data-content="profileDD">
 <div class="dropdown-inner user-card-wrap d-none d-md-block">
-<div class="user-card">
-<div class="user-avatar">
-<span>AB</span>
+<div class="user-card sidebar-user-card">
+<div class="user-avatar sidebar-profile-avatar">
+<span>JO</span>
 </div>
 <div class="user-info">
-<span class="lead-text">Abu Bin Ishtiyak</span>
-<span class="sub-text text-soft">info@softnio.com</span>
+<span class="lead-text">Joshua Origin</span>
+<span class="sub-text text-soft">joshua@commodityorigin.com</span>
 </div>
 </div>
 </div>
@@ -165,12 +166,12 @@
 <a href="#" class="nk-nav-toggle nk-quick-nav-icon" data-target="sidebarMenu"><em class="icon ni ni-menu"></em></a>
 </div>
 <div class="nk-header-app-name">
-<div class="nk-header-app-logo">
+<!-- <div class="nk-header-app-logo">
 <em class="icon ni ni-dashlite bg-purple-dim"></em>
-</div>
+</div> -->
 <div class="nk-header-app-info">
-<span class="sub-text">DashLite</span>
-<span class="lead-text">Dashboard</span>
+<span class="sub-text header-app-subtitle">Cooperative</span>
+<span class="lead-text header-app-title">Commodity Origin</span>
 </div>
 </div>
 <div class="nk-header-menu is-light">
@@ -781,6 +782,90 @@
 </template>
 
 <style scoped>
+.nk-apps-sidebar.is-silver {
+  background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%) !important;
+  border-right: 1px solid #d1d5db;
+}
+
+.nk-apps-sidebar.is-silver .nk-menu-link {
+  color: #4b5563;
+}
+
+.nk-apps-sidebar.is-silver .nk-menu-link:hover,
+.nk-apps-sidebar.is-silver .nk-menu-item.active .nk-menu-link {
+  color: #111827;
+  background-color: rgba(255, 255, 255, 0.65);
+}
+
+.nk-apps-sidebar.is-silver .nk-menu-icon .icon {
+  color: #6b7280;
+}
+
+.nk-apps-sidebar.is-silver .nk-menu-hr {
+  border-color: #d1d5db;
+}
+
+.nk-apps-sidebar.is-silver .nk-sidebar-profile,
+.nk-apps-sidebar.is-silver .nk-sidebar-profile-fixed {
+  background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%) !important;
+  border-top: 1px solid #d1d5db;
+}
+
+.sidebar-profile-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.25rem;
+}
+
+.sidebar-profile-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.72rem;
+}
+
+.sidebar-profile-caret .icon {
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
+.sidebar-profile-menu {
+  border: 1px solid #d1d5db;
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.12);
+  border-radius: 0.65rem;
+  overflow: hidden;
+}
+
+.sidebar-user-card {
+  background: #f9fafb;
+}
+
+.nk-header-app-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  line-height: 1.1;
+}
+
+.header-app-subtitle {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.7rem;
+  color: #8b5e3c;
+}
+
+.header-app-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #2f2016;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
 .nk-header-tools {
   gap: 0.25rem;
 }
