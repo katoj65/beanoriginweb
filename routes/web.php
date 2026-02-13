@@ -6,7 +6,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\Home\HomeController;
 
 Route::get('/', function () {
-    
+
 if (auth()->check()) {
 return redirect()->route('dashboard');
 }
@@ -28,13 +28,9 @@ return Inertia::render('Welcome', [
 Route::middleware([
 'auth:sanctum',
 config('jetstream.auth_session'),
-'verified',
-])->group(function () {
-
-
-Route::get('/dashboard', function () {
-return Inertia::render('Dashboard');
-})->name('dashboard');
+'verified',])->group(function () {
+    
+Route::get('/dashboard',[HomeController::class,'userDashboard'])->name('dashboard');
 
 
 

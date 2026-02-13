@@ -1,5 +1,5 @@
 <script setup>
-import AppLayoutV2 from "@/Layouts/AppLayoutV2.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 
 import TableDefault from '@/Tables/TableDefault.vue';
 import FarmersTable from '@/Tables/FarmersTable.vue';
@@ -58,7 +58,7 @@ const coffee_types=[
 
 </script>
 <template>
-<app-layout-v-2>
+<app-layout>
 
 
 
@@ -292,7 +292,7 @@ const coffee_types=[
 
 
 
-</app-layout-v-2>
+</app-layout>
 </template>
 
 

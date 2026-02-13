@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayoutV1.1.vue';
 import TableDefault from '@/Tables/TableDefault.vue';
 import FarmersTable from '@/Tables/FarmersTable.vue';
 import { reactive,ref } from 'vue';
