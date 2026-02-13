@@ -21,7 +21,21 @@ const user = computed(() => {
 
 <template>
 <app-layout>
-<div class="container py-4">
+<div class="container py-2">
+
+<div class="card border p-4" style="height:550px;">
+
+
+ <el-skeleton :rows="10" />
+</div>
+
+
+
+
+
+
+
+
 
 
 
@@ -163,7 +177,16 @@ const user = computed(() => {
 </div>
 </div>
 <div v-if="showModal" class="modal-backdrop fade show"></div>
+
+
+
+
+
+
 </div>
+
+
+
 </app-layout>
 </template>
 
