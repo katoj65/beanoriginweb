@@ -6,13 +6,18 @@ use Inertia\Inertia;
 use App\Http\Controllers\Home\HomeController;
 
 Route::get('/', function () {
+    
+if (auth()->check()) {
+return redirect()->route('dashboard');
+}
 return Inertia::render('Welcome', [
 'canLogin' => Route::has('login'),
 'canRegister' => Route::has('register'),
 'laravelVersion' => Application::VERSION,
 'phpVersion' => PHP_VERSION,
 ]);
-// return Inertia::render('LoginPage');
+
+
 });
 
 
@@ -34,12 +39,14 @@ return Inertia::render('Dashboard');
 
 
 
+
+
+
+//user middleware group
+Route::middleware(['auth', 'role:user'])->group(function () {
 Route::get('/test',[HomeController::class,'userDashboard']);
 
-
-
-
-
+});
 
 
 
