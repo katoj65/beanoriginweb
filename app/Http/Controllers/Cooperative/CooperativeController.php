@@ -23,6 +23,10 @@ return Inertia::render('CooperativeCreate', [
 ]);
 }
 
+
+
+
+
 public function store(Request $request)
 {
 $validated = $request->validate([
@@ -60,7 +64,16 @@ return redirect('/cooperative/'.$model->id)->with('success', 'Cooperative accoun
 
 
 public function show(Request $request){
-return ('some information');
+return Inertia::render('CooperativeShow',[
+'title'=>'cooperative',
+'response'=>[
+
+
+
+]
+
+
+]);
 }
 
 
