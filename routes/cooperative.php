@@ -7,11 +7,25 @@ use App\Http\Controllers\Cooperative\CooperativeController;
 
 
 
-Route::middleware(['auth', 'role:farmer'])->group(function () {
-// Route::get('/test',[HomeController::class,'userDashboard']);
-Route::get('/test',function(){
-return('some information11');
-});
+Route::middleware(['auth', 'role:cooperative'])->group(function () {
+
+Route::get('/cooperative/create',[CooperativeController::class,'create_cooperative'])->name('cooperative_create');
+
+Route::post('/store/cooperative',[CooperativeController::class,'store'])->name('cooperative-store');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 });
 
 

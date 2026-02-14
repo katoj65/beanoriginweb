@@ -85,7 +85,7 @@ $request->user()->update([
 'role' => $roleMap[$validated['item']],
 ]);
 
-return redirect()->route('dashboard')->with('success', 'Account role updated successfully.');
+return redirect()->route('cooperative_create')->with('success', 'Account role updated successfully.');
 }
 
 
