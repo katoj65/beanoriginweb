@@ -13,7 +13,7 @@ Route::get('/cooperative/create',[CooperativeController::class,'create_cooperati
 
 Route::post('/store/cooperative',[CooperativeController::class,'store'])->name('cooperative-store');
 
-
+Route::get('/cooperative/{id}',[CooperativeController::class,'show'])->name('cooperative.show');
 
 
 

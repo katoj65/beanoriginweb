@@ -9,33 +9,22 @@ use App\Models\Cooperative;
 
 class CooperativeController extends Controller
 {
-    //
-
-
-static function dashboard(){
-$data['title']='dashboard';
-return Inertia::render('DashboardCooperative',$data);
+static function dashboard()
+{
+$data['title'] = 'dashboard';
+return Inertia::render('DashboardCooperative', $data);
 }
-
 
 public function create_cooperative(Request $request)
 {
-return Inertia::render('CooperativeCreate',[
-'title'=>'create cooperative',
-'response'=>[
-
-
-
-]
-
-
+return Inertia::render('CooperativeCreate', [
+'title' => 'create cooperative',
+'response' => [],
 ]);
-
 }
 
-
-
-public function store(Request $request){
+public function store(Request $request)
+{
 $validated = $request->validate([
 'legal_name' => ['required', 'string', 'max:255'],
 'name' => ['required', 'string', 'max:255'],
@@ -49,7 +38,29 @@ $validated = $request->validate([
 'website' => ['nullable', 'url', 'max:255'],
 ]);
 
-    return $validated;
+$model = Cooperative::create([
+'legal_name' => $validated['legal_name'],
+'name' => $validated['name'],
+'reg_num' => $validated['reg_num'],
+'reg_date' => $validated['reg_date'],
+'district' => $validated['district'],
+'physical_address' => $validated['physical_address'],
+'postal_address' => $validated['postal_address'],
+'email' => $validated['email'],
+'tel' => $validated['telephone'],
+'website' => $validated['website'] ?? '',
+'user_id' => $request->user()->id,
+]);
+
+return redirect('/cooperative/'.$model->id)->with('success', 'Cooperative account created successfully.');
+}
+
+
+
+
+
+public function show(Request $request){
+return ('some information');
 }
 
 
