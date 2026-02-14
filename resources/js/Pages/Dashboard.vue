@@ -100,7 +100,7 @@ isLoading.value=false;
 
 
 <div class="">
-<div class="card-inner">
+<div class="card-inner" style="background:none">
 <div class="team">
 
 <div class="user-card user-card-s2">

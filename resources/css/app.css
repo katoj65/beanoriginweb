@@ -55,9 +55,12 @@ body {
 }
 
 .card-header,
-.card-inner,
 .card-body {
   background: var(--app-surface);
+}
+
+.card-inner {
+  background: none !important;
 }
 
 .modern-panel {
