@@ -1,5 +1,4 @@
 import './bootstrap';
-import '../css/app.css';
 
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
@@ -14,6 +13,9 @@ import '../temp/assets/css/theme.css';
 import '../temp2/assets/css/dashlite.css';
 import '../temp2/assets/css/dashlite.min.css';
 import '../temp2/assets/css/theme.css';
+
+// Global app theme overrides (keep after vendor css)
+import '../css/app.css';
 
 
 
