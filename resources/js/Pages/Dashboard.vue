@@ -2,16 +2,28 @@
 import { ref,computed } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { useForm } from '@inertiajs/vue3';
-import { Calendar } from '@element-plus/icons-vue'
+import SubmitButton from '@/Components/SubmitButton.vue';
+import InputError from '@/Components/InputError.vue';
+import SelectBusinessComponent from '@/Components/SelectBusinessComponent.vue';
 
 const showModal = ref(true);
 const props = defineProps({
-  title: String,
-  response: Object,
+title: String,
+response: Object,
 });
 
+
+
 const user = computed(() => {
-  return props.response.user;
+return props.response.user;
+});
+
+const profile_state = computed(() => {
+return props.response.user_profile_exists;
+});
+
+const profile=computed(()=>{
+return props.response.user_profile;
 });
 
 
@@ -24,9 +36,7 @@ const gender = ref([
 
 
 
-
-
-const form=useForm({
+const form = useForm({
 gender:'',
 dob:'',
 tel:'',
@@ -34,11 +44,29 @@ address:''
 });
 
 
-const submit =()=>{
-alert();
+
+const isLoading = ref(false);
+const submit = ()=>{
+isLoading.value=true;
+form.post('/store/profile',{
+onFinish: () =>{
+isLoading.value=false;
+},
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
-
-
 
 
 
@@ -61,42 +89,42 @@ alert();
 
 
 
-
-
-
-
-
 <div v-if="showModal" class="modal show d-block" id="popupModal" tabindex="-1" aria-labelledby="popupModalLabel" aria-modal="true" role="dialog">
 <div class="modal-dialog modal-dialog-centered custom-modal-dialog">
-<div class="modal-content responsive-modal-content">
 
+
+<div class="modal-content responsive-modal-content" v-if="profile_state==false">
 <div class="modal-body p-0 responsive-modal-body">
 <div class="row g-0 modal-split-row">
-<div class="col-12 col-md-5 pt-4 pt-md-5 modal-left-pane">
+<div class="col-12 col-md-4 pt-4 pt-md-5 modal-left-pane">
 
 
-<div>
+<div class="">
 <div class="card-inner">
 <div class="team">
+
 <div class="user-card user-card-s2">
-<el-avatar :size="50" src="https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png" />
+<div class="user-avatar lg bg-danger">
+<span>JM</span>
+<div class="status dot dot-lg dot-success"></div>
+</div>
 <div class="user-info">
 <h6>
-{{ user.fname+' '+user.lname}}
+{{ user.fname+' '+user.lname }}
 </h6>
-<span class="">Logged in as user</span>
-<span class="contact-line">
-<em class="icon ni ni-mail contact-icon"></em>
-<span>{{ user.email }}</span>
-</span>
-<span class="contact-line">
-<!-- <em class="icon ni ni-call contact-icon"></em>
-<span>+88 01713-123656</span> -->
-</span>
+<span class="sub-text">User Account</span>
 </div>
 </div>
+<ul class="team-info">
+<li><span>Email</span><span>{{ user.email }} </span></li>
+
+
+
+
+
+</ul>
 <div class="team-view">
-<!-- <a href="html/user-details-regular.html" class="btn btn-block btn-dim btn-primary"><span>View Profile</span></a> -->
+
 </div>
 </div><!-- .team -->
 </div><!-- .card-inner -->
@@ -106,8 +134,9 @@ alert();
 
 
 
+
 </div>
-<div class="col-12 col-md-7 bg-white modal-right-pane">
+<div class="col-12 col-md-8 bg-white modal-right-pane">
 <div class="card h-100 border-0 rounded-0">
 <div class="card-inner p-3 p-md-4">
 
@@ -121,10 +150,14 @@ Create your profile
 
 
 
-<form class="mt-3 mt-md-4 card border p-3 p-md-4 profile-form-card">
+<form class="mt-3 mt-md-4 card p-3 p-md-4 profile-form-card" @submit.prevent="submit">
+
+
+
 <div class="form-group">
 <label class="form-label" for="default-01">
 Gender
+<input-error :message="form.errors.gender"/>
 </label>
 <div class="form-control-wrap">
  <el-select v-model="form.gender" placeholder="Select" style="width: 100%" id="default-01">
@@ -142,9 +175,11 @@ Gender
 
 
 <div class="form-group">
-<label class="form-label" for="default-dob">Date of Birth</label>
+<label class="form-label" for="default-dob">Date of Birth
+<input-error :message="form.errors.dob"/>
+</label>
 <div class="form-control-wrap">
-<input type="date" class="form-control" id="default-dob" placeholder="Enter date of birth"/>
+<input type="date" class="form-control" id="default-dob" placeholder="Enter date of birth" v-model="form.dob"/>
 </div>
 </div>
 
@@ -153,7 +188,9 @@ Gender
 
 
 <div class="form-group">
-<label class="form-label" for="default-02">Telephone Number</label>
+<label class="form-label" for="default-02">Telephone Number
+<input-error :message="form.errors.tel"/>
+</label>
 <div class="form-control-wrap">
 <input type="text" class="form-control" id="default-02" placeholder="Enter telephone number" v-model="form.tel"/>
 </div>
@@ -163,22 +200,19 @@ Gender
 
 
 <div class="form-group">
-<label class="form-label" for="default-04">Address</label>
+<label class="form-label" for="default-04">Address
+<input-error :message="form.errors.address"/>
+</label>
 <div class="form-control-wrap">
-<input type="text" class="form-control" id="default-04" placeholder="Input placeholder" v-model="form.address"/>
+<input type="text" class="form-control" id="default-04" placeholder="Enter your address" v-model="form.address"/>
 </div>
 </div>
 
 
 
 <div class="form-group">
-
-<div class="form-control-wrap">
-<input type="submit" class="btn btn-lg btn-primary btn-block" value="Save">
+<submit-button :title="'Save'" :status="isLoading"/>
 </div>
-</div>
-
-
 </form>
 
 
@@ -215,6 +249,22 @@ Gender
 
 </div>
 </div>
+<select-business-component v-else :user="user" :profile="profile" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </div>
 </div>
 <div v-if="showModal" class="modal-backdrop fade show"></div>

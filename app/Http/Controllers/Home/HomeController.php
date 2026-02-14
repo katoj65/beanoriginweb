@@ -7,19 +7,33 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use app\Models\UserRoles;
 use Illuminate\Support\Facades\Auth;
+use App\Models\UserProfile;
 
 class HomeController extends Controller
 {
     //
 
 public function userDashboard(Request $request){
-$user=$request->user();
-return Inertia::render('Dashboard',[
-'title'=>'dashboard',
-'response'=>['user'=>$user]
+$user = $request->user();
+$userProfile = UserProfile::where('user_id', $user->id)->first();
 
+// return $userProfile;
+return Inertia::render('Dashboard', [
+'title' => 'dashboard',
+'response' => [
+'user' => $user,
+'user_profile_exists' => (bool) $userProfile,
+'user_profile' => $userProfile,
+],
 ]);
 }
+
+
+
+
+
+
+
 
 
 

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('user_profile', function (Blueprint $table) {
             $table->id();
-            $table->enum('enum',['male','female','other'])->default('other');
+            $table->enum('gender',['male','female','other'])->default('other');
             $table->date('dob')->nullable();
             $table->string('tel');
             $table->string('address');

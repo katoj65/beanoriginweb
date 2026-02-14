@@ -20,7 +20,21 @@ return Inertia::render('DashboardCooperative',$data);
 
 
 
+public function create_cooperative(Request $request)
+{
 
+
+
+
+
+
+
+
+
+
+
+
+}
 
 
 
