@@ -38,7 +38,7 @@ class UserProfileController extends Controller
             ]
         );
 
-        // return back()->with('success', 'Profile saved successfully.');
+        return back()->with('success', 'Profile saved successfully.');
 
     }
 
@@ -87,6 +87,13 @@ $request->user()->update([
 
 return redirect()->route('cooperative_create')->with('success', 'Account role updated successfully.');
 }
+
+
+
+
+
+
+
 
 
 

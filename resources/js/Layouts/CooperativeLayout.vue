@@ -2,15 +2,10 @@
 import { ref } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { Search, Bell, User } from '@element-plus/icons-vue';
-import { onMounted } from 'vue';
+import { onMounted, computed } from 'vue';
 
 
 
-
-const props=defineProps({
-title : String,
-name : String
-});
 
 
 const logout = () => {
@@ -22,6 +17,25 @@ router.post(route('logout'));
 
 onMounted(()=>{
 console.log(usePage);
+});
+
+
+const  app_user=computed(()=>{
+const page=usePage();
+const data=page.props.auth.user;
+return {
+id:data.id,
+fname:data.fname,
+lname:data.lname,
+email:data.email
+};
+});
+
+
+const cooperative=computed(()=>{
+const page=usePage();
+const data=page.props;
+return data.cooperative;
 });
 
 
@@ -181,8 +195,6 @@ console.log(usePage);
 
 
 
-
-
 <!-- main header @s -->
 <div class="nk-header nk-header-fixed is-light">
 <div class="container-fluid">
@@ -196,10 +208,10 @@ console.log(usePage);
 </div> -->
 <div class="nk-header-app-info">
 <span class="sub-text header-app-subtitle">
-Welcome
+Cooperative
 </span>
 <span class="lead-text header-app-title text-capitalize">
-Commodity Origin
+{{ cooperative.legal_name }}
 </span>
 </div>
 </div>
@@ -240,7 +252,9 @@ Commodity Origin
 <el-dropdown trigger="click" placement="bottom-end" popper-class="user-dropdown-popper" class="p-0 m-0 ml-1">
 <span class="el-dropdown-link m-0 p-0 d-flex align-items-center cursor-pointer">
 <el-button :icon="User" circle />
-<span class="ml-2">Joshua</span>
+<span class="ml-2">
+{{ app_user.fname }}
+</span>
 <em class="icon ni ni-chevron-down ml-1 header-caret-icon"></em>
 
 </span>
@@ -795,6 +809,7 @@ Sign Out
 <div class="container-fluid pt-0">
 <div class="nk-content-inner pt-0">
 <div class="nk-content-body pt-0">
+
 <slot></slot>
 </div>
 </div>

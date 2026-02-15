@@ -1,8 +1,16 @@
 <script setup>
-import AppLayout from "@/Layouts/AppLayout.vue";
+import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import TableDefault from '@/Tables/TableDefault.vue';
 import FarmersTable from '@/Tables/FarmersTable.vue';
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+
+
+const props=defineProps({
+title : String,
+response : Object
+});
+
+
 
 const tabs = ref([
   { title: 'Farmers', subtitle: 'Farmers registered', stats: '100', icon: 'ni-users' },
@@ -10,6 +18,8 @@ const tabs = ref([
   { title: 'Coffee Sold', subtitle: 'Batches sold', stats: '300', icon: 'ni-tranx' },
   { title: 'Buyers', subtitle: 'Active buyers', stats: '400', icon: 'ni-user-circle' },
 ]);
+
+
 
 const payment_status = ref([
   { item: 'Revenue Generated', value: 'Shs 50 M', icon: 'ni-coins' },
@@ -20,6 +30,8 @@ const payment_status = ref([
   { item: 'Trees Planted', value: '15,000', icon: 'ni-growth' },
   { item: 'Loans Issued', value: '320', icon: 'ni-wallet' },
 ]);
+
+
 
 const trend = {
   Jan: 20,
@@ -36,6 +48,8 @@ const trend = {
   Dec: 100,
 };
 
+
+
 const coffee_types = [
   { name: 'Arabica coffee', value: 50 },
   { name: 'Robusta', value: 80 },
@@ -43,22 +57,26 @@ const coffee_types = [
   { name: 'Tuzza', value: 10 },
 ];
 
-const highlights = ref([
-  { label: 'Today Deliveries', value: '27', icon: 'ni-truck' },
-  { label: 'Open Purchase Orders', value: '12', icon: 'ni-cart' },
-  { label: 'Certified Farms', value: '84%', icon: 'ni-shield-check' },
-]);
 
-const today = new Date().toLocaleDateString('en-US', {
-  weekday: 'short',
-  month: 'short',
-  day: 'numeric',
-  year: 'numeric',
+
+
+onMounted(()=>{
+console.log(props.response);
 });
+
+
+const cooperative=computed(()=>{
+return props.response.cooperative;
+});
+
+
+
+
+
 </script>
 
 <template>
-<app-layout>
+<cooperative-layout>
 <div class="">
 
 
@@ -228,7 +246,7 @@ const today = new Date().toLocaleDateString('en-US', {
 </div>
 
 </div>
-</app-layout>
+</cooperative-layout>
 </template>
 
 <style scoped>

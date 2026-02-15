@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use app\Models\UserRoles;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserProfile;
+use App\Http\Controllers\Cooperative\CooperativeController;
 
 class HomeController extends Controller
 {
@@ -17,7 +18,17 @@ public function userDashboard(Request $request){
 $user = $request->user();
 $userProfile = UserProfile::where('user_id', $user->id)->first();
 
-// return $userProfile;
+
+if($user->role=='cooperative'){
+$cooperative=new CooperativeController;
+return $cooperative->dashboard();
+}
+
+
+
+
+
+
 return Inertia::render('Dashboard', [
 'title' => 'dashboard',
 'response' => [
@@ -26,6 +37,8 @@ return Inertia::render('Dashboard', [
 'user_profile' => $userProfile,
 ],
 ]);
+
+
 }
 
 
