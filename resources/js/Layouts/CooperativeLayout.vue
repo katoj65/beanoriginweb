@@ -260,7 +260,11 @@ Cooperative
 </span>
 <template #dropdown>
 <el-dropdown-menu>
-<el-dropdown-item>View Profile</el-dropdown-item>
+<el-dropdown-item>
+<Link :href="route('cooperative.profile')" class="d-block w-100 text-dark">
+View Profile
+</Link>
+</el-dropdown-item>
 <el-dropdown-item>Account Settings</el-dropdown-item>
 <el-dropdown-item>Help</el-dropdown-item>
 <el-dropdown-item divided>

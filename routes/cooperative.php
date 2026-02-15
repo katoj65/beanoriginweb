@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Cooperative\CooperativeController;
+use App\Http\Controllers\Cooperative\ProfileController;
 
 
 
@@ -15,6 +16,8 @@ Route::post('/store/cooperative',[CooperativeController::class,'store'])->name('
 
 Route::get('/cooperative/{id}',[CooperativeController::class,'show'])->name('cooperative.show');
 
+Route::get('/cooperate/profile',[ProfileController::class,'show'])->name('cooperative.profile');
+
 
 
 
@@ -27,5 +30,4 @@ Route::get('/cooperative/{id}',[CooperativeController::class,'show'])->name('coo
 
 
 });
-
 
