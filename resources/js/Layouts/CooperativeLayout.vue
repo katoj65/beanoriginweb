@@ -265,7 +265,11 @@ Cooperative
 View Profile
 </Link>
 </el-dropdown-item>
-<el-dropdown-item>Account Settings</el-dropdown-item>
+<el-dropdown-item>
+<Link :href="route('cooperative.account.settings')" class="d-block w-100 text-dark">
+Account Settings
+</Link>
+</el-dropdown-item>
 <el-dropdown-item>Help</el-dropdown-item>
 <el-dropdown-item divided>
 

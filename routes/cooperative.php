@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Cooperative\CooperativeController;
 use App\Http\Controllers\Cooperative\ProfileController;
+use App\Http\Controllers\Cooperative\AccountSettings;
 
 
 
@@ -18,6 +19,8 @@ Route::get('/cooperative/{id}',[CooperativeController::class,'show'])->name('coo
 
 Route::get('/cooperate/profile',[ProfileController::class,'show'])->name('cooperative.profile');
 
+Route::get('/cooperate/account-settings',[AccountSettings::class,'index'])->name('cooperative.account.settings');
+
 
 
 
@@ -30,4 +33,3 @@ Route::get('/cooperate/profile',[ProfileController::class,'show'])->name('cooper
 
 
 });
-
