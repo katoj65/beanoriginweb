@@ -9,31 +9,14 @@
 </template>
 
 <script setup>
-const tableData = [
-{
-fname:'Joshua',lname:'Kato',farm:'Wakiso Farm',produce:'Coffee',location:'Wakiso district'
-},
-{
-fname:'Joshua',lname:'Kato',farm:'Wakiso Farm',produce:'Coffee',location:'Wakiso district'
-},
-{
-fname:'Joshua',lname:'Kato',farm:'Wakiso Farm',produce:'Coffee',location:'Wakiso district'
-},
-{
-fname:'Joshua',lname:'Kato',farm:'Wakiso Farm',produce:'Coffee',location:'Wakiso district'
-},
-{
-fname:'Joshua',lname:'Kato',farm:'Wakiso Farm',produce:'Coffee',location:'Wakiso district'
-},
-{
-fname:'Joshua',lname:'Kato',farm:'Wakiso Farm',produce:'Coffee',location:'Wakiso district'
-},
-{
-fname:'Joshua',lname:'Kato',farm:'Wakiso Farm',produce:'Coffee',location:'Wakiso district'
-},
-{
-fname:'Joshua',lname:'Kato',farm:'Wakiso Farm',produce:'Coffee',location:'Wakiso district'
-},
+import { computed } from 'vue';
 
-]
+const props = defineProps({
+  farmers: {
+    type: Array,
+    default: () => [],
+  },
+});
+
+const tableData = computed(() => props.farmers ?? []);
 </script>

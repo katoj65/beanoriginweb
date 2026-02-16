@@ -56,20 +56,21 @@ class FarmerController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'phone_number' => ['required', 'string', 'max:30', 'regex:/^[0-9+()\\-\\s]{7,20}$/'],
             'email' => ['nullable', 'email', 'max:255'],
-            'gender' => ['nullable', 'in:male,female,other'],
-            'date_of_birth' => ['nullable', 'date', 'before:today'],
+            'gender' => ['required', 'in:male,female,other'],
+            'date_of_birth' => ['required', 'date', 'before:today'],
             'national_id' => ['nullable', 'string', 'max:50'],
-            'district' => ['nullable', 'string', 'max:255'],
-            'sub_county' => ['nullable', 'string', 'max:255'],
-            'village' => ['nullable', 'string', 'max:255'],
+            'district' => ['required', 'string', 'max:255'],
+            'sub_county' => ['required', 'string', 'max:255'],
+            'village' => ['required', 'string', 'max:255'],
             'primary_crop' => ['nullable', 'string', 'max:255'],
-            'status' => ['required', 'in:pending,active,suspended,exited'],
+       
         ]);
 
         $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
         $farmer = CooperativeFarmer::create([
             ...$validated,
             'cooperative_id' => $cooperativeId,
+            'status' => $validated['status'] ?? 'pending',
         ]);
         return redirect()
             ->route('cooperative.farmers.show', $farmer->id)

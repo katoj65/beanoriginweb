@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Cooperative;
+use App\Models\CooperativeFarmer;
+use App\Http\Resources\CooperativeFarmer as CooperativeFarmerResource;
+
 
 class CooperativeController extends Controller
 {
@@ -13,12 +16,19 @@ class CooperativeController extends Controller
     {
         $user = auth()->user();
         $cooperative = $user ? Cooperative::where('user_id', $user->id)->first() : null;
+        $farmers = CooperativeFarmer::where('cooperative_id', $cooperative->id)->get();
+
+
+// return $farmers;
 
         return Inertia::render('CooperativeShow', [
             'title' => 'Cooperative',
             'response' => [
                 'cooperative' => $cooperative,
-                'cooperative_exists' => (bool) $cooperative,
+                'farmers' => CooperativeFarmerResource::collection($farmers),
+                'count_farmers'=>count($farmers),
+
+
             ],
         ]);
     }
@@ -74,13 +84,6 @@ class CooperativeController extends Controller
 
     public function show(Request $request)
     {
-
-
-        return Inertia::render('CooperativeShow', [
-            'title' => 'cooperative',
-            'response' => [
-
-            ],
-        ]);
+        return self::dashboard();
     }
 }

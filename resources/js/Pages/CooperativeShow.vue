@@ -2,6 +2,7 @@
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import TableDefault from '@/Tables/TableDefault.vue';
 import FarmersTable from '@/Tables/FarmersTable.vue';
+import { usePage } from '@inertiajs/vue3';
 import { ref, onMounted, computed } from 'vue';
 
 
@@ -10,14 +11,16 @@ title : String,
 response : Object
 });
 
+const page = usePage();
 
 
-const tabs = ref([
-  { title: 'Farmers', subtitle: 'Farmers registered', stats: '100', icon: 'ni-users' },
-  { title: 'Coffee Available', subtitle: 'Batches for sale', stats: '200', icon: 'ni-package' },
-  { title: 'Coffee Sold', subtitle: 'Batches sold', stats: '300', icon: 'ni-tranx' },
-  { title: 'Buyers', subtitle: 'Active buyers', stats: '400', icon: 'ni-user-circle' },
-]);
+
+// const tabs = computed(() => [
+//   { title: 'Farmers', subtitle: 'Farmers registered', stats: String(props.response?.farmers_count ?? 0), icon: 'ni-users' },
+//   { title: 'Coffee Available', subtitle: 'Batches for sale', stats: '200', icon: 'ni-package' },
+//   { title: 'Coffee Sold', subtitle: 'Batches sold', stats: '300', icon: 'ni-tranx' },
+//   { title: 'Buyers', subtitle: 'Active buyers', stats: '400', icon: 'ni-user-circle' },
+// ]);
 
 
 
@@ -61,13 +64,30 @@ const coffee_types = [
 
 
 onMounted(()=>{
-console.log(props.response);
+console.log(page.props.response.farmers);
 });
 
 
 const cooperative=computed(()=>{
 return props.response.cooperative;
 });
+
+const count_farmers=computed(()=>props.response.count_farmers);
+const farmers=computed(()=>{
+props.response.farmers.data
+
+});
+
+
+
+
+const tabs = computed(() => [
+  { title: 'Farmers', subtitle: 'Farmers registered', stats: count_farmers, icon: 'ni-users' },
+  { title: 'Coffee Available', subtitle: 'Batches for sale', stats: '200', icon: 'ni-package' },
+  { title: 'Coffee Sold', subtitle: 'Batches sold', stats: '300', icon: 'ni-tranx' },
+  { title: 'Buyers', subtitle: 'Active buyers', stats: '400', icon: 'ni-user-circle' },
+]);
+
 
 
 
@@ -78,6 +98,8 @@ return props.response.cooperative;
 <template>
 <cooperative-layout>
 <div class="">
+
+
 
 
 <div class="row">
@@ -219,7 +241,7 @@ return props.response.cooperative;
 </div>
 </div>
 <div class="card-body p-0">
-<farmers-table/>
+<farmers-table :farmers="farmers" />
 </div>
 </div>
 </div>

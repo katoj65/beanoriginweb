@@ -112,8 +112,8 @@ const submit = () => {
                 <strong>{{ locationLabel }}</strong>
               </div>
               <div class="mt-3">
-                <button type="button" class="btn btn-light btn-sm w-100" @click="openModal">
-                  Add Farm Details
+                <button type="button" class="btn btn-primary btn-sm w-100" @click="openModal">
+                  <em class="icon ni ni-plus mr-1"></em>Add Farm Details
                 </button>
               </div>
             </div>
