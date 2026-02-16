@@ -7,6 +7,9 @@ import SubmitButton from '@/Components/SubmitButton.vue';
 
 const page = usePage();
 const farmer = computed(() => page.props.farmer?.data ?? page.props.farmer ?? {});
+const farms = computed(() => page.props.farms?.data ?? page.props.farms ?? []);
+
+
 
 const statusClass = computed(() => {
   const status = farmer.value?.status;
@@ -32,6 +35,11 @@ const initials = computed(() => {
   return (first + last || 'FR').toUpperCase();
 });
 
+
+
+
+
+
 const showModal = ref(false);
 
 const form = useForm({
@@ -39,17 +47,23 @@ const form = useForm({
   farm_name: '',
   location: '',
   area_acres: '',
-  number_of_gardens: '',
   primary_crop: farmer.value?.primary_crop ?? '',
   soil_type: '',
   water_source_type: '',
 });
+
+
+
+
 
 const openModal = () => {
   form.cooperative_farmer_id = farmer.value?.id ?? '';
   if (!form.primary_crop) form.primary_crop = farmer.value?.primary_crop ?? '';
   showModal.value = true;
 };
+
+
+
 
 const closeModal = () => {
   showModal.value = false;
@@ -182,6 +196,36 @@ const submit = () => {
                 </div>
               </div>
             </div>
+
+            <div class="card-inner border-top">
+              <h6 class="title mb-2"><em class="icon ni ni-home mr-1"></em>Farms</h6>
+              <div v-if="farms.length" class="farm-list">
+                <div v-for="farm in farms" :key="farm.id" class="farm-item">
+                  <div class="farm-header">
+                    <div class="farm-title">
+                      <h6 class="mb-1">{{ farm.farm_name || 'Unnamed Farm' }}</h6>
+                      <p class="sub-text mb-0">{{ farm.location || 'N/A' }}</p>
+                    </div>
+                    <span class="farm-area">{{ farm.area_acres || 0 }} acres</span>
+                  </div>
+                  <div class="farm-meta">
+                    <div class="farm-meta-item">
+                      <span class="sub-text"><em class="icon ni ni-growth mr-1"></em>Primary Crop</span>
+                      <strong>{{ farm.primary_crop || 'N/A' }}</strong>
+                    </div>
+                    <div class="farm-meta-item">
+                      <span class="sub-text"><em class="icon ni ni-sun-fill mr-1"></em>Soil Type</span>
+                      <strong>{{ farm.soil_type || 'N/A' }}</strong>
+                    </div>
+                    <div class="farm-meta-item">
+                      <span class="sub-text"><em class="icon ni ni-dropbox mr-1"></em>Water Source</span>
+                      <strong>{{ farm.water_source_type || 'N/A' }}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p v-else class="sub-text mb-0">No farms registered for this farmer yet.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -226,12 +270,6 @@ const submit = () => {
               </div>
 
               <div class="col-12 col-md-6 modal-field">
-                <label class="form-label">No. of Gardens</label>
-                <input v-model="form.number_of_gardens" type="number" min="0" step="1" class="form-control" placeholder="0" />
-                <InputError :message="form.errors.number_of_gardens" class="mt-2" />
-              </div>
-
-              <div class="col-12 col-md-12 modal-field">
                 <label class="form-label">Primary Crop</label>
                 <input v-model="form.primary_crop" type="text" class="form-control" placeholder="Coffee, Maize..." />
                 <InputError :message="form.errors.primary_crop" class="mt-2" />
@@ -244,13 +282,13 @@ const submit = () => {
               </div>
 
               <div class="col-12 col-md-6 modal-field">
-                <label class="form-label">Water Source Type</label>
+                <label class="form-label"><em class="icon ni ni-dropbox mr-1"></em>Water Source Type</label>
                 <input v-model="form.water_source_type" type="text" class="form-control" placeholder="Rainfed, Borehole, River..." />
                 <InputError :message="form.errors.water_source_type" class="mt-2" />
               </div>
 
 
-              <div class="col-12 d-flex  pt-2">
+              <div class="col-3 pt-2">
                 <SubmitButton :title="'Save Farm'" :status="form.processing" />
               </div>
             </form>
@@ -333,6 +371,63 @@ const submit = () => {
   border-top: 1px solid #edf2f7;
 }
 
+.farm-list {
+  display: grid;
+  gap: 10px;
+}
+
+.farm-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.farm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.farm-title h6 {
+  margin-bottom: 4px;
+}
+
+.farm-area {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e9f2ff;
+  color: #364a63;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.farm-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.farm-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.farm-meta-item strong {
+  color: #364a63;
+  line-height: 1.2;
+}
+
 .modal-form-grid .form-label {
   margin-bottom: 0.35rem;
 }
@@ -355,6 +450,15 @@ const submit = () => {
 
   .detail-item-full {
     grid-column: span 1;
+  }
+
+  .farm-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .farm-meta {
+    grid-template-columns: 1fr;
   }
 }
 </style>

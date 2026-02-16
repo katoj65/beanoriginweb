@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Cooperative;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CooperativeFarmer as CooperativeFarmerResource;
+use App\Http\Resources\FarmResource;
 use App\Models\Cooperative;
 use App\Models\CooperativeFarmer;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\Farm;
 
 class FarmerController extends Controller
 {
@@ -74,6 +76,11 @@ class FarmerController extends Controller
             ->with('success', 'Farmer added successfully.');
     }
 
+
+
+
+
+
     /**
      * Display the specified resource.
      */
@@ -85,9 +92,14 @@ class FarmerController extends Controller
             ->where('cooperative_id', $cooperativeId)
             ->findOrFail($id);
 
+        $farms = Farm::query()
+            ->where('cooperative_farmer_id', $farmer->id)
+            ->get();
+
         return Inertia::render('CooperativeFarmerShow', [
             'title' => 'Farmer Details',
             'farmer' => new CooperativeFarmerResource($farmer),
+            'farms' => FarmResource::collection($farms),
         ]);
     }
 

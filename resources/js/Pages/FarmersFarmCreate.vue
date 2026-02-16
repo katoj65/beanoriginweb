@@ -108,7 +108,7 @@ const submit = () => {
                 </div>
 
                 <div class="col-12 col-md-6">
-                  <label class="form-label">Water Source Type</label>
+                  <label class="form-label"><em class="icon ni ni-dropbox mr-1"></em>Water Source Type</label>
                   <input v-model="form.water_source_type" type="text" class="form-control" placeholder="Rainfed, Borehole, River..." />
                   <InputError :message="form.errors.water_source_type" class="mt-2" />
                 </div>
