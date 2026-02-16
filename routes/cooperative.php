@@ -24,6 +24,8 @@ Route::get('/cooperate/account-settings',[AccountSettings::class,'index'])->name
 
 Route::get('/cooperate/help',[HelpController::class,'index'])->name('cooperative.help');
 
+Route::post('/cooperate/help',[HelpController::class,'store'])->name('cooperative.help.store');
+
 
 
 

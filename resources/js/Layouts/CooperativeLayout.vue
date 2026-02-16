@@ -54,7 +54,7 @@ return data.cooperative;
 
 <div class="nk-apps-sidebar is-silver">
 <div class="nk-apps-brand">
-<a href="html/index.html" class="logo-link">
+<a :href="route('dashboard')" class="logo-link">
 <img class="logo-light logo-img" src="../../images/logo.png"  alt="logo" style="border-radius:20px;">
 <img class="logo-dark logo-img" src="../../images/logo.png"  alt="logo-dark" style="border-radius:20px;">
 </a>
@@ -72,22 +72,22 @@ return data.cooperative;
 </li><!-- .nk-menu-item -->
 <li class="nk-menu-hr"></li>
 <li class="nk-menu-item">
-<a href="html/index.html" class="nk-menu-link" title="Analytics Dashboard">
+<a :href="route('dashboard')" class="nk-menu-link" title="Analytics Dashboard">
 <span class="nk-menu-icon"><em class="icon ni ni-dashboard"></em></span>
 </a>
 </li>
 <li class="nk-menu-item">
-<a href="html/index-sales.html" class="nk-menu-link" title="Sales Dashboard">
+<a :href="route('dashboard')" class="nk-menu-link" title="Sales Dashboard">
 <span class="nk-menu-icon"><em class="icon ni ni-speed"></em></span>
 </a>
 </li>
 <li class="nk-menu-item">
-<a href="html/index-crypto.html" class="nk-menu-link" title="Crypto Dashboard">
+<a :href="route('dashboard')" class="nk-menu-link" title="Crypto Dashboard">
 <span class="nk-menu-icon"><em class="icon ni ni-bitcoin-cash"></em></span>
 </a>
 </li>
 <li class="nk-menu-item">
-<a href="html/index-invest.html" class="nk-menu-link" title="Invest Dashboard">
+<a :href="route('dashboard')" class="nk-menu-link" title="Invest Dashboard">
 <span class="nk-menu-icon"><em class="icon ni ni-invest"></em></span>
 </a>
 </li>
@@ -310,25 +310,25 @@ Sign Out
 <h6 class="overline-title text-primary-alt">Dashboards</h6>
 </li><!-- .nk-menu-heading -->
 <li class="nk-menu-item">
-<a href="html/index.html" class="nk-menu-link">
+<a :href="route('dashboard')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-dashboard"></em></span>
 <span class="nk-menu-text">Default Dashboard</span>
 </a>
 </li><!-- .nk-menu-item -->
 <li class="nk-menu-item">
-<a href="html/index-sales.html" class="nk-menu-link">
+<a :href="route('dashboard')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-speed"></em></span>
 <span class="nk-menu-text">Sales Dashboard</span>
 </a>
 </li><!-- .nk-menu-item -->
 <li class="nk-menu-item">
-<a href="html/index-crypto.html" class="nk-menu-link">
+<a :href="route('dashboard')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-bitcoin-cash"></em></span>
 <span class="nk-menu-text">Crypto Dashboard</span>
 </a>
 </li><!-- .nk-menu-item -->
 <li class="nk-menu-item">
-<a href="html/index-invest.html" class="nk-menu-link">
+<a :href="route('dashboard')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-coins"></em></span>
 <span class="nk-menu-text">Invest Dashboard</span>
 </a>

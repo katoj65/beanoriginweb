@@ -79,7 +79,7 @@ class CooperativeController extends Controller
         return Inertia::render('CooperativeShow', [
             'title' => 'cooperative',
             'response' => [
-         
+
             ],
         ]);
     }
