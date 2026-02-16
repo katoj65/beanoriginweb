@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cooperative extends Model
 {
@@ -21,4 +22,9 @@ class Cooperative extends Model
         'website',
         'user_id',
     ];
+
+    public function farmers(): HasMany
+    {
+        return $this->hasMany(CooperativeFarmer::class);
+    }
 }
