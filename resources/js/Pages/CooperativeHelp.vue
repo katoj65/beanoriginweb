@@ -3,6 +3,8 @@ import { useForm, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import SubmitButton from '@/Components/SubmitButton.vue';
 import InputError from '@/Components/InputError.vue';
+import { ElMessage } from 'element-plus';
+import SuccessMessage from '@/Components/SuccessMessage.vue';
 
 const page = usePage();
 const cooperative = page.props?.cooperative ?? null;
@@ -34,11 +36,26 @@ const priorities = [
 { label: 'Critical', value: 'critical' },
 ];
 
+
+
 const submitHelpRequest = () => {
 form.post(route('cooperative.help.store'), {
-onFinish: () => form.reset(),
+onSuccess: () => {
+ElMessage({
+message: page.props.flash?.success,
+type: 'success',
+placement: 'bottom-left',
+customClass: 'el-success-message',
 });
+form.reset();
+},
+});
+
+
 };
+
+
+
 </script>
 
 <template>
@@ -47,12 +64,16 @@ onFinish: () => form.reset(),
 <div class="row g-gs">
 
 
+
 <div class="col-12 col-xl-8">
 <div class="card card-bordered">
 <div class="card-inner border-bottom">
 <h6 class="title mb-1">Submit Help Request</h6>
 <p class="sub-text mb-0">Describe your issue so the right admin team can respond quickly.</p>
 </div>
+
+
+
 
 <div class="card-inner">
 <form class="row g-3" @submit.prevent="submitHelpRequest">
@@ -69,7 +90,7 @@ onFinish: () => form.reset(),
 <el-select v-model="form.priority" placeholder="Select priority" style="width: 100%">
 <el-option v-for="item in priorities" :key="item.value" :label="item.label" :value="item.value" />
 </el-select>
-              <input-error :message="form.errors.priority" class="mt-2" />
+<input-error :message="form.errors.priority" class="mt-2" />
 </div>
 
 <div class="col-12">

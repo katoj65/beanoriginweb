@@ -41,8 +41,10 @@ return [
 'user' => fn () => $request->user() ? $request->user() : null,
 'cooperative' => fn () => $request->user() && $request->user()->role === 'cooperative'
 ? Cooperative::where('user_id', $request->user()->id)->first(): null,
-
-
+'flash' => [
+'success' => $request->session()->get('success'),
+'error' => $request->session()->get('error'),
+],
 
 
 
