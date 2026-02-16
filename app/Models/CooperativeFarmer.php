@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CooperativeFarmer extends Model
 {
@@ -32,5 +33,10 @@ class CooperativeFarmer extends Model
     public function cooperative(): BelongsTo
     {
         return $this->belongsTo(Cooperative::class);
+    }
+
+    public function farms(): HasMany
+    {
+        return $this->hasMany(Farm::class, 'cooperative_farmer_id');
     }
 }

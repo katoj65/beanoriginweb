@@ -1,8 +1,9 @@
 <script setup>
-import { computed } from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
-import { ElMessageBox } from 'element-plus';
+import InputError from '@/Components/InputError.vue';
+import SubmitButton from '@/Components/SubmitButton.vue';
 
 const page = usePage();
 const farmer = computed(() => page.props.farmer?.data ?? page.props.farmer ?? {});
@@ -31,16 +32,43 @@ const initials = computed(() => {
   return (first + last || 'FR').toUpperCase();
 });
 
-const promptAddFarmDetails = () => {
-  ElMessageBox.confirm(
-    'Would you like to add farm and garden details for this farmer?',
-    'Add Farm Details',
-    {
-      confirmButtonText: 'Yes, Add Details',
-      cancelButtonText: 'Cancel',
-      type: 'info',
-    }
-  );
+const showModal = ref(false);
+
+const form = useForm({
+  cooperative_farmer_id: farmer.value?.id ?? '',
+  farm_name: '',
+  location: '',
+  area_acres: '',
+  number_of_gardens: '',
+  primary_crop: farmer.value?.primary_crop ?? '',
+  soil_type: '',
+  water_source_type: '',
+});
+
+const openModal = () => {
+  form.cooperative_farmer_id = farmer.value?.id ?? '';
+  if (!form.primary_crop) form.primary_crop = farmer.value?.primary_crop ?? '';
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
+};
+
+
+
+
+
+
+const submit = () => {
+  form.post(route('cooperative.farms.store'), {
+    onSuccess: () => {
+      showModal.value = false;
+      form.reset();
+      form.cooperative_farmer_id = farmer.value?.id ?? '';
+      form.primary_crop = farmer.value?.primary_crop ?? '';
+    },
+  });
 };
 </script>
 
@@ -56,7 +84,6 @@ const promptAddFarmDetails = () => {
               <p class="sub-text mb-2">Registered Farmer</p>
               <span class="badge rounded-pill" :class="statusClass">{{ statusLabel }}</span>
             </div>
-
             <div class="card-inner">
               <div class="profile-metric">
                 <span class="sub-text">Primary Crop</span>
@@ -67,11 +94,11 @@ const promptAddFarmDetails = () => {
                 <strong>#{{ farmer.id || '-' }}</strong>
               </div>
               <div class="profile-metric">
-                <span class="sub-text">Registered At</span>
-                <strong>{{ farmer.created_at || 'N/A' }}</strong>
+                <span class="sub-text">Location</span>
+                <strong>{{ locationLabel }}</strong>
               </div>
               <div class="mt-3">
-                <button type="button" class="btn btn-light btn-sm w-100" @click="promptAddFarmDetails">
+                <button type="button" class="btn btn-light btn-sm w-100" @click="openModal">
                   Add Farm Details
                 </button>
               </div>
@@ -83,11 +110,9 @@ const promptAddFarmDetails = () => {
           <div class="card card-bordered">
             <div class="card-inner">
               <h6 class="title mb-1"><em class="icon ni ni-user mr-1"></em>Farmer Profile</h6>
-              <p class="sub-text mb-0">Personal, contact, and farm details.</p>
+              <p class="sub-text mb-0">All farmer details from the database record.</p>
             </div>
-
-            <div class="card-inner section-block">
-              <h6 class="section-title"><em class="icon ni ni-id-card mr-1"></em>Personal Information</h6>
+            <div class="card-inner border-top">
               <div class="details-grid">
                 <div class="detail-item">
                   <span class="sub-text"><em class="icon ni ni-user mr-1"></em>First Name</span>
@@ -109,11 +134,27 @@ const promptAddFarmDetails = () => {
                   <span class="sub-text"><em class="icon ni ni-card-view mr-1"></em>National ID</span>
                   <strong>{{ farmer.national_id || 'N/A' }}</strong>
                 </div>
+                <div class="detail-item">
+                  <span class="sub-text"><em class="icon ni ni-growth mr-1"></em>Primary Crop</span>
+                  <strong>{{ farmer.primary_crop || 'N/A' }}</strong>
+                </div>
+                <div class="detail-item">
+                  <span class="sub-text"><em class="icon ni ni-check-circle mr-1"></em>Status</span>
+                  <strong>{{ farmer.status || 'N/A' }}</strong>
+                </div>
+                <div class="detail-item">
+                  <span class="sub-text"><em class="icon ni ni-clock mr-1"></em>Created At</span>
+                  <strong>{{ farmer.created_at || 'N/A' }}</strong>
+                </div>
+                <div class="detail-item">
+                  <span class="sub-text"><em class="icon ni ni-update mr-1"></em>Updated At</span>
+                  <strong>{{ farmer.updated_at || 'N/A' }}</strong>
+                </div>
               </div>
             </div>
 
-            <div class="card-inner border-top section-block">
-              <h6 class="section-title"><em class="icon ni ni-map-pin mr-1"></em>Contact & Location</h6>
+            <div class="card-inner border-top">
+              <h6 class="title mb-2"><em class="icon ni ni-call mr-1"></em>Contact Information</h6>
               <div class="details-grid">
                 <div class="detail-item">
                   <span class="sub-text"><em class="icon ni ni-call mr-1"></em>Phone Number</span>
@@ -123,87 +164,21 @@ const promptAddFarmDetails = () => {
                   <span class="sub-text"><em class="icon ni ni-mail mr-1"></em>Email</span>
                   <strong>{{ farmer.email || 'N/A' }}</strong>
                 </div>
+                <div class="detail-item">
+                  <span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Village</span>
+                  <strong>{{ farmer.village || 'N/A' }}</strong>
+                </div>
+                <div class="detail-item">
+                  <span class="sub-text"><em class="icon ni ni-map mr-1"></em>Sub County</span>
+                  <strong>{{ farmer.sub_county || 'N/A' }}</strong>
+                </div>
+                <div class="detail-item">
+                  <span class="sub-text"><em class="icon ni ni-map-fill mr-1"></em>District</span>
+                  <strong>{{ farmer.district || 'N/A' }}</strong>
+                </div>
                 <div class="detail-item detail-item-full">
-                  <span class="sub-text"><em class="icon ni ni-map mr-1"></em>Location</span>
+                  <span class="sub-text"><em class="icon ni ni-navigation mr-1"></em>Combined Location</span>
                   <strong>{{ locationLabel }}</strong>
-                </div>
-              </div>
-            </div>
-
-            <div class="card-inner border-top section-block">
-              <h6 class="section-title"><em class="icon ni ni-leaf mr-1"></em>Farms & Gardens</h6>
-              <div class="details-grid">
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-growth mr-1"></em>Primary Crop</span>
-                  <strong>{{ farmer.primary_crop || 'N/A' }}</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Main Farm/Garden Area</span>
-                  <strong>{{ locationLabel }}</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-grid-alt mr-1"></em>Number of Gardens</span>
-                  <strong>N/A</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-ruler mr-1"></em>Total Farm Size</span>
-                  <strong>N/A</strong>
-                </div>
-                <div class="detail-item detail-item-full">
-                  <span class="sub-text"><em class="icon ni ni-notes mr-1"></em>Farm Notes</span>
-                  <strong>No additional farm or garden details recorded yet.</strong>
-                </div>
-              </div>
-            </div>
-
-            <div class="card-inner border-top section-block">
-              <h6 class="section-title"><em class="icon ni ni-shield-check mr-1"></em>Sustainability Info</h6>
-              <div class="details-grid">
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-recycle mr-1"></em>Soil Conservation</span>
-                  <strong>N/A</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-drop mr-1"></em>Water Management</span>
-                  <strong>N/A</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-leaf-fill mr-1"></em>Organic Practices</span>
-                  <strong>N/A</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-sun mr-1"></em>Shade Tree Coverage</span>
-                  <strong>N/A</strong>
-                </div>
-                <div class="detail-item detail-item-full">
-                  <span class="sub-text"><em class="icon ni ni-flag mr-1"></em>Sustainability Notes</span>
-                  <strong>No sustainability assessment data recorded yet.</strong>
-                </div>
-              </div>
-            </div>
-
-            <div class="card-inner border-top section-block">
-              <h6 class="section-title"><em class="icon ni ni-coins mr-1"></em>Credit & Loan Profile</h6>
-              <div class="details-grid">
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-chart-growth mr-1"></em>Farmer Credit Score</span>
-                  <strong>N/A</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-check-circle mr-1"></em>Loan Eligibility</span>
-                  <strong>Pending Assessment</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-wallet mr-1"></em>Recommended Loan Limit</span>
-                  <strong>N/A</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-calendar-alt mr-1"></em>Last Credit Review</span>
-                  <strong>N/A</strong>
-                </div>
-                <div class="detail-item detail-item-full">
-                  <span class="sub-text"><em class="icon ni ni-note-add mr-1"></em>Credit Notes</span>
-                  <strong>No credit scoring data recorded yet.</strong>
                 </div>
               </div>
             </div>
@@ -211,6 +186,79 @@ const promptAddFarmDetails = () => {
         </div>
       </div>
     </div>
+
+
+
+
+
+
+    <div v-if="showModal" class="modal show d-block farm-modal" tabindex="-1" role="dialog" aria-modal="true">
+      <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable custom-modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Create Farm Profile</h5>
+            <button type="button" class="btn-close" aria-label="Close" @click="closeModal"></button>
+          </div>
+
+          <div class="modal-body">
+            <form class="row g-3 modal-form-grid" @submit.prevent="submit">
+              <input v-model="form.cooperative_farmer_id" type="hidden" />
+              <div class="col-12">
+                <InputError :message="form.errors.cooperative_farmer_id" class="mt-0" />
+              </div>
+
+              <div class="col-12 col-md-6 modal-field">
+                <label class="form-label">Farm/ Garden Name</label>
+                <input v-model="form.farm_name" type="text" class="form-control" placeholder="Main farm name" />
+                <InputError :message="form.errors.farm_name" class="mt-2" />
+              </div>
+
+              <div class="col-12 col-md-6 modal-field">
+                <label class="form-label">Location</label>
+                <input v-model="form.location" type="text" class="form-control" placeholder="Village, sub county, district" />
+                <InputError :message="form.errors.location" class="mt-2" />
+              </div>
+
+              <div class="col-12 col-md-6 modal-field">
+                <label class="form-label">Area (Acres)</label>
+                <input v-model="form.area_acres" type="number" min="0" step="0.01" class="form-control" placeholder="0.00" />
+                <InputError :message="form.errors.area_acres" class="mt-2" />
+              </div>
+
+              <div class="col-12 col-md-6 modal-field">
+                <label class="form-label">No. of Gardens</label>
+                <input v-model="form.number_of_gardens" type="number" min="0" step="1" class="form-control" placeholder="0" />
+                <InputError :message="form.errors.number_of_gardens" class="mt-2" />
+              </div>
+
+              <div class="col-12 col-md-12 modal-field">
+                <label class="form-label">Primary Crop</label>
+                <input v-model="form.primary_crop" type="text" class="form-control" placeholder="Coffee, Maize..." />
+                <InputError :message="form.errors.primary_crop" class="mt-2" />
+              </div>
+
+              <div class="col-12 col-md-6 modal-field">
+                <label class="form-label">Soil Type</label>
+                <input v-model="form.soil_type" type="text" class="form-control" placeholder="Loamy, Clay, Sandy..." />
+                <InputError :message="form.errors.soil_type" class="mt-2" />
+              </div>
+
+              <div class="col-12 col-md-6 modal-field">
+                <label class="form-label">Water Source Type</label>
+                <input v-model="form.water_source_type" type="text" class="form-control" placeholder="Rainfed, Borehole, River..." />
+                <InputError :message="form.errors.water_source_type" class="mt-2" />
+              </div>
+
+
+              <div class="col-12 d-flex  pt-2">
+                <SubmitButton :title="'Save Farm'" :status="form.processing" />
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="showModal" class="modal-backdrop fade show"></div>
   </CooperativeLayout>
 </template>
 
@@ -246,15 +294,6 @@ const promptAddFarmDetails = () => {
   border-bottom: 0;
 }
 
-.section-block {
-  background: #fff;
-}
-
-.section-title {
-  margin-bottom: 12px;
-  font-weight: 600;
-}
-
 .details-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -272,6 +311,41 @@ const promptAddFarmDetails = () => {
 
 .detail-item-full {
   grid-column: span 2;
+}
+
+.custom-modal-dialog {
+  max-width: 50%;
+}
+
+.modal-content {
+  border: 1px solid #dbe3ed;
+  border-radius: 14px;
+}
+
+.modal-body {
+  height: 400px;
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+}
+
+.section-divider {
+  padding-top: 6px;
+  border-top: 1px solid #edf2f7;
+}
+
+.modal-form-grid .form-label {
+  margin-bottom: 0.35rem;
+}
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 991px) {
+  .custom-modal-dialog {
+    max-width: 95%;
+  }
 }
 
 @media (max-width: 768px) {

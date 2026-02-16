@@ -44,15 +44,15 @@ Add Farmer
 </div>
 <div class="card-inner">
 <div class="stats-grid">
-<div class="stat-tile border">
+<div class="stat-tile">
 <span class="sub-text">Total Farmers</span>
 <h4 class="mb-0">{{ stats.total }}</h4>
 </div>
-<div class="stat-tile border">
+<div class="stat-tile">
 <span class="sub-text">Active</span>
 <h4 class="mb-0 text-success">{{ stats.active }}</h4>
 </div>
-<div class="stat-tile border">
+<div class="stat-tile">
 <span class="sub-text">Pending</span>
 <h4 class="mb-0 text-warning">{{ stats.pending }}</h4>
 </div>
@@ -67,7 +67,7 @@ Add Farmer
 </div>
 
 <div v-else class="table-responsive">
-<table class="table table-striped mb-0">
+<table class="table mb-0">
 <thead>
 <tr>
 <th>#</th>

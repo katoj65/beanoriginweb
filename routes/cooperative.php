@@ -5,6 +5,7 @@ use App\Http\Controllers\Cooperative\ProfileController;
 use App\Http\Controllers\Cooperative\AccountSettings;
 use App\Http\Controllers\Cooperative\HelpController;
 use App\Http\Controllers\Cooperative\FarmerController;
+use App\Http\Controllers\Cooperative\FarmController;
 
 
 
@@ -34,6 +35,10 @@ Route::get('/cooperate/farmers/create',[FarmerController::class,'create'])->name
 Route::get('/cooperate/farmers/{id}',[FarmerController::class,'show'])->name('cooperative.farmers.show');
 
 Route::post('/cooperate/farmers',[FarmerController::class,'store'])->name('cooperative.farmers.store');
+
+Route::get('/cooperate/farms/create',[FarmController::class,'create'])->name('cooperative.farms.create');
+
+Route::post('/cooperate/farms',[FarmController::class,'store'])->name('cooperative.farms.store');
 
 
 
