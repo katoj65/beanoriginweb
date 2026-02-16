@@ -221,9 +221,9 @@ Cooperative
 
 <ul class="nk-menu nk-menu-main">
 <li class="nk-menu-item">
-<a href="html/index.html" class="nk-menu-link">
+<Link :href="cooperative?.id ? route('cooperative.show', cooperative.id) : '#'" class="nk-menu-link">
 <span class="nk-menu-text">Home</span>
-</a>
+</Link>
 </li>
 <li class="nk-menu-item">
 <a href="html/components.html" class="nk-menu-link">
@@ -270,7 +270,11 @@ View Profile
 Account Settings
 </Link>
 </el-dropdown-item>
-<el-dropdown-item>Help</el-dropdown-item>
+<el-dropdown-item>
+<Link :href="route('cooperative.help')" class="d-block w-100 text-dark">
+Help
+</Link>
+</el-dropdown-item>
 <el-dropdown-item divided>
 
 

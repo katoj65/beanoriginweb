@@ -3,26 +3,21 @@
 namespace App\Http\Controllers\Cooperative;
 
 use App\Http\Controllers\Controller;
-use App\Models\Cooperative;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class AccountSettings extends Controller
+
+class HelpController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $user = auth()->user();
-        $cooperative = $user ? Cooperative::where('user_id', $user->id)->first() : null;
-
-        return Inertia::render('CooperativeAccountSettings', [
-            'title' => 'account settings',
-            'response' => [
-                'cooperative' => $cooperative,
-              
-            ],
+        return Inertia::render('CooperativeHelp',
+        [
+            'title' => 'Help Center',
+            'response' => [],
         ]);
     }
 
