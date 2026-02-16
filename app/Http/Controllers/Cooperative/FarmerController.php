@@ -65,12 +65,12 @@ class FarmerController extends Controller
         ]);
 
         $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
-        CooperativeFarmer::create([
+        $farmer = CooperativeFarmer::create([
             ...$validated,
             'cooperative_id' => $cooperativeId,
         ]);
         return redirect()
-            ->route('cooperative.farmers')
+            ->route('cooperative.farmers.show', $farmer->id)
             ->with('success', 'Farmer added successfully.');
     }
 
@@ -79,7 +79,16 @@ class FarmerController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+
+        $farmer = CooperativeFarmer::query()
+            ->where('cooperative_id', $cooperativeId)
+            ->findOrFail($id);
+
+        return Inertia::render('CooperativeFarmerShow', [
+            'title' => 'Farmer Details',
+            'farmer' => new CooperativeFarmerResource($farmer),
+        ]);
     }
 
     /**

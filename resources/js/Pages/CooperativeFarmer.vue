@@ -44,15 +44,15 @@ Add Farmer
 </div>
 <div class="card-inner">
 <div class="stats-grid">
-<div class="stat-tile">
+<div class="stat-tile border">
 <span class="sub-text">Total Farmers</span>
 <h4 class="mb-0">{{ stats.total }}</h4>
 </div>
-<div class="stat-tile">
+<div class="stat-tile border">
 <span class="sub-text">Active</span>
 <h4 class="mb-0 text-success">{{ stats.active }}</h4>
 </div>
-<div class="stat-tile">
+<div class="stat-tile border">
 <span class="sub-text">Pending</span>
 <h4 class="mb-0 text-warning">{{ stats.pending }}</h4>
 </div>
@@ -77,6 +77,7 @@ Add Farmer
 <th>Crop</th>
 <th>Location</th>
 <th>Status</th>
+<th>Action</th>
 </tr>
 </thead>
 <tbody>
@@ -91,6 +92,11 @@ Add Farmer
 <span class="badge rounded-pill" :class="statusClass(farmer.status)">
     {{ statusLabel(farmer.status) }}
 </span>
+</td>
+<td>
+<Link :href="route('cooperative.farmers.show', farmer.id)" class="btn btn-sm btn-light">
+View
+</Link>
 </td>
 </tr>
 </tbody>
@@ -116,7 +122,7 @@ gap: 12px;
 }
 
 .stat-tile {
-border-radius: 12px;
+border-radius: 10px;
 padding: 12px;
 background: #f8fafc;
 }

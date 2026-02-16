@@ -31,6 +31,8 @@ Route::get('/cooperate/farmers',[FarmerController::class,'index'])->name('cooper
 
 Route::get('/cooperate/farmers/create',[FarmerController::class,'create'])->name('cooperative.farmers.create');
 
+Route::get('/cooperate/farmers/{id}',[FarmerController::class,'show'])->name('cooperative.farmers.show');
+
 Route::post('/cooperate/farmers',[FarmerController::class,'store'])->name('cooperative.farmers.store');
 
 
