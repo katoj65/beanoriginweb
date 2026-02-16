@@ -36,8 +36,6 @@ const priorities = [
 { label: 'Critical', value: 'critical' },
 ];
 
-
-
 const submitHelpRequest = () => {
 form.post(route('cooperative.help.store'), {
 onSuccess: () => {
