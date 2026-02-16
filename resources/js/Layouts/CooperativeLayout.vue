@@ -226,9 +226,9 @@ Cooperative
 </Link>
 </li>
 <li class="nk-menu-item">
-<a href="html/components.html" class="nk-menu-link">
+<Link :href="route('cooperative.farmers')" class="nk-menu-link">
 <span class="nk-menu-text">Farmers</span>
-</a>
+</Link>
 </li>
 <li class="nk-menu-item has-sub">
 <a href="#" class="nk-menu-link">
