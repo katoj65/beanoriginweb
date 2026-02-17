@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Produce;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ProduceResource;
+use App\Models\Cooperative;
+use App\Models\Farm;
 use App\Models\Produce;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,13 +16,17 @@ class ProduceController extends Controller
      */
     public function index()
     {
-        $produces = Produce::query()
-            ->latest('id')
-            ->get();
+        $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+        $farms = Farm::query()
+            ->whereHas('farmer', function ($query) use ($cooperativeId) {
+                $query->where('cooperative_id', $cooperativeId);
+            })
+            ->orderBy('farm_name')
+            ->get(['id', 'farm_name']);
 
         return Inertia::render('ProducePage', [
-            'title' => 'Coffee Harvest Batches',
-            'produces' => ProduceResource::collection($produces),
+            'title' => 'Add Produce',
+            'farms' => $farms,
         ]);
     }
 
@@ -32,7 +37,6 @@ class ProduceController extends Controller
     {
         $validated = $request->validate([
             'farm_id' => ['required', 'exists:farms,id'],
-            'user_id' => ['required', 'exists:users,id'],
             'crop_name' => ['required', 'string', 'max:255'],
             'crop_type' => ['required', 'string', 'max:255'],
             'quantity' => ['required', 'numeric', 'min:0'],
@@ -44,7 +48,10 @@ class ProduceController extends Controller
             'status' => ['required', 'string', 'max:255'],
         ]);
 
-        Produce::create($validated);
+        Produce::create([
+            ...$validated,
+            'user_id' => auth()->id(),
+        ]);
 
         return redirect()->back()->with('success', 'Produce added successfully.');
     }
@@ -72,4 +79,32 @@ class ProduceController extends Controller
     {
         //
     }
+
+
+    public function create(Request $request)
+    {
+        $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+        $farms = Farm::query()
+            ->whereHas('farmer', function ($query) use ($cooperativeId) {
+                $query->where('cooperative_id', $cooperativeId);
+            })
+            ->orderBy('farm_name')
+            ->get(['id', 'farm_name']);
+
+        return Inertia::render('ProduceCreate', [
+            'title' => 'Add Produce',
+            'farms' => $farms,
+        ]);
+    }
+
+
+
+
+
+
+
+
+
+
+
 }

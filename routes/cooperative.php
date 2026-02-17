@@ -47,6 +47,10 @@ Route::get('/cooperate/farms/{id}',[FarmController::class,'show'])->name('cooper
 
 Route::get('/cooperative/produce',[ProduceController::class,'index'])->name('cooperative.produce');
 
+Route::get('/cooperative/produce/create',[ProduceController::class,'create'])->name('cooperative.produce.create');
+
+Route::post('/cooperative/produce',[ProduceController::class,'store'])->name('cooperative.produce.store');
+
 
 
 
