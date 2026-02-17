@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Models\Cooperative;
 use App\Models\CooperativeFarmer;
 use App\Http\Resources\CooperativeFarmer as CooperativeFarmerResource;
+use App\Http\Resources\FarmersTableSummaryResource;
 
 
 class CooperativeController extends Controller
@@ -25,7 +26,7 @@ class CooperativeController extends Controller
             'title' => 'Cooperative',
             'response' => [
                 'cooperative' => $cooperative,
-                'farmers' => CooperativeFarmerResource::collection($farmers),
+                'farmers' => FarmersTableSummaryResource::collection($farmers),
                 'count_farmers'=>count($farmers),
 
 
@@ -85,5 +86,13 @@ class CooperativeController extends Controller
     public function show(Request $request)
     {
         return self::dashboard();
+    }
+
+    public function produce()
+    {
+        return Inertia::render('ProducePage', [
+            'title' => 'Coffee Harvest Batches',
+            'response' => [],
+        ]);
     }
 }

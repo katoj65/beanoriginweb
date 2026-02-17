@@ -14,16 +14,6 @@ response : Object
 const page = usePage();
 
 
-
-// const tabs = computed(() => [
-//   { title: 'Farmers', subtitle: 'Farmers registered', stats: String(props.response?.farmers_count ?? 0), icon: 'ni-users' },
-//   { title: 'Coffee Available', subtitle: 'Batches for sale', stats: '200', icon: 'ni-package' },
-//   { title: 'Coffee Sold', subtitle: 'Batches sold', stats: '300', icon: 'ni-tranx' },
-//   { title: 'Buyers', subtitle: 'Active buyers', stats: '400', icon: 'ni-user-circle' },
-// ]);
-
-
-
 const payment_status = ref([
   { item: 'Revenue Generated', value: 'Shs 50 M', icon: 'ni-coins' },
   { item: 'Pending Payment', value: '50/2000', icon: 'ni-clock' },
@@ -73,10 +63,7 @@ return props.response.cooperative;
 });
 
 const count_farmers=computed(()=>props.response.count_farmers);
-const farmers=computed(()=>{
-props.response.farmers.data
-
-});
+const farmers=computed(()=>props.response.farmers.data);
 
 
 
@@ -241,7 +228,13 @@ const tabs = computed(() => [
 </div>
 </div>
 <div class="card-body p-0">
-<farmers-table :farmers="farmers" />
+<el-table :data="farmers" height="250" style="width: 100%">
+<el-table-column prop="name" label="Names" width="180" />
+<el-table-column prop="gender" label="Gender" width="80" />
+<el-table-column prop="produce" label="Produce" />
+<el-table-column prop="location" label="Location" />
+<el-table-column prop="status" label="Status" />
+</el-table>
 </div>
 </div>
 </div>

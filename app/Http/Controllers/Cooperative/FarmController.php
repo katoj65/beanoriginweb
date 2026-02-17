@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Cooperative;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CooperativeFarmer as CooperativeFarmerResource;
 use App\Http\Resources\FarmResource;
 use App\Models\Cooperative;
 use App\Models\CooperativeFarmer;
@@ -57,15 +58,12 @@ class FarmController extends Controller
             'primary_crop' => ['required', 'string', 'max:255'],
             'soil_type' => ['required', 'string', 'max:255'],
             'water_source_type' => ['required', 'string', 'max:255'],
-
-
         ]);
 
-        $farm = Farm::create($validated);
+        Farm::create($validated);
 
         return redirect()->back()->with([
-            'success' => 'Farm fields validated successfully.',
-            'farm' => (new FarmResource($farm))->resolve(),
+            'success' => 'Farm has been saved successfully',
         ]);
     }
 
@@ -74,7 +72,20 @@ class FarmController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+
+        $farm = Farm::query()
+            ->whereHas('farmer', function ($query) use ($cooperativeId) {
+                $query->where('cooperative_id', $cooperativeId);
+            })
+            ->with('farmer')
+            ->findOrFail($id);
+
+        return Inertia::render('FarmShow', [
+            'title' => 'Farm Details',
+            'farm' => new FarmResource($farm),
+            'owner' => new CooperativeFarmerResource($farm->farmer),
+        ]);
     }
 
     /**

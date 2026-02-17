@@ -230,10 +230,10 @@ Cooperative
 <span class="nk-menu-text">Farmers</span>
 </Link>
 </li>
-<li class="nk-menu-item has-sub">
-<a href="#" class="nk-menu-link">
+<li class="nk-menu-item">
+<Link :href="route('cooperative.produce')" class="nk-menu-link">
 <span class="nk-menu-text">Products</span>
-</a>
+</Link>
 </li><!-- .nk-menu-item -->
 </ul>
 
@@ -436,7 +436,7 @@ Sign Out
 </a>
 <ul class="nk-menu-sub">
 <li class="nk-menu-item">
-<a href="html/product-list.html" class="nk-menu-link"><span class="nk-menu-text">Product List</span></a>
+<Link :href="route('cooperative.produce')" class="nk-menu-link"><span class="nk-menu-text">Product List</span></Link>
 </li>
 <li class="nk-menu-item">
 <a href="html/product-card.html" class="nk-menu-link"><span class="nk-menu-text">Product Card</span></a>

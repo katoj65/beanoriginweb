@@ -6,6 +6,7 @@ use App\Http\Controllers\Cooperative\AccountSettings;
 use App\Http\Controllers\Cooperative\HelpController;
 use App\Http\Controllers\Cooperative\FarmerController;
 use App\Http\Controllers\Cooperative\FarmController;
+use App\Http\Controllers\Produce\ProduceController;
 
 
 
@@ -18,7 +19,9 @@ Route::get('/cooperative/create',[CooperativeController::class,'create_cooperati
 
 Route::post('/store/cooperative',[CooperativeController::class,'store'])->name('cooperative-store');
 
-Route::get('/cooperative/{id}',[CooperativeController::class,'show'])->name('cooperative.show');
+Route::get('/cooperative/{id}',[CooperativeController::class,'show'])
+    ->whereNumber('id')
+    ->name('cooperative.show');
 
 Route::get('/cooperate/profile',[ProfileController::class,'show'])->name('cooperative.profile');
 
@@ -40,7 +43,9 @@ Route::get('/cooperate/farms/create',[FarmController::class,'create'])->name('co
 
 Route::post('/cooperate/farms',[FarmController::class,'store'])->name('cooperative.farms.store');
 
+Route::get('/cooperate/farms/{id}',[FarmController::class,'show'])->name('cooperative.farms.show');
 
+Route::get('/cooperative/produce',[ProduceController::class,'index'])->name('cooperative.produce');
 
 
 
