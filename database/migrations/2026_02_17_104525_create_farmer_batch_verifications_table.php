@@ -11,18 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('produces', function (Blueprint $table) {
+        Schema::create('farmer_batch_verifications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('cooperative_id')->constrained('cooperative')->cascadeOnDelete();
-            $table->string('crop_name');
-            $table->string('crop_type');
-            $table->decimal('quantity', 12, 2);
-            $table->decimal('price', 12, 2);
-            $table->string('location');
-            $table->date('date_of_harvest');
-            $table->string('crop_grade');
-            $table->string('process_method');
-            $table->string('status')->default('listed');
+            $table->foreignId('cooperative_farmers_id')->constrained('cooperative_farmers')->cascadeOnDelete();
+            $table->string('verification_code');
+            $table->integer('expiry_minutes');
+            $table->enum('status', ['active', 'expired'])->default('active');
             $table->timestamps();
         });
     }
@@ -32,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('produces');
+        Schema::dropIfExists('farmer_batch_verifications');
     }
 };

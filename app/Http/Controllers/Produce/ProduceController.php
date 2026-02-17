@@ -14,6 +14,11 @@ use App\models\CropType;
 use App\Http\Resources\CropTypeResource;
 use App\Models\ProcessMethod;
 use App\Http\Resources\ProcessMethodResource;
+use App\Models\CropGrade;
+use App\Http\Resources\CropGradeResource;
+use App\Models\CooperativeFarmer;
+
+
 
 class ProduceController extends Controller
 {
@@ -44,23 +49,37 @@ return Inertia::render('ProducePage', [
  */
 public function store(Request $request)
 {
+$cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+
+if (! $cooperativeId) {
+return back()->withErrors([
+'cooperative_id' => 'No cooperative profile found for this account.',
+])->withInput();
+}
+
 $validated = $request->validate([
-'farm_id' => ['required', 'exists:farms,id'],
 'crop_name' => ['required', 'string', 'max:255'],
 'crop_type' => ['required', 'string', 'max:255'],
 'quantity' => ['required', 'numeric', 'min:0'],
 'price' => ['required', 'numeric', 'min:0'],
 'location' => ['required', 'string', 'max:255'],
-'date_of_havest' => ['required', 'date'],
+'date_of_harvest' => ['nullable', 'date', 'required_without:date_of_havest'],
+'date_of_harvest' => ['nullable', 'date', 'required_without:date_of_harvest'],
 'crop_grade' => ['required', 'string', 'max:255'],
 'process_method' => ['required', 'string', 'max:255'],
 'status' => ['required', 'string', 'max:255'],
+
+
 ]);
 
 Produce::create([
 ...$validated,
-'user_id' => auth()->id(),
+'cooperative_id' => $cooperativeId,
+'date_of_harvest' => $validated['date_of_harvest'] ?? $validated['date_of_havest'] ?? null,
 ]);
+
+
+
 
 return redirect()->back()->with('success', 'Produce added successfully.');
 }
@@ -102,6 +121,7 @@ $query->where('cooperative_id', $cooperativeId);
 $crops=Crops::get();
 $crop_type=CropType::get();
 $process_method=ProcessMethod::get();
+$grade=CropGrade::get();
 
 return Inertia::render('ProduceCreate', [
 'title' => 'Add Produce',
@@ -109,10 +129,53 @@ return Inertia::render('ProduceCreate', [
 'crops'=>CropResource::collection($crops),
 'crop_type'=>CropTypeResource::collection($crop_type),
 'process_method'=>ProcessMethodResource::collection($process_method),
+'crop_grade'=>CropGradeResource::collection($grade)
 
 
 ]);
 }
+
+
+
+
+
+
+
+
+public function store_verification(Request $request)
+{
+$validated = $request->validate([
+'last_name' => ['required', 'string', 'max:255'],
+'phone_number' => ['required', 'string', 'regex:/^[0-9+()\\-\\s]{7,20}$/'],
+]);
+
+$cooperative=Cooperative::where('user_id',$request->user()->id)->first()->id;
+$count = CooperativeFarmer::where('last_name', $validated['last_name'])
+->where('phone_number', $validated['phone_number'])
+->where('cooperative_id',$cooperative)
+->count();
+$status=false;
+$message='Could not verify farmer details.';
+if($count){
+$status=true;
+$message='Farmer has been verified.';
+//generate 
+
+
+
+
+return('some');
+
+
+}
+
+return redirect()->back()->with('success',['status'=>$status,'message'=>$message]);
+
+}
+
+
+
+
 
 
 

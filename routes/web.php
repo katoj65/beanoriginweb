@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Home\HomeController;
 use App\Http\Controllers\Home\UserProfileController;
+use App\Services\FarmerVerificationService;
 
 Route::get('/', function () {
 
@@ -48,12 +49,18 @@ Route::post('/update/user-account-status',[UserProfileController::class,'update_
 
 
 
-// Route::middleware(['auth', 'role:farmer'])->group(function () {
-// // Route::get('/test',[HomeController::class,'userDashboard']);
-// Route::get('/test',function(){
-// return('some information');
-// });
-// });
+Route::middleware(['auth'])->group(function () {
+// Route::get('/test',[HomeController::class,'userDashboard']);
+Route::get('/test',function(){
+//return Inertia::render('TestPage');
+
+return FarmerVerificationService::checkFarmer();
+
+
+
+
+});
+});
 
 
 

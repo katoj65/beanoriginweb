@@ -210,3 +210,7 @@ body {
 .form-control-like .el-select__selected-item {
   line-height: 1.5;
 }
+
+.bold {
+  font-weight: 700 !important;
+}
