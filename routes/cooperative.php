@@ -53,7 +53,7 @@ Route::post('/cooperative/produce',[ProduceController::class,'store'])->name('co
 
 Route::post('/verification/farmer/produce',[ProduceController::class,'store_verification'])->name('verification.farmer.store');
 
-
+Route::get('/cooperative/produce/create/{any}',[ProduceController::class,'create_batch'])->name('cooperative.produce.create.batch');
 
 
 

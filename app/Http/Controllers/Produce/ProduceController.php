@@ -17,7 +17,8 @@ use App\Http\Resources\ProcessMethodResource;
 use App\Models\CropGrade;
 use App\Http\Resources\CropGradeResource;
 use App\Models\CooperativeFarmer;
-
+use App\Services\FarmerVerificationService;
+use App\Models\FarmerBatchVerification;
 
 
 class ProduceController extends Controller
@@ -139,6 +140,38 @@ return Inertia::render('ProduceCreate', [
 
 
 
+public function create_batch(Request $request)
+{
+$cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+$farms = Farm::query()
+->whereHas('farmer', function ($query) use ($cooperativeId) {
+$query->where('cooperative_id', $cooperativeId);
+})
+->orderBy('farm_name')
+->get(['id', 'farm_name']);
+$crops=Crops::get();
+$crop_type=CropType::get();
+$process_method=ProcessMethod::get();
+$grade=CropGrade::get();
+
+return Inertia::render('ProduceCreateAfterVerification', [
+'title' => 'Add Produce',
+'farms' => $farms,
+'crops'=>CropResource::collection($crops),
+'crop_type'=>CropTypeResource::collection($crop_type),
+'process_method'=>ProcessMethodResource::collection($process_method),
+'crop_grade'=>CropGradeResource::collection($grade)
+
+
+
+
+
+]);
+}
+
+
+
+
 
 
 
@@ -150,25 +183,25 @@ $validated = $request->validate([
 ]);
 
 $cooperative=Cooperative::where('user_id',$request->user()->id)->first()->id;
-$count = CooperativeFarmer::where('last_name', $validated['last_name'])
+$farmer = CooperativeFarmer::where('last_name', $validated['last_name'])
 ->where('phone_number', $validated['phone_number'])
-->where('cooperative_id',$cooperative)
-->count();
+->where('cooperative_id',$cooperative)->first();
+
 $status=false;
 $message='Could not verify farmer details.';
-if($count){
+if($farmer){
 $status=true;
 $message='Farmer has been verified.';
-//generate 
 
+//generate verification code
+$code=FarmerVerificationService::generate_verification_code();
+$segment=md5($code);
+FarmerBatchVerification::create(['cooperative_id'=>$cooperative,'cooperative_farmers_id'=>$farmer->id,
+'verification_code'=>$code,
+'expiry_minutes'=>10]);
 
-
-
-return('some');
-
-
+return redirect()->route('cooperative.produce.create.batch', ['any' => $segment]);
 }
-
 return redirect()->back()->with('success',['status'=>$status,'message'=>$message]);
 
 }
