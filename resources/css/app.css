@@ -193,3 +193,20 @@ body {
 .el-warning-message .el-message__closeBtn:hover {
   opacity: 0.75;
 }
+
+.form-control-like {
+  width: 100%;
+}
+
+.form-control-like .el-input__wrapper,
+.form-control-like .el-select__wrapper {
+  height: calc(1.5em + 0.75rem + 2px) !important;
+  min-height: calc(1.5em + 0.75rem + 2px) !important;
+  border-radius: 4px !important;
+  padding: 0 0.75rem !important;
+}
+
+.form-control-like .el-input__inner,
+.form-control-like .el-select__selected-item {
+  line-height: 1.5;
+}
