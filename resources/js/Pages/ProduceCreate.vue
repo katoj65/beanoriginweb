@@ -38,8 +38,8 @@ form.farm_id = farms.value[0]?.id ?? '';
 });
 };
 
-const crops=computed(()=>page.props.crops.data);
-
+const crops = computed(()=>page.props.crops.data);
+const crop_type =computed (()=>page.props.crop_type.data);
 
 
 
@@ -79,7 +79,14 @@ const crops=computed(()=>page.props.crops.data);
 
 <div class="col-12 col-md-4">
 <label class="form-label">Crop Type</label>
-<input v-model="form.crop_type" type="text" class="form-control" />
+<el-select v-model="form.crop_type" placeholder="Select" class="form-control-like">
+    <el-option
+      v-for="item in crop_type"
+      :key="item.name"
+      :label="item.name"
+      :value="item.name"
+    />
+  </el-select>
 <InputError :message="form.errors.crop_type" class="mt-2" />
 </div>
 

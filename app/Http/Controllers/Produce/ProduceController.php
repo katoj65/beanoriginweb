@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Crops;
 use App\Http\Resources\CropResource;
+use App\models\CropType;
+use App\Http\Resources\CropTypeResource;
 
 class ProduceController extends Controller
 {
@@ -88,10 +90,12 @@ public function destroy(string $id)
 public function create(Request $request)
 {
 $crops=Crops::get();
+$crop_type=CropType::get();
 
 return Inertia::render('ProduceCreate', [
 'title' => 'Add Produce',
 'crops'=>CropResource::collection($crops),
+'crop_type'=>CropTypeResource::collection($crop_type)
 
 
 ]);
