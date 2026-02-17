@@ -38,8 +38,9 @@ form.farm_id = farms.value[0]?.id ?? '';
 });
 };
 
-const crops = computed(()=>page.props.crops.data);
-const crop_type =computed (()=>page.props.crop_type.data);
+const crops = computed(() => page.props.crops?.data ?? []);
+const crop_type = computed(() => page.props.crop_type?.data ?? []);
+const process_methods = computed(() => page.props.process_method?.data ?? []);
 
 
 
@@ -122,7 +123,14 @@ const crop_type =computed (()=>page.props.crop_type.data);
 
 <div class="col-12 col-md-6">
 <label class="form-label">Process Method</label>
-<input v-model="form.process_method" type="text" class="form-control" />
+<el-select v-model="form.process_method" placeholder="Select" class="form-control-like">
+    <el-option
+      v-for="item in process_methods"
+      :key="item.name"
+      :label="item.name"
+      :value="item.name"
+    />
+  </el-select>
 <InputError :message="form.errors.process_method" class="mt-2" />
 </div>
 

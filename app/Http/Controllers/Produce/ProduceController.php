@@ -12,6 +12,8 @@ use App\Models\Crops;
 use App\Http\Resources\CropResource;
 use App\models\CropType;
 use App\Http\Resources\CropTypeResource;
+use App\Models\ProcessMethod;
+use App\Http\Resources\ProcessMethodResource;
 
 class ProduceController extends Controller
 {
@@ -32,6 +34,7 @@ $query->where('cooperative_id', $cooperativeId);
 return Inertia::render('ProducePage', [
 'title' => 'Add Produce',
 'farms' => $farms,
+
 
 ]);
 }
@@ -89,13 +92,23 @@ public function destroy(string $id)
 
 public function create(Request $request)
 {
+$cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+$farms = Farm::query()
+->whereHas('farmer', function ($query) use ($cooperativeId) {
+$query->where('cooperative_id', $cooperativeId);
+})
+->orderBy('farm_name')
+->get(['id', 'farm_name']);
 $crops=Crops::get();
 $crop_type=CropType::get();
+$process_method=ProcessMethod::get();
 
 return Inertia::render('ProduceCreate', [
 'title' => 'Add Produce',
+'farms' => $farms,
 'crops'=>CropResource::collection($crops),
-'crop_type'=>CropTypeResource::collection($crop_type)
+'crop_type'=>CropTypeResource::collection($crop_type),
+'process_method'=>ProcessMethodResource::collection($process_method),
 
 
 ]);

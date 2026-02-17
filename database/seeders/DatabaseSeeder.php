@@ -25,7 +25,8 @@ class DatabaseSeeder extends Seeder
 $this->call([
 UserRolesSeeder::class,
 CropTypeSeeder::class,
-ProcessMethodSeeder::class
+ProcessMethodSeeder::class,
+CropGradeSeeder::class
 
 
 
