@@ -64,11 +64,11 @@ return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFraction
 <strong><span :class="statusClass">{{ batch.status }}</span></strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-leaf mr-1"></em>Crop Name</span>
+<span class="sub-text"><em class="icon ni ni-growth mr-1"></em>Crop Name</span>
 <strong>{{ batch.crop_name }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-tree-view mr-1"></em>Crop Type</span>
+<span class="sub-text"><em class="icon ni ni-growth mr-1"></em>Crop Type</span>
 <strong>{{ batch.crop_type }}</strong>
 </div>
 <div class="detail-item">
@@ -95,10 +95,7 @@ return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFraction
 <span class="sub-text"><em class="icon ni ni-setting mr-1"></em>Process Method</span>
 <strong>{{ batch.process_method }}</strong>
 </div>
-<div class="detail-item detail-item-full">
-<span class="sub-text"><em class="icon ni ni-shield-check mr-1"></em>Verification Code</span>
-<strong>{{ batch.verification_code }}</strong>
-</div>
+
 </div>
 </div>
 
@@ -111,31 +108,31 @@ return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFraction
 <h6 class="title mb-3"><em class="icon ni ni-user mr-1"></em>Farmer Details</h6>
 <div class="details-grid">
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-user mr-1"></em>Name</span>
+<span class="sub-text"><em class="icon ni ni-user mr-1 label-icon"></em>Name</span>
 <strong>{{ [farmer.first_name, farmer.last_name].filter(Boolean).join(' ') || 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-users mr-1"></em>Gender</span>
+<span class="sub-text"><em class="icon ni ni-users mr-1 label-icon"></em>Gender</span>
 <strong>{{ farmer.gender ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-growth mr-1"></em>Primary Crop</span>
+<span class="sub-text"><em class="icon ni ni-growth mr-1 label-icon"></em>Primary Crop</span>
 <strong>{{ farmer.crop ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Location</span>
+<span class="sub-text"><em class="icon ni ni-map-pin mr-1 label-icon"></em>Location</span>
 <strong>{{ farmer.location ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-check-circle mr-1"></em>Status</span>
+<span class="sub-text"><em class="icon ni ni-check-circle mr-1 label-icon"></em>Status</span>
 <strong>{{ farmer.status ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-call mr-1"></em>Telephone</span>
+<span class="sub-text"><em class="icon ni ni-call mr-1 label-icon"></em>Telephone</span>
 <strong>{{ farmer.telephone ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-mail mr-1"></em>Email</span>
+<span class="sub-text"><em class="icon ni ni-mail mr-1 label-icon"></em>Email</span>
 <strong>{{ farmer.email ?? 'N/A' }}</strong>
 </div>
 </div>
@@ -163,6 +160,12 @@ gap: 4px;
 
 .detail-item-full {
 grid-column: span 2;
+}
+
+.label-icon {
+color: #6f4e37;
+font-size: 14px;
+opacity: 1;
 }
 
 @media (max-width: 768px) {
