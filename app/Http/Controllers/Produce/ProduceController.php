@@ -111,7 +111,10 @@ public function show(Request $request)
 //
 $id = $request->segment(3);
 $produce = Produce::where('id', $id)->first();
-$farmer = CooperativeFarmer::where('id', FarmerBatchVerification::where('verification_code', $produce?->verification_code)->value('cooperative_farmers_id'))->first();
+$cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+$farmer = CooperativeFarmer::where('id', FarmerBatchVerification::where('verification_code', $produce?->verification_code)->value('cooperative_farmers_id'))
+->where('cooperative_id', $cooperativeId)
+->first();
 
 return Inertia::render('BatchShowPage',[
 'produce'=> new ProduceResource($produce),
