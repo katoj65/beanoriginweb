@@ -19,6 +19,7 @@ use App\Http\Resources\CropGradeResource;
 use App\Models\CooperativeFarmer;
 use App\Services\FarmerVerificationService;
 use App\Models\FarmerBatchVerification;
+use App\Http\Resources\FarmersTableSummaryResource;
 
 
 
@@ -77,11 +78,8 @@ $validated = $request->validate([
 Produce::create([
 ...$validated,
 'cooperative_id' => $cooperativeId,
-'date_of_harvest' => $validated['date_of_harvest'] ?? $validated['date_of_havest'] ?? null,
+'date_of_harvest' => $validated['date_of_harvest'] ?? $validated['date_of_harvest'] ?? null,
 ]);
-
-
-
 
 return redirect()->back()->with('success', 'Produce added successfully.');
 }
@@ -109,6 +107,11 @@ public function destroy(string $id)
 {
 //
 }
+
+
+
+
+
 
 
 public function create(Request $request)
@@ -163,6 +166,8 @@ $crops=Crops::get();
 $crop_type=CropType::get();
 $process_method=ProcessMethod::get();
 $grade=CropGrade::get();
+$farmer_id=$verification->cooperative_farmers_id;
+$farmer=CooperativeFarmer::where('id',$farmer_id)->first();
 
 
 
@@ -173,7 +178,8 @@ return Inertia::render('ProduceCreateAfterVerification', [
 'crops'=>CropResource::collection($crops),
 'crop_type'=>CropTypeResource::collection($crop_type),
 'process_method'=>ProcessMethodResource::collection($process_method),
-'crop_grade'=>CropGradeResource::collection($grade)
+'crop_grade'=>CropGradeResource::collection($grade),
+'farmer'=> new FarmersTableSummaryResource($farmer)
 
 
 

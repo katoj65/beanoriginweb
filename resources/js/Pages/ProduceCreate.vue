@@ -214,12 +214,12 @@ Verify the farmer using last name and telephone before creating a batch. This se
 
 
 
-                <div class="col-12">
-                  <SubmitButton :title="'Verify'" :status="form.processing" />
-                </div>
-              </form>
-            </div>
-          </div>
+<div class="col-12">
+<SubmitButton :title="'Verify'" :status="form.processing" />
+</div>
+</form>
+</div>
+</div>
 </div>
 </div>
 </div>

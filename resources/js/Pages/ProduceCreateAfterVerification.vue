@@ -42,7 +42,7 @@ const crops = computed(() => page.props.crops?.data ?? []);
 const crop_type = computed(() => page.props.crop_type?.data ?? []);
 const process_methods = computed(() => page.props.process_method?.data ?? []);
 const crop_grade = computed(() => page.props.crop_grade?.data ?? []);
-
+const farmer=computed(()=>page.props.farmer.data);
 
 
 
@@ -63,10 +63,8 @@ const crop_grade = computed(() => page.props.crop_grade?.data ?? []);
 
 <div class="card-inner">
 
-
-
-
-<div>
+<div class="verified-farmer-section">
+<h6 class="title mb-2">Verified Farmer</h6>
 <ul class="nk-support border mb-3 support-ticket-list">
 <li class="nk-support-item">
 <div class="user-avatar support-avatar">
@@ -74,11 +72,15 @@ const crop_grade = computed(() => page.props.crop_grade?.data ?? []);
 </div>
 <div class="nk-support-content">
 <div class="title support-title">
-<span class="support-name">Daniel Moore</span>
+<h5 class="support-name mb-0">{{ farmer.name || 'Farmer' }}</h5>
 <span class="badge badge-dot badge-dot-xs bg-success ms-1">Verified</span>
 </div>
-<p class="support-text mb-1">Verification passed. You can proceed to create and list this coffee batch securely.</p>
-<span class="time support-time"><em class="icon ni ni-clock mr-1"></em>Updated 2 hours ago</span>
+<div class="support-meta">
+<span class="meta-pill"><em class="icon ni ni-users mr-1"></em>Gender: {{ farmer.gender }}</span>
+<span class="meta-pill"><em class="icon ni ni-growth mr-1"></em>Primary Crop: {{ farmer.produce }}</span>
+<span class="meta-pill"><em class="icon ni ni-map-pin mr-1"></em>Location: {{ farmer.location }}</span>
+</div>
+<!-- <span class="time support-time"><em class="icon ni ni-clock mr-1"></em>Updated 2 hours ago</span> -->
 </div>
 </li>
 
@@ -189,35 +191,59 @@ const crop_grade = computed(() => page.props.crop_grade?.data ?? []);
 
 <style scoped>
 .support-ticket-list {
-  border-radius: 10px;
-  background: linear-gradient(180deg, #ffffff 0%, #f9fbfd 100%);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+  border-radius: 12px;
+  border: 1px solid #e5edf6 !important;
+  background: #ffffff;
+  overflow: hidden;
 }
 
 .support-avatar {
-  background: #e8f0ff;
-  color: #1d4ed8;
+  background: linear-gradient(135deg, #e6f0ff, #d8e8ff);
+  color: #1e40af;
   font-weight: 700;
 }
 
 .support-title {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
+  margin-bottom: 10px;
 }
 
 .support-name {
-  color: #1f2b3a;
-  font-weight: 600;
+  color: #1f2b46;
+  font-weight: 700;
 }
 
-.support-text {
-  color: #526484;
+.support-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.meta-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #eef4fb;
+  color: #44566c;
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .support-time {
   display: inline-flex;
   align-items: center;
   color: #8094ae;
+  font-size: 12px;
+}
+
+.verified-farmer-section {
+  border-bottom: 1px solid #e5edf6;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
 }
 </style>
