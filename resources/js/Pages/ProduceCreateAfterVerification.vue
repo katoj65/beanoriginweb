@@ -9,7 +9,7 @@ const page = usePage();
 const farms = computed(() => page.props.farms ?? []);
 
 const form = useForm({
-farm_id: '',
+verification_id:'',
 crop_name: '',
 crop_type: '',
 quantity: '',
@@ -18,7 +18,7 @@ location: '',
 date_of_harvest: '',
 crop_grade: '',
 process_method: '',
-status: 'listed',
+
 });
 
 watchEffect(() => {
@@ -31,9 +31,8 @@ const submit = () => {
 form.post(route('cooperative.produce.store'), {
 preserveScroll: true,
 onSuccess: () => {
-form.reset();
-form.status = 'listed';
-form.farm_id = farms.value[0]?.id ?? '';
+// form.reset();
+
 },
 });
 };
@@ -45,6 +44,12 @@ const crop_grade = computed(() => page.props.crop_grade?.data ?? []);
 const farmer=computed(()=>page.props.farmer.data);
 
 
+watchEffect(()=>{
+const segments = page.url.split('/');
+const id=segments[4];
+form.verification_id=id;
+
+});
 
 
 </script>
@@ -103,8 +108,8 @@ const farmer=computed(()=>page.props.farmer.data);
 </div>
 
 <div class="col-12 col-md-4">
-<label class="form-label">Crop Name</label>
- <el-select v-model="form.crop_name" placeholder="Select" class="form-control-like">
+<label class="form-label" for="01">Crop Name</label>
+ <el-select v-model="form.crop_name" placeholder="Select" class="form-control-like" id="01">
     <el-option
       v-for="item in crops"
       :key="item.name"
@@ -116,8 +121,8 @@ const farmer=computed(()=>page.props.farmer.data);
 </div>
 
 <div class="col-12 col-md-4">
-<label class="form-label">Crop Type</label>
-<el-select v-model="form.crop_type" placeholder="Select" class="form-control-like">
+<label class="form-label" for="02">Crop Type</label>
+<el-select v-model="form.crop_type" placeholder="Select" class="form-control-like" id="02">
     <el-option
       v-for="item in crop_type"
       :key="item.name"
@@ -129,32 +134,33 @@ const farmer=computed(()=>page.props.farmer.data);
 </div>
 
 <div class="col-12 col-md-4">
-<label class="form-label">Quantity</label>
-<input v-model="form.quantity" type="number" min="0" step="0.01" class="form-control" />
+<label class="form-label" for="03">Quantity (Kgs)</label>
+<input v-model="form.quantity" type="number" min="0" step="0.01" class="form-control" placeholder="Enter batch quantity in Kgs" id="03"/>
 <InputError :message="form.errors.quantity" class="mt-2" />
 </div>
 
 <div class="col-12 col-md-4">
-<label class="form-label">Price</label>
-<input v-model="form.price" type="number" min="0" step="0.01" class="form-control" />
+<label class="form-label" for="04">Price</label>
+<input v-model="form.price" type="number" min="0" step="0.01" class="form-control" placeholder="Enter price" id="04"/>
 <InputError :message="form.errors.price" class="mt-2" />
 </div>
 
 <div class="col-12 col-md-4">
-<label class="form-label">Location</label>
-<input v-model="form.location" type="text" class="form-control" />
+<label class="form-label" for="05">Location</label>
+<input v-model="form.location" type="text" class="form-control" placeholder="Enter location" id="05"/>
 <InputError :message="form.errors.location" class="mt-2" />
 </div>
 
 <div class="col-12 col-md-4">
-<label class="form-label">Date Of Havest</label>
-<input v-model="form.date_of_harvest" type="date" class="form-control" />
-<InputError :message="form.errors.date_of_havest" class="mt-2" />
+<label class="form-label" for="06">Date Of Harvest</label>
+<input v-model="form.date_of_harvest" type="date" class="form-control" id="06"/>
+<InputError :message="form.errors.date_of_harvest" class="mt-2" />
 </div>
 
 <div class="col-12 col-md-6">
-<label class="form-label">Crop Grade</label>
-<el-select v-model="form.crop_grade" placeholder="Select" class="form-control-like">
+<label class="form-label" for="07">Crop Grade</label>
+<el-select v-model="form.crop_grade" placeholder="Select" class="form-control-like" id="07">
+     <el-option label="None" value="N/A"/>
     <el-option
       v-for="item in crop_grade"
       :key="item.name"
@@ -166,8 +172,9 @@ const farmer=computed(()=>page.props.farmer.data);
 </div>
 
 <div class="col-12 col-md-6">
-<label class="form-label">Process Method</label>
-<el-select v-model="form.process_method" placeholder="Select" class="form-control-like">
+<label class="form-label" for="08">Process Method</label>
+<el-select v-model="form.process_method" placeholder="Select" class="form-control-like" id="08">
+    <el-option label="None" value="N/A"/>
     <el-option
       v-for="item in process_methods"
       :key="item.name"
@@ -179,7 +186,7 @@ const farmer=computed(()=>page.props.farmer.data);
 </div>
 
 
-<div class="col-12 col-md-4 d-flex align-items-end">
+<div class="col-12 col-md-4 d-flex align-items-end mt-4">
 <SubmitButton :title="'Save Produce'" :status="form.processing" />
 </div>
 </form>

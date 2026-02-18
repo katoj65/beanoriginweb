@@ -52,37 +52,33 @@ return Inertia::render('ProducePage', [
  */
 public function store(Request $request)
 {
-$cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
-
-if (! $cooperativeId) {
-return back()->withErrors([
-'cooperative_id' => 'No cooperative profile found for this account.',
-])->withInput();
-}
-
 $validated = $request->validate([
 'crop_name' => ['required', 'string', 'max:255'],
 'crop_type' => ['required', 'string', 'max:255'],
 'quantity' => ['required', 'numeric', 'min:0'],
 'price' => ['required', 'numeric', 'min:0'],
 'location' => ['required', 'string', 'max:255'],
-'date_of_harvest' => ['nullable', 'date', 'required_without:date_of_havest'],
-'date_of_harvest' => ['nullable', 'date', 'required_without:date_of_harvest'],
+'date_of_harvest' => ['required', 'date'],
 'crop_grade' => ['required', 'string', 'max:255'],
 'process_method' => ['required', 'string', 'max:255'],
-'status' => ['required', 'string', 'max:255'],
-
-
+'verification_id'=>['required','string']
 ]);
 
-Produce::create([
-...$validated,
-'cooperative_id' => $cooperativeId,
-'date_of_harvest' => $validated['date_of_harvest'] ?? $validated['date_of_harvest'] ?? null,
-]);
+//check if the verification code is valid
+$validity = FarmerVerificationService::check_id_validity($validated['verification_id']);
 
-return redirect()->back()->with('success', 'Produce added successfully.');
-}
+
+
+
+return $validity;
+
+return $validated;
+
+return redirect()->back()->with('success', 'Produce data validated successfully.');
+
+
+
+    }
 
 /**
  * Display the specified resource.
@@ -172,6 +168,7 @@ $farmer=CooperativeFarmer::where('id',$farmer_id)->first();
 
 
 
+
 return Inertia::render('ProduceCreateAfterVerification', [
 'title' => 'Add Produce',
 'farms' => $farms,
@@ -179,7 +176,8 @@ return Inertia::render('ProduceCreateAfterVerification', [
 'crop_type'=>CropTypeResource::collection($crop_type),
 'process_method'=>ProcessMethodResource::collection($process_method),
 'crop_grade'=>CropGradeResource::collection($grade),
-'farmer'=> new FarmersTableSummaryResource($farmer)
+'farmer'=> new FarmersTableSummaryResource($farmer),
+
 
 
 
