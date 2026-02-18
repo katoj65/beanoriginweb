@@ -9,8 +9,8 @@ const page = usePage();
 const farms = computed(() => page.props.farms ?? []);
 
 const form=useForm({
-last_name:'kato',
-phone_number:'+256752567534'
+last_name:'',
+phone_number:''
 });
 
 
