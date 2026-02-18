@@ -1,21 +1,25 @@
 <script setup>
 import { computed } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 
 const page = usePage();
 const produces = computed(() => page.props.produces?.data ?? page.props.produces ?? []);
 
 const totalBatches = computed(() => produces.value.length);
-const listedCount = computed(() => produces.value.filter((b) => b.status === 'listed').length);
-const soldCount = computed(() => produces.value.filter((b) => b.status === 'sold').length);
-const totalVolume = computed(() => produces.value.reduce((sum, b) => sum + Number(b.quantity || 0), 0));
+const listedCount = computed(() => Number(page.props.listed_count ?? produces.value.filter((b) => b.status === 'listed').length));
+const soldCount = computed(() => Number(page.props.sold_count ?? produces.value.filter((b) => b.status === 'sold').length));
+const totalVolume = computed(() => Number(page.props.total_quantity ?? produces.value.reduce((sum, b) => sum + Number(b.quantity || 0), 0)));
 
 const statusClass = (status) => {
 if (status === 'listed') return 'badge bg-success-subtle text-success';
 if (status === 'negotiating') return 'badge bg-warning-subtle text-warning';
 if (status === 'sold') return 'badge bg-info-subtle text-info';
 return 'badge bg-light text-dark';
+};
+
+const goToBatch = (id) => {
+router.get(route('cooperative.batch.show', { id }));
 };
 </script>
 
@@ -70,35 +74,39 @@ return 'badge bg-light text-dark';
 <thead>
 <tr>
 <th>ID</th>
-<th>Farm ID</th>
-<th>User ID</th>
 <th>Crop Name</th>
 <th><em class="icon ni ni-tree-view mr-1"></em>Crop Type</th>
 <th><em class="icon ni ni-package mr-1"></em>Quantity</th>
 <th><em class="icon ni ni-coins mr-1"></em>Price</th>
 <th><em class="icon ni ni-map-pin mr-1"></em>Location</th>
-<th><em class="icon ni ni-calendar mr-1"></em>Date Of Havest</th>
+<th><em class="icon ni ni-calendar mr-1"></em>Date Of Harvest</th>
 <th><em class="icon ni ni-award mr-1"></em>Crop Grade</th>
 <th>Process Method</th>
 <th><em class="icon ni ni-flag mr-1"></em>Status</th>
 </tr>
 </thead>
 <tbody>
-<tr v-for="produce in produces" :key="produce.id">
+<tr
+v-for="produce in produces"
+:key="produce.id"
+class="clickable-row"
+@click="goToBatch(produce.id)"
+>
 <td>{{ produce.id }}</td>
-<td>{{ produce.farm_id }}</td>
-<td>{{ produce.user_id }}</td>
 <td>{{ produce.crop_name }}</td>
 <td>{{ produce.crop_type }}</td>
 <td>{{ produce.quantity }}</td>
 <td>{{ produce.price }}</td>
 <td>{{ produce.location }}</td>
-<td>{{ produce.date_of_havest }}</td>
+<td>{{ produce.date_of_harvest }}</td>
 <td>{{ produce.crop_grade }}</td>
 <td>{{ produce.process_method }}</td>
 <td>
 <span :class="statusClass(produce.status)">{{ produce.status }}</span>
 </td>
+</tr>
+<tr v-if="!produces.length">
+<td colspan="10" class="text-center py-3">No produce batches found.</td>
 </tr>
 </tbody>
 </table>
@@ -125,7 +133,6 @@ padding: 12px;
 .stat-icon {
 display: inline-flex;
 margin-bottom: 8px;
-color: #6f4e37;
 font-size: 1rem;
 }
 
@@ -144,5 +151,13 @@ white-space: nowrap;
 color: #364a63;
 vertical-align: middle;
 white-space: nowrap;
+}
+
+.clickable-row {
+cursor: pointer;
+}
+
+.clickable-row:hover {
+background: #f8fafc;
 }
 </style>

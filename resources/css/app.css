@@ -9,6 +9,7 @@
   --app-coffee-700: #6f4e37;
   --app-coffee-800: #5a3e2b;
   --app-coffee-900: #4a2e1b;
+  --app-icon-color: var(--app-coffee-700);
   --app-surface: #ffffff;
   --app-surface-soft: #f8fafc;
   --app-border: #e5e9f2;
@@ -33,6 +34,12 @@
 
 body {
   background: #f4f6f9;
+}
+
+/* Global icon theme color */
+.icon.ni,
+.bi {
+  color: currentColor;
 }
 
 .btn-primary {

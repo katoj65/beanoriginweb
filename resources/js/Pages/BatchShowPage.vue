@@ -163,7 +163,7 @@ grid-column: span 2;
 }
 
 .label-icon {
-color: #6f4e37;
+color: currentColor;
 font-size: 14px;
 opacity: 1;
 }

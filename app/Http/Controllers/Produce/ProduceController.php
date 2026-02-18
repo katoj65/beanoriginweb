@@ -21,6 +21,7 @@ use App\Services\FarmerVerificationService;
 use App\Models\FarmerBatchVerification;
 use App\Http\Resources\FarmerFullDetailsResource;
 use App\Http\Resources\ProduceResource;
+use App\Http\Resources\FarmersTableSummaryResource;
 
 
 
@@ -33,17 +34,25 @@ class ProduceController extends Controller
 public function index()
 {
 $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
-$farms = Farm::query()
-->whereHas('farmer', function ($query) use ($cooperativeId) {
-$query->where('cooperative_id', $cooperativeId);
-})
-->orderBy('farm_name')
-->get(['id', 'farm_name']);
+$produces = Produce::where('cooperative_id', $cooperativeId)
+->latest()
+->get();
+$listedCount = Produce::where('cooperative_id', $cooperativeId)
+->where('status', 'listed')
+->count();
+$soldCount = Produce::where('cooperative_id', $cooperativeId)
+->where('status', 'sold')
+->count();
+$totalQuantity = Produce::where('cooperative_id', $cooperativeId)->sum('quantity');
+
 
 
 return Inertia::render('ProducePage', [
 'title' => 'Add Produce',
-'farms' => $farms,
+'produces' => ProduceResource::collection($produces),
+'listed_count' => $listedCount,
+'sold_count' => $soldCount,
+'total_quantity' => $totalQuantity,
 
 
 ]);
