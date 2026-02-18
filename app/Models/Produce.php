@@ -18,6 +18,7 @@ class Produce extends Model
         'date_of_harvest',
         'crop_grade',
         'process_method',
+        'verification_code',
         'status',
     ];
 

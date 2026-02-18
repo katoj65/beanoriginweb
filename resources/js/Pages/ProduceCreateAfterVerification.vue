@@ -152,7 +152,7 @@ form.verification_id=id;
 </div>
 
 <div class="col-12 col-md-4">
-<label class="form-label" for="06">Date Of Harvest</label>
+<label class="form-label" for="06">Date of Harvest</label>
 <input v-model="form.date_of_harvest" type="date" class="form-control" id="06"/>
 <InputError :message="form.errors.date_of_harvest" class="mt-2" />
 </div>

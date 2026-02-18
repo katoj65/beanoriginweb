@@ -19,7 +19,9 @@ use App\Http\Resources\CropGradeResource;
 use App\Models\CooperativeFarmer;
 use App\Services\FarmerVerificationService;
 use App\Models\FarmerBatchVerification;
-use App\Http\Resources\FarmersTableSummaryResource;
+use App\Http\Resources\FarmerFullDetailsResource;
+use App\Http\Resources\ProduceResource;
+
 
 
 
@@ -47,6 +49,9 @@ return Inertia::render('ProducePage', [
 ]);
 }
 
+
+
+
 /**
  * Store a newly created resource in storage.
  */
@@ -61,32 +66,65 @@ $validated = $request->validate([
 'date_of_harvest' => ['required', 'date'],
 'crop_grade' => ['required', 'string', 'max:255'],
 'process_method' => ['required', 'string', 'max:255'],
-'verification_id'=>['required','string']
+'verification_id' => ['required', 'string'],
 ]);
 
 //check if the verification code is valid
 $validity = FarmerVerificationService::check_id_validity($validated['verification_id']);
 
+if ($validity['status'] == false) {
+return redirect()->route('cooperative.produce.create')->with('success', ['status' => false, 'message' => 'Farmer validation code expired, try again.']);
+}
+
+$cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+$verification = FarmerBatchVerification::where('verification_id', $validated['verification_id'])->first();
+
+$produce = Produce::create([
+'cooperative_id' => $cooperativeId,
+'crop_name' => $validated['crop_name'],
+'crop_type' => $validated['crop_type'],
+'quantity' => $validated['quantity'],
+'price' => $validated['price'],
+'location' => $validated['location'],
+'date_of_harvest' => $validated['date_of_harvest'],
+'crop_grade' => $validated['crop_grade'],
+'process_method' => $validated['process_method'],
+'verification_code' => $verification?->verification_code,
+]);
+
+$verification?->update(['status' => 'expired']);
+
+return redirect()->route('cooperative.batch.show', ['id' => $produce->id])->with('success', 'Produce saved successfully.');
 
 
 
-return $validity;
-
-return $validated;
-
-return redirect()->back()->with('success', 'Produce data validated successfully.');
+}
 
 
 
-    }
 
 /**
  * Display the specified resource.
  */
-public function show(string $id)
+public function show(Request $request)
 {
 //
+$id = $request->segment(3);
+$produce = Produce::where('id', $id)->first();
+$farmer = CooperativeFarmer::where('id', FarmerBatchVerification::where('verification_code', $produce?->verification_code)->value('cooperative_farmers_id'))->first();
+
+return Inertia::render('BatchShowPage',[
+'produce'=> new ProduceResource($produce),
+'farmer' => new FarmerFullDetailsResource($farmer),
+
+
+]);
+
 }
+
+
+
+
 
 /**
  * Update the specified resource in storage.
@@ -164,9 +202,6 @@ $process_method=ProcessMethod::get();
 $grade=CropGrade::get();
 $farmer_id=$verification->cooperative_farmers_id;
 $farmer=CooperativeFarmer::where('id',$farmer_id)->first();
-
-
-
 
 
 return Inertia::render('ProduceCreateAfterVerification', [
