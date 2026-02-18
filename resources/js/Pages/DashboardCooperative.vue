@@ -2,14 +2,28 @@
 import AppLayout from '@/Layouts/AppLayoutV1.1.vue';
 import TableDefault from '@/Tables/TableDefault.vue';
 import FarmersTable from '@/Tables/FarmersTable.vue';
-import { reactive,ref } from 'vue';
+import { computed, ref } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 
-const tabs=ref([
+
+
+
+
+
+
+
+
+const page = usePage();
+const produces = computed(() => page.props.response?.produces?.data ?? page.props.response?.produces ?? []);
+const listedCount = computed(() => produces.value.filter((p) => p.status === 'listed').length);
+const soldCount = computed(() => produces.value.filter((p) => p.status === 'sold').length);
+
+const tabs = computed(() => ([
 {title:'Farmers',subtitle:'Farmers registered',stats:'100',icon:'ni-users'},
-{title:'Coffee Available',subtitle:'Batches for sale',stats:'200',icon:'ni-package'},
-{title:'Coffee Sold',subtitle:'Batches sold',stats:'300',icon:'ni-tranx'},
+{title:'Coffee Available',subtitle:'Batches for sale',stats:String(listedCount.value),icon:'ni-package'},
+{title:'Coffee Sold',subtitle:'Batches sold',stats:String(soldCount.value),icon:'ni-tranx'},
 {title:'Buyers',subtitle:'Active buyers',stats:'400',icon:'ni-user-circle'}
-]);
+]));
 
 
 
@@ -59,7 +73,6 @@ const coffee_types=[
 
 <template>
 <app-layout>
-
 
 
 

@@ -1,6 +1,5 @@
 <script setup>
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
-import TableDefault from '@/Tables/TableDefault.vue';
 import FarmersTable from '@/Tables/FarmersTable.vue';
 import { usePage } from '@inertiajs/vue3';
 import { ref, onMounted, computed } from 'vue';
@@ -11,7 +10,19 @@ title : String,
 response : Object
 });
 
+
 const page = usePage();
+const produces = computed(() => page.props.response?.produces?.data ?? page.props.response?.produces ?? []);
+const listedCount = computed(() => produces.value.filter((p) => p.status === 'listed').length);
+const soldCount = computed(() => Number(page.props.response?.sold_count ?? 0));
+const listedQuantityTotal = computed(() => Number(page.props.response?.listed_quantity_total ?? 0));
+
+
+
+
+
+
+
 
 
 const payment_status = ref([
@@ -70,8 +81,8 @@ const farmers=computed(()=>props.response.farmers.data);
 
 const tabs = computed(() => [
   { title: 'Farmers', subtitle: 'Farmers registered', stats: count_farmers, icon: 'ni-users' },
-  { title: 'Coffee Available', subtitle: 'Batches for sale', stats: '200', icon: 'ni-package' },
-  { title: 'Coffee Sold', subtitle: 'Batches sold', stats: '300', icon: 'ni-tranx' },
+  { title: 'Coffee Available', subtitle: 'Kgs listed for sale', stats: listedQuantityTotal, icon: 'ni-package' },
+  { title: 'Coffee Sold', subtitle: 'Batches sold', stats: soldCount, icon: 'ni-tranx' },
   { title: 'Buyers', subtitle: 'Active buyers', stats: '400', icon: 'ni-user-circle' },
 ]);
 
@@ -109,7 +120,31 @@ const tabs = computed(() => [
 <h6 class="mb-0">Coffee Price Offerings</h6>
 <span class="sub-text">Live buyer bids</span>
 </div>
-<table-default/>
+<div class="card-body p-0">
+<el-table :data="produces" height="350" style="width: 100%">
+<el-table-column prop="id" width="100">
+<template #header><em class="icon ni ni-hash mr-1"></em>Batch ID</template>
+</el-table-column>
+<el-table-column prop="crop_name" width="150">
+<template #header><em class="icon ni ni-growth mr-1"></em>Crop</template>
+</el-table-column>
+<el-table-column prop="crop_type" width="120">
+<template #header><em class="icon ni ni-growth mr-1"></em>Type</template>
+</el-table-column>
+<el-table-column prop="quantity" width="110">
+<template #header><em class="icon ni ni-package mr-1"></em>Qty (kg)</template>
+</el-table-column>
+<el-table-column prop="price" width="110">
+<template #header><em class="icon ni ni-coins mr-1"></em>Price</template>
+</el-table-column>
+<el-table-column prop="status" width="110">
+<template #header><em class="icon ni ni-flag mr-1"></em>Status</template>
+</el-table-column>
+<el-table-column prop="date_of_harvest" min-width="140">
+<template #header><em class="icon ni ni-calendar mr-1"></em>Harvest Date</template>
+</el-table-column>
+</el-table>
+</div>
 </div>
 </div>
 

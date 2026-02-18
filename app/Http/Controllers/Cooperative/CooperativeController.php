@@ -7,8 +7,10 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Cooperative;
 use App\Models\CooperativeFarmer;
+use App\Models\Produce;
 use App\Http\Resources\CooperativeFarmer as CooperativeFarmerResource;
 use App\Http\Resources\FarmersTableSummaryResource;
+use App\Http\Resources\ProduceResource;
 
 
 class CooperativeController extends Controller
@@ -18,6 +20,13 @@ class CooperativeController extends Controller
         $user = auth()->user();
         $cooperative = $user ? Cooperative::where('user_id', $user->id)->first() : null;
         $farmers = CooperativeFarmer::where('cooperative_id', $cooperative->id)->get();
+        $produces = Produce::where('cooperative_id', $cooperative->id)->get();
+        $totalQuantity = Produce::where('cooperative_id', $cooperative->id)->sum('quantity');
+        $listedQuantityTotal = Produce::where('cooperative_id', $cooperative->id)->where('status', 'listed')->sum('quantity');
+        $soldCount = Produce::where('cooperative_id', $cooperative->id)->where('status', 'sold')->count();
+        
+
+
 
 
 // return $farmers;
@@ -28,6 +37,10 @@ class CooperativeController extends Controller
                 'cooperative' => $cooperative,
                 'farmers' => FarmersTableSummaryResource::collection($farmers),
                 'count_farmers'=>count($farmers),
+                'produces' => ProduceResource::collection($produces),
+                'total_quantity' => $totalQuantity,
+                'listed_quantity_total' => $listedQuantityTotal,
+                'sold_count' => $soldCount,
 
 
             ],

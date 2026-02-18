@@ -64,14 +64,16 @@ router.get(route('cooperative.produce.create'));
 </div>
 
 <div class="card card-bordered">
-<div class="card-inner border-bottom d-flex justify-content-between align-items-center">
-<div>
+<div class="card-inner border-bottom">
+<div class="row g-2 align-items-center">
+<div class="col-12 col-md">
 <h6 class="title mb-1"><em class="icon ni ni-bag mr-1"></em>Batch Listings</h6>
 <p class="sub-text mb-0">Current coffee lots available to buyers.</p>
 </div>
-
-  <el-button :icon="Plus" @click="goToCreate" />
-
+<div class="col-12 col-md-auto">
+<el-button :icon="Plus" @click="goToCreate" class="w-100 w-md-auto" />
+</div>
+</div>
 </div>
 
 <div class="table-wrap">

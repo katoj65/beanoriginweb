@@ -232,7 +232,7 @@ Cooperative
 </li>
 <li class="nk-menu-item">
 <Link :href="route('cooperative.produce')" class="nk-menu-link">
-<span class="nk-menu-text">Products</span>
+<span class="nk-menu-text">Batches</span>
 </Link>
 </li><!-- .nk-menu-item -->
 </ul>
@@ -432,11 +432,11 @@ Sign Out
 <li class="nk-menu-item has-sub">
 <a href="#" class="nk-menu-link nk-menu-toggle">
 <span class="nk-menu-icon"><em class="icon ni ni-card-view"></em></span>
-<span class="nk-menu-text">Products</span>
+<span class="nk-menu-text">Batches</span>
 </a>
 <ul class="nk-menu-sub">
 <li class="nk-menu-item">
-<Link :href="route('cooperative.produce')" class="nk-menu-link"><span class="nk-menu-text">Product List</span></Link>
+<Link :href="route('cooperative.produce')" class="nk-menu-link"><span class="nk-menu-text">Batch List</span></Link>
 </li>
 <li class="nk-menu-item">
 <a href="html/product-card.html" class="nk-menu-link"><span class="nk-menu-text">Product Card</span></a>
