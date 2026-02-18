@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
+import { Plus } from '@element-plus/icons-vue'
 
 const page = usePage();
 const produces = computed(() => page.props.produces?.data ?? page.props.produces ?? []);
@@ -20,6 +21,10 @@ return 'badge bg-light text-dark';
 
 const goToBatch = (id) => {
 router.get(route('cooperative.batch.show', { id }));
+};
+
+const goToCreate = () => {
+router.get(route('cooperative.produce.create'));
 };
 </script>
 
@@ -64,9 +69,9 @@ router.get(route('cooperative.batch.show', { id }));
 <h6 class="title mb-1"><em class="icon ni ni-bag mr-1"></em>Batch Listings</h6>
 <p class="sub-text mb-0">Current coffee lots available to buyers.</p>
 </div>
-<Link :href="route('cooperative.produce.create')" class="btn btn-primary btn-sm">
-<em class="icon ni ni-plus mr-1"></em>New Batch
-</Link>
+
+  <el-button :icon="Plus" @click="goToCreate" />
+
 </div>
 
 <div class="table-wrap">

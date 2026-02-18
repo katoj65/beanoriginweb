@@ -1,7 +1,8 @@
 <script setup>
 import { computed } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
+import { Edit, Back } from '@element-plus/icons-vue'
 
 const page = usePage();
 const batch = computed(() => page.props.produce?.data ?? page.props.produce ?? {});
@@ -37,6 +38,10 @@ const num = Number(value);
 if (Number.isNaN(num)) return value;
 return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
+
+const goBackToList = () => {
+router.get(route('cooperative.produce'));
+};
 </script>
 
 <template>
@@ -48,9 +53,15 @@ return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFraction
 <h6 class="title mb-1"><em class="icon ni ni-bag mr-1"></em>{{ batchTitle }}</h6>
 <p class="sub-text mb-0">Commodity batch traceability details from farm origin to listing.</p>
 </div>
-<Link :href="route('cooperative.produce')" class="btn btn-outline-light btn-sm">
-<em class="icon ni ni-arrow-left mr-1"></em>Back to Batches
-</Link>
+
+
+  <el-button-group>
+    <el-button :icon="Back" @click="goBackToList" />
+    <el-button :icon="Edit" />
+  </el-button-group>
+
+
+
 </div>
 
 <div class="card-inner">
