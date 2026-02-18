@@ -19,6 +19,7 @@ class FarmerBatchVerificationResource extends JsonResource
             'cooperative_id' => $this->cooperative_id,
             'cooperative_farmers_id' => $this->cooperative_farmers_id,
             'verification_code' => $this->verification_code,
+            'verification_id'=>$this->verification_id,
             'expiry_minutes' => $this->expiry_minutes,
             'status' => $this->status,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),

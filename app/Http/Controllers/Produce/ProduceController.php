@@ -21,6 +21,7 @@ use App\Services\FarmerVerificationService;
 use App\Models\FarmerBatchVerification;
 
 
+
 class ProduceController extends Controller
 {
 /**
@@ -142,6 +143,15 @@ return Inertia::render('ProduceCreate', [
 
 public function create_batch(Request $request)
 {
+
+//get url segment 4
+$segment = $request->segment(4);
+$verification = FarmerBatchVerification::where('verification_id',$segment)->first();
+if(!$verification){
+return redirect()->route('cooperative.produce.create')->with('success',['status'=>false,'message'=>'Could not verify farmer details.']);
+}
+
+
 $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
 $farms = Farm::query()
 ->whereHas('farmer', function ($query) use ($cooperativeId) {
@@ -153,6 +163,9 @@ $crops=Crops::get();
 $crop_type=CropType::get();
 $process_method=ProcessMethod::get();
 $grade=CropGrade::get();
+
+
+
 
 return Inertia::render('ProduceCreateAfterVerification', [
 'title' => 'Add Produce',
@@ -198,6 +211,7 @@ $code=FarmerVerificationService::generate_verification_code();
 $segment=md5($code);
 FarmerBatchVerification::create(['cooperative_id'=>$cooperative,'cooperative_farmers_id'=>$farmer->id,
 'verification_code'=>$code,
+'verification_id'=>$segment,
 'expiry_minutes'=>10]);
 
 return redirect()->route('cooperative.produce.create.batch', ['any' => $segment]);

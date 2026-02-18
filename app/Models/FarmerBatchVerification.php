@@ -13,6 +13,7 @@ class FarmerBatchVerification extends Model
         'cooperative_id',
         'cooperative_farmers_id',
         'verification_code',
+        'verification_id',
         'expiry_minutes',
         'status',
     ];

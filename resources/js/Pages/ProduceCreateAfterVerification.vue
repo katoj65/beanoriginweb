@@ -57,11 +57,44 @@ const crop_grade = computed(() => page.props.crop_grade?.data ?? []);
 <div class="container">
 <div class="card card-bordered">
 <div class="card-inner border-bottom">
-<h6 class="title mb-1"><em class="icon ni ni-plus mr-1"></em>Add Produce</h6>
+<h6 class="title mb-1"><em class="icon ni ni-plus mr-1"></em>Add Batch</h6>
 <p class="sub-text mb-0">Create a new coffee harvest batch for sale.</p>
 </div>
 
 <div class="card-inner">
+
+
+
+
+<div>
+<ul class="nk-support border mb-3 support-ticket-list">
+<li class="nk-support-item">
+<div class="user-avatar support-avatar">
+<span>DM</span>
+</div>
+<div class="nk-support-content">
+<div class="title support-title">
+<span class="support-name">Daniel Moore</span>
+<span class="badge badge-dot badge-dot-xs bg-success ms-1">Verified</span>
+</div>
+<p class="support-text mb-1">Verification passed. You can proceed to create and list this coffee batch securely.</p>
+<span class="time support-time"><em class="icon ni ni-clock mr-1"></em>Updated 2 hours ago</span>
+</div>
+</li>
+
+</ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
 <form class="row g-3" @submit.prevent="submit">
 <div class="col-12">
 <InputError :message="form.errors.farm_id" class="mt-2" />
@@ -153,3 +186,38 @@ const crop_grade = computed(() => page.props.crop_grade?.data ?? []);
 </div>
 </CooperativeLayout>
 </template>
+
+<style scoped>
+.support-ticket-list {
+  border-radius: 10px;
+  background: linear-gradient(180deg, #ffffff 0%, #f9fbfd 100%);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+}
+
+.support-avatar {
+  background: #e8f0ff;
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+.support-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.support-name {
+  color: #1f2b3a;
+  font-weight: 600;
+}
+
+.support-text {
+  color: #526484;
+}
+
+.support-time {
+  display: inline-flex;
+  align-items: center;
+  color: #8094ae;
+}
+</style>

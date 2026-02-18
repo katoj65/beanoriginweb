@@ -39,8 +39,11 @@ const crops = computed(() => page.props.crops?.data ?? []);
 const crop_type = computed(() => page.props.crop_type?.data ?? []);
 const process_methods = computed(() => page.props.process_method?.data ?? []);
 const crop_grade = computed(() => page.props.crop_grade?.data ?? []);
-
 const showModal = ref(true);
+const flashData=computed(()=>{
+const f=page.props.flash;
+return f;
+});
 
 
 
@@ -58,7 +61,6 @@ const showModal = ref(true);
 
 <div class="card-inner">
 <div class="row g-3">
-
 <div class="col-12 col-md-4">
 <label class="form-label">Crop Name</label>
  <el-select  placeholder="Select" class="form-control-like">
@@ -147,20 +149,39 @@ const showModal = ref(true);
 
 
 
+
+
+
+
+
+
+
+
 <div v-if="showModal" class="modal show d-block" id="popupModal" tabindex="-1" aria-labelledby="popupModalLabel" aria-modal="true" role="dialog">
 <div class="modal-dialog modal-dialog-centered custom-modal-dialog">
 <div class="modal-content">
  <div class="card security-card border-0" style="border-radius: 7px;">
+
+
             <div class="card-inner">
               <div class="security-head">
-                <span class="security-badge">
-                  <em class="icon ni ni-shield-check"></em>
-                </span>
-                <h5 class="title mb-0" style="font-size:20px">Farmer Security Verification</h5>
-              </div>
 
-            </div>
-            <div class="card-inner">
+<div class="row">
+<div class="col-1">
+<span class="security-badge">
+<em class="icon ni ni-shield-check"></em>
+</span>
+</div>
+<div class="col-11">
+<h5 class="title mb-0" style="font-size:20px">Farmer Security Verification</h5>
+<p class="mt-2">
+Verify the farmer using last name and telephone before creating a batch. This secures identity and preserves commodity-chain traceability from farm origin to sale.
+</p>
+</div>
+</div>
+</div>
+</div>
+            <div class="card-inner mt-0 pt-0">
               <form class="row g-3" @submit.prevent="submit">
                 <div class="col-12">
                   <label class="form-label"><em class="icon ni ni-user mr-1"></em>Last Name</label>
@@ -178,6 +199,19 @@ const showModal = ref(true);
                   />
                   <InputError :message="form.errors.phone_number" class="mt-2" />
                 </div>
+
+
+
+
+
+<div class="alert alert-danger alert-icon alert-dismissible border-0" v-if="flashData.success">
+<em class="icon ni ni-cross-circle"></em> <strong>Verification Failed</strong>! {{ flashData.success.message }}
+</div>
+
+
+
+
+
 
 
                 <div class="col-12">
