@@ -37,14 +37,14 @@ onFinish: () => form.reset('password'),
 <a href="#" class="toggle btn btn-white btn-icon btn-light" data-target="athPromo"><em class="icon ni ni-info"></em></a>
 </div>
 <div class="nk-block nk-block-middle nk-auth-body">
-<div class="brand-logo pb-0">
+<div class="brand-logo pb-0 text-center">
 <a href="/" class="logo-link">
-<img class="" src="../../images/logo.png" srcset="" alt="logo-dark" style="width:200px;">
+<img class="" src="../../images/logo.png" srcset="" alt="logo-dark" style="width:110px;">
 </a>
 </div>
 <div class="nk-block-head">
 <div class="nk-block-head-content">
-<h5 class="nk-block-title">Join Bean Origin</h5>
+<h5 class="nk-block-title">Join Commodity Origin</h5>
 <div class="nk-block-des">
 <p>Create your account and start your coffee journey</p>
 </div>
@@ -123,7 +123,7 @@ onFinish: () => form.reset('password'),
 </ul><!-- nav -->
 </div>
 <div class="mt-3">
-<p>&copy; 2026 Bean Origin. All Rights Reserved.</p>
+<p>&copy; 2026 Commodity Origin. All Rights Reserved.</p>
 </div>
 </div><!-- nk-block -->
 </div><!-- nk-split-content -->
@@ -135,8 +135,32 @@ onFinish: () => form.reset('password'),
 <div class="slider-item">
 <div class="nk-feature nk-feature-center">
 <div class="nk-feature-content py-4 p-sm-5">
-<h4>☕ Where Every Bean Has a Story</h4>
-<p>Journey through the fertile highlands of Uganda, where the source of the Nile meets ancient volcanic soils. Bean Origin connects you directly to the passionate Ugandan farmers who cultivate exceptional Arabica beans at altitudes of 1,200 to 2,300 meters, crafting liquid gold one bean at a time.</p>
+<span class="promo-badge">From Highlands To Cup</span>
+<h4>Uganda's Finest Coffee, Traced To Its True Origin</h4>
+<p>Commodity Origin links buyers to verified cooperatives and smallholder farmers growing exceptional Arabica at 1,200-2,300m. Every batch is transparently tracked from harvest to market.</p>
+<div class="promo-divider"></div>
+
+<div class="promo-stats">
+<div class="promo-stat">
+<strong>2,000+</strong>
+<span>Batches Listed</span>
+</div>
+<div class="promo-stat">
+<strong>120+</strong>
+<span>Active Cooperatives</span>
+</div>
+<div class="promo-stat">
+<strong>100%</strong>
+<span>Traceable Lots</span>
+</div>
+</div>
+
+<div class="promo-tags">
+<span class="promo-tag"><em class="icon ni ni-growth mr-1"></em>Highland Arabica</span>
+<span class="promo-tag"><em class="icon ni ni-map-pin mr-1"></em>Origin Verified</span>
+<span class="promo-tag"><em class="icon ni ni-shield-check mr-1"></em>Trusted Supply</span>
+</div>
+<p class="promo-footnote"><em class="icon ni ni-check-circle mr-1"></em>Trusted by exporters, roasters, and cooperatives across Uganda.</p>
 </div>
 </div>
 </div><!-- .slider-item -->
@@ -156,210 +180,320 @@ onFinish: () => form.reset('password'),
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
+.brand-logo .logo-link {
+display: inline-block;
+}
+
 #background{
-    background-image:
-        linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)),
-        url('../../images/bg2.jpg');
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    position: relative;
+background-image:
+linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)),
+url('../../images/bg2.jpg');
+background-size: cover;
+background-position: center center;
+background-repeat: no-repeat;
+background-attachment: scroll;
+position: relative;
+overflow: hidden;
 }
 
 #background::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(80, 200, 120, 0.1));
-    pointer-events: none;
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(80, 200, 120, 0.1));
+pointer-events: none;
+}
+
+#background::after {
+content: '';
+position: absolute;
+top: 8%;
+right: 10%;
+width: 220px;
+height: 220px;
+border-radius: 50%;
+background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0) 70%);
+pointer-events: none;
 }
 
 #background .slider-wrap {
-    position: relative;
-    z-index: 2;
+position: relative;
+z-index: 2;
 }
 
 #background .nk-feature-content h4 {
-    color: #ffffff;
-    font-family: 'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 2.5rem;
-    text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.7);
-    margin-bottom: 1.5rem;
-    letter-spacing: -0.5px;
-    line-height: 1.2;
-    text-align: center;
+color: #ffffff;
+font-family: 'Playfair Display', serif;
+font-weight: 700;
+font-size: 2rem;
+text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.7);
+margin-bottom: 1.5rem;
+letter-spacing: -0.5px;
+line-height: 1.2;
+text-align: center;
 }
 
 #background .nk-feature-content p {
-    color: #f1f3f4;
-    font-family: 'Inter', sans-serif;
-    font-size: 1.25rem;
-    line-height: 1.7;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
-    font-weight: 300;
-    letter-spacing: 0.3px;
-    text-align: center;
-    max-width: 500px;
-    margin: 0 auto;
+color: #f1f3f4;
+font-family: 'Inter', sans-serif;
+font-size: 1rem;
+line-height: 1.7;
+text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+font-weight: 300;
+letter-spacing: 0.3px;
+text-align: center;
+max-width: 500px;
+margin: 0 auto;
 }
 
-/* Modern slider dots styling */
+.promo-badge {
+display: inline-flex;
+align-items: center;
+padding: 6px 12px;
+border-radius: 999px;
+margin-bottom: 1rem;
+font-size: 0.68rem;
+font-weight: 700;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+background: rgba(255, 255, 255, 0.18);
+border: 1px solid rgba(255, 255, 255, 0.25);
+color: #fef3c7;
+}
+
+.promo-stats {
+display: grid;
+grid-template-columns: repeat(3, minmax(0, 1fr));
+gap: 10px;
+margin-top: 1.25rem;
+}
+
+.promo-divider {
+width: 72px;
+height: 2px;
+margin: 1rem auto 0.25rem;
+border-radius: 999px;
+background: linear-gradient(90deg, rgba(255, 215, 0, 0.9), rgba(255, 215, 0, 0.2));
+}
+
+.promo-stat {
+background: rgba(255, 255, 255, 0.1);
+border: 1px solid rgba(255, 255, 255, 0.16);
+border-radius: 12px;
+padding: 10px;
+text-align: center;
+transform: translateY(0);
+transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.promo-stat:hover {
+transform: translateY(-2px);
+background: rgba(255, 255, 255, 0.14);
+}
+
+.promo-stat strong {
+display: block;
+font-size: 0.9rem;
+font-weight: 700;
+color: #ffffff;
+}
+
+.promo-stat span {
+font-size: 0.7rem;
+color: rgba(255, 255, 255, 0.85);
+}
+
+.promo-tags {
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+margin-top: 1rem;
+justify-content: center;
+}
+
+.promo-tag {
+display: inline-flex;
+align-items: center;
+padding: 6px 10px;
+border-radius: 999px;
+font-size: 0.68rem;
+font-weight: 600;
+background: rgba(255, 255, 255, 0.12);
+border: 1px solid rgba(255, 255, 255, 0.2);
+color: #ffffff;
+}
+
+.promo-footnote {
+margin-top: 1rem;
+margin-bottom: 0;
+font-size: 0.78rem !important;
+font-weight: 500 !important;
+color: rgba(255, 255, 255, 0.9) !important;
+text-align: center;
+}
+
 #background .slider-dots .slick-dots {
-    bottom: 20px;
+bottom: 20px;
 }
 
 #background .slider-dots .slick-dots li button:before {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 12px;
+color: rgba(255, 255, 255, 0.7);
+font-size: 12px;
 }
 
 #background .slider-dots .slick-dots li.slick-active button:before {
-    color: #ffffff;
+color: #ffffff;
 }
 
-/* Enhanced content container with better spacing */
 #background .nk-feature-content {
-    padding: 3.5rem 2.5rem;
-    border-radius: 20px;
-    backdrop-filter: blur(15px);
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
-    transition: all 0.4s ease;
-    max-width: 550px;
-    margin: 0 auto;
+padding: 3.5rem 2.5rem;
+border-radius: 20px;
+backdrop-filter: none;
+-webkit-backdrop-filter: none;
+background: rgba(255, 255, 255, 0.08);
+border: 1px solid rgba(255, 255, 255, 0.15);
+box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+transition: all 0.4s ease;
+max-width: 550px;
+margin: 0 auto;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+#background .nk-feature-content {
+background: rgba(20, 20, 20, 0.55);
+}
 }
 
 #background .nk-feature-content:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 35px 90px rgba(0, 0, 0, 0.5);
-    background: rgba(255, 255, 255, 0.12);
+transform: translateY(-5px);
+box-shadow: 0 35px 90px rgba(0, 0, 0, 0.5);
+background: rgba(255, 255, 255, 0.12);
 }
 
-/* Form typography improvements */
 .nk-block-title {
-    font-family: 'Playfair Display', serif !important;
-    font-weight: 600 !important;
-    color: #6F4E37 !important;
-    font-size: 2rem !important;
-    letter-spacing: -0.3px !important;
+font-family: 'Playfair Display', serif !important;
+font-weight: 600 !important;
+color: #6F4E37 !important;
+font-size: 2rem !important;
+letter-spacing: -0.3px !important;
 }
 
 .nk-block-des p {
-    font-family: 'Inter', sans-serif !important;
-    font-weight: 400 !important;
-    color: #6c757d !important;
-    font-size: 1.1rem !important;
-    letter-spacing: 0.2px !important;
+font-family: 'Inter', sans-serif !important;
+font-weight: 400 !important;
+color: #6c757d !important;
+font-size: 1.1rem !important;
+letter-spacing: 0.2px !important;
 }
 
-/* Add subtle animation with improved timing */
 #background .nk-feature {
-    animation: elegantFadeIn 0.8s ease-out;
+animation: elegantFadeIn 0.8s ease-out;
 }
 
 @keyframes elegantFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.98);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+from {
+opacity: 0;
+transform: translateY(30px) scale(0.98);
+}
+to {
+opacity: 1;
+transform: translateY(0) scale(1);
+}
 }
 
-/* Additional typography refinements */
 #background .nk-feature-content h4::after {
-    content: '';
-    display: block;
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, #ffd700, #ffed4e);
-    margin: 1rem auto;
-    border-radius: 2px;
-    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+content: '';
+display: block;
+width: 60px;
+height: 3px;
+background: linear-gradient(90deg, #ffd700, #ffed4e);
+margin: 1rem auto;
+border-radius: 2px;
+box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
 }
 
-/* Improve text selection styling */
 #background .nk-feature-content h4::selection,
 #background .nk-feature-content p::selection {
-    background: rgba(255, 215, 0, 0.3);
-    color: #ffffff;
+background: rgba(255, 215, 0, 0.3);
+color: #ffffff;
 }
 
-/* Coffee-colored button styling */
 .btn-primary {
-    background: linear-gradient(135deg, #6F4E37, #8B5A2B) !important;
-    border-color: #6F4E37 !important;
-    font-family: 'Inter', sans-serif !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.5px !important;
-    transition: all 0.3s ease !important;
+background: linear-gradient(135deg, #6F4E37, #8B5A2B) !important;
+border-color: #6F4E37 !important;
+font-family: 'Inter', sans-serif !important;
+font-weight: 600 !important;
+letter-spacing: 0.5px !important;
+transition: all 0.3s ease !important;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #5A3E2B, #6F4E37) !important;
-    transform: translateY(-2px) !important;
-    border-color: #5A3E2B !important;
+background: linear-gradient(135deg, #5A3E2B, #6F4E37) !important;
+transform: translateY(-2px) !important;
+border-color: #5A3E2B !important;
 }
 
 .btn-primary:active,
 .btn-primary:focus {
-    background: linear-gradient(135deg, #4A2E1B, #5A3E2B) !important;
-    border-color: #4A2E1B !important;
+background: linear-gradient(135deg, #4A2E1B, #5A3E2B) !important;
+border-color: #4A2E1B !important;
 }
 
-/* Responsive improvements */
 @media (max-width: 768px) {
-    #background {
-        background-attachment: scroll;
-    }
+#background {
+background-attachment: scroll;
+}
 
-    #background .nk-feature-content {
-        padding: 2.5rem 1.5rem;
-        border-radius: 16px;
-    }
+#background .nk-feature-content {
+padding: 2.5rem 1.5rem;
+border-radius: 16px;
+}
 
-    #background .nk-feature-content h4 {
-        font-size: 2rem;
-        line-height: 1.3;
-    }
+#background .nk-feature-content h4 {
+font-size: 1.7rem;
+line-height: 1.3;
+}
 
-    #background .nk-feature-content p {
-        font-size: 1.1rem;
-        line-height: 1.6;
-    }
+#background .nk-feature-content p {
+font-size: 0.95rem;
+line-height: 1.6;
+}
 
-    .nk-block-title {
-        font-size: 1.75rem !important;
-    }
+.promo-stats {
+grid-template-columns: 1fr;
+}
 
-    .nk-block-des p {
-        font-size: 1rem !important;
-    }
+#background::after {
+display: none;
+}
+
+.nk-block-title {
+font-size: 1.75rem !important;
+}
+
+.nk-block-des p {
+font-size: 1rem !important;
+}
 }
 
 @media (max-width: 480px) {
-    #background .nk-feature-content {
-        padding: 2rem 1.25rem;
-    }
+#background .nk-feature-content {
+padding: 2rem 1.25rem;
+}
 
-    #background .nk-feature-content h4 {
-        font-size: 1.75rem;
-    }
+#background .nk-feature-content h4 {
+font-size: 1.5rem;
+}
 
-    #background .nk-feature-content p {
-        font-size: 1rem;
-    }
+#background .nk-feature-content p {
+font-size: 0.9rem;
+}
 
-    .nk-block-title {
-        font-size: 1.5rem !important;
-    }
+.nk-block-title {
+font-size: 1.5rem !important;
+}
 }
 </style>

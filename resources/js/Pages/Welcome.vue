@@ -32,14 +32,14 @@ onFinish: () => form.reset('password'),
 <a href="#" class="toggle btn btn-white btn-icon btn-light" data-target="athPromo"><em class="icon ni ni-info"></em></a>
 </div>
 <div class="nk-block nk-block-middle nk-auth-body">
-<div class="brand-logo pb-0">
+<div class="brand-logo pb-0 text-center">
 <a href="/" class="logo-link">
-<img class="" src="../../images/logo.png" srcset="" alt="logo-dark" style="width:200px;">
+<img class="" src="../../images/logo.png" srcset="" alt="logo-dark" style="width:110px;">
 </a>
 </div>
 <div class="nk-block-head">
 <div class="nk-block-head-content">
-<h5 class="nk-block-title">Join Bean Origin</h5>
+<h5 class="nk-block-title">Join Commodity Origin</h5>
 <div class="nk-block-des">
 <p>Create your account and start your coffee journey</p>
 </div>
@@ -115,7 +115,7 @@ onFinish: () => form.reset('password'),
 </ul><!-- nav -->
 </div>
 <div class="mt-3">
-<p>&copy; 2026 Bean Origin. All Rights Reserved.</p>
+<p>&copy; 2026 Commodity Origin. All Rights Reserved.</p>
 </div>
 </div><!-- nk-block -->
 </div><!-- nk-split-content -->
@@ -127,8 +127,32 @@ onFinish: () => form.reset('password'),
 <div class="slider-item">
 <div class="nk-feature nk-feature-center">
 <div class="nk-feature-content py-4 p-sm-5">
-<h4>☕ Where Every Bean Has a Story</h4>
-<p>Journey through the fertile highlands of Uganda, where the source of the Nile meets ancient volcanic soils. Bean Origin connects you directly to the passionate Ugandan farmers who cultivate exceptional Arabica beans at altitudes of 1,200 to 2,300 meters, crafting liquid gold one bean at a time.</p>
+<span class="promo-badge">From Highlands To Cup</span>
+<h4>Uganda's Finest Coffee, Traced To Its True Origin</h4>
+<p>Commodity Origin links buyers to verified cooperatives and smallholder farmers growing exceptional Arabica at 1,200-2,300m. Every batch is transparently tracked from harvest to market.</p>
+<div class="promo-divider"></div>
+
+<div class="promo-stats">
+<div class="promo-stat">
+<strong>2,000+</strong>
+<span>Batches Listed</span>
+</div>
+<div class="promo-stat">
+<strong>120+</strong>
+<span>Active Cooperatives</span>
+</div>
+<div class="promo-stat">
+<strong>100%</strong>
+<span>Traceable Lots</span>
+</div>
+</div>
+
+<div class="promo-tags">
+<span class="promo-tag"><em class="icon ni ni-growth mr-1"></em>Highland Arabica</span>
+<span class="promo-tag"><em class="icon ni ni-map-pin mr-1"></em>Origin Verified</span>
+<span class="promo-tag"><em class="icon ni ni-shield-check mr-1"></em>Trusted Supply</span>
+</div>
+<p class="promo-footnote"><em class="icon ni ni-check-circle mr-1"></em>Trusted by exporters, roasters, and cooperatives across Uganda.</p>
 </div>
 </div>
 </div><!-- .slider-item -->
@@ -138,6 +162,9 @@ onFinish: () => form.reset('password'),
 <div class="slider-arrows"></div>
 </div><!-- .slider-wrap -->
 </div><!-- nk-split-content -->
+
+
+
 </div><!-- nk-split -->
 </div>
 </div>
@@ -148,6 +175,10 @@ onFinish: () => form.reset('password'),
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
+.brand-logo .logo-link {
+display: inline-block;
+}
+
 #background{
 background-image:
 linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)),
@@ -155,8 +186,9 @@ url('../../images/bg2.jpg');
 background-size: cover;
 background-position: center center;
 background-repeat: no-repeat;
-background-attachment: fixed;
+background-attachment: scroll;
 position: relative;
+overflow: hidden;
 }
 
 #background::before {
@@ -170,6 +202,18 @@ background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(80, 200, 120, 
 pointer-events: none;
 }
 
+#background::after {
+content: '';
+position: absolute;
+top: 8%;
+right: 10%;
+width: 220px;
+height: 220px;
+border-radius: 50%;
+background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0) 70%);
+pointer-events: none;
+}
+
 #background .slider-wrap {
 position: relative;
 z-index: 2;
@@ -179,7 +223,7 @@ z-index: 2;
 color: #ffffff;
 font-family: 'Playfair Display', serif;
 font-weight: 700;
-font-size: 2.5rem;
+font-size: 2rem;
 text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.7);
 margin-bottom: 1.5rem;
 letter-spacing: -0.5px;
@@ -190,7 +234,7 @@ text-align: center;
 #background .nk-feature-content p {
 color: #f1f3f4;
 font-family: 'Inter', sans-serif;
-font-size: 1.25rem;
+font-size: 1rem;
 line-height: 1.7;
 text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
 font-weight: 300;
@@ -198,6 +242,92 @@ letter-spacing: 0.3px;
 text-align: center;
 max-width: 500px;
 margin: 0 auto;
+}
+
+.promo-badge {
+display: inline-flex;
+align-items: center;
+padding: 6px 12px;
+border-radius: 999px;
+margin-bottom: 1rem;
+font-size: 0.68rem;
+font-weight: 700;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+background: rgba(255, 255, 255, 0.18);
+border: 1px solid rgba(255, 255, 255, 0.25);
+color: #fef3c7;
+}
+
+.promo-stats {
+display: grid;
+grid-template-columns: repeat(3, minmax(0, 1fr));
+gap: 10px;
+margin-top: 1.25rem;
+}
+
+.promo-divider {
+width: 72px;
+height: 2px;
+margin: 1rem auto 0.25rem;
+border-radius: 999px;
+background: linear-gradient(90deg, rgba(255, 215, 0, 0.9), rgba(255, 215, 0, 0.2));
+}
+
+.promo-stat {
+background: rgba(255, 255, 255, 0.1);
+border: 1px solid rgba(255, 255, 255, 0.16);
+border-radius: 12px;
+padding: 10px;
+text-align: center;
+transform: translateY(0);
+transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.promo-stat:hover {
+transform: translateY(-2px);
+background: rgba(255, 255, 255, 0.14);
+}
+
+.promo-stat strong {
+display: block;
+font-size: 0.9rem;
+font-weight: 700;
+color: #ffffff;
+}
+
+.promo-stat span {
+font-size: 0.7rem;
+color: rgba(255, 255, 255, 0.85);
+}
+
+.promo-tags {
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+margin-top: 1rem;
+justify-content: center;
+}
+
+.promo-tag {
+display: inline-flex;
+align-items: center;
+padding: 6px 10px;
+border-radius: 999px;
+font-size: 0.68rem;
+font-weight: 600;
+background: rgba(255, 255, 255, 0.12);
+border: 1px solid rgba(255, 255, 255, 0.2);
+color: #ffffff;
+}
+
+.promo-footnote {
+margin-top: 1rem;
+margin-bottom: 0;
+font-size: 0.78rem !important;
+font-weight: 500 !important;
+color: rgba(255, 255, 255, 0.9) !important;
+text-align: center;
 }
 
 /* Modern slider dots styling */
@@ -218,13 +348,20 @@ color: #ffffff;
 #background .nk-feature-content {
 padding: 3.5rem 2.5rem;
 border-radius: 20px;
-backdrop-filter: blur(15px);
+backdrop-filter: none;
+-webkit-backdrop-filter: none;
 background: rgba(255, 255, 255, 0.08);
 border: 1px solid rgba(255, 255, 255, 0.15);
 box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
 transition: all 0.4s ease;
 max-width: 550px;
 margin: 0 auto;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+#background .nk-feature-content {
+background: rgba(20, 20, 20, 0.55);
+}
 }
 
 #background .nk-feature-content:hover {
@@ -319,13 +456,21 @@ border-radius: 16px;
 }
 
 #background .nk-feature-content h4 {
-font-size: 2rem;
+font-size: 1.7rem;
 line-height: 1.3;
 }
 
 #background .nk-feature-content p {
-font-size: 1.1rem;
+font-size: 0.95rem;
 line-height: 1.6;
+}
+
+.promo-stats {
+grid-template-columns: 1fr;
+}
+
+#background::after {
+display: none;
 }
 
 .nk-block-title {
@@ -343,11 +488,11 @@ padding: 2rem 1.25rem;
 }
 
 #background .nk-feature-content h4 {
-font-size: 1.75rem;
+font-size: 1.5rem;
 }
 
 #background .nk-feature-content p {
-font-size: 1rem;
+font-size: 0.9rem;
 }
 
 .nk-block-title {
