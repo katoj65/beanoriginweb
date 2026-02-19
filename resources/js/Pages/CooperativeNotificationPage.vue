@@ -97,7 +97,7 @@ const initials = (name) => {
     <div class="notif-page" style="margin:-25px;">
       <div class="card card-bordered notif-card">
         <div class="card-inner border-bottom notif-header">
-          <h5 class="title mb-1">Cooperative Notifications</h5>
+          <h5 class="title mb-1">Notifications</h5>
           <p class="sub-text mb-0">Recent alerts, requests, and system updates.</p>
         </div>
 
