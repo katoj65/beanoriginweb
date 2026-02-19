@@ -18,6 +18,7 @@ location: '',
 date_of_harvest: '',
 crop_grade: '',
 process_method: '',
+farm:''
 
 });
 
@@ -42,6 +43,9 @@ const crop_type = computed(() => page.props.crop_type?.data ?? []);
 const process_methods = computed(() => page.props.process_method?.data ?? []);
 const crop_grade = computed(() => page.props.crop_grade?.data ?? []);
 const farmer=computed(()=>page.props.farmer.data);
+const farmer_farms=computed(()=>page.props.farms ?? []);
+const farmsCount = computed(() => farmer_farms.value.length);
+
 
 
 watchEffect(()=>{
@@ -84,6 +88,9 @@ form.verification_id=id;
 <span class="meta-pill"><em class="icon ni ni-users mr-1"></em>Gender: {{ farmer.gender }}</span>
 <span class="meta-pill"><em class="icon ni ni-growth mr-1"></em>Primary Crop: {{ farmer.produce }}</span>
 <span class="meta-pill"><em class="icon ni ni-map-pin mr-1"></em>Location: {{ farmer.location }}</span>
+<span class="meta-pill"><em class="icon ni ni-home mr-1"></em>Farms/ Gardens: {{ farmsCount }}</span>
+
+
 </div>
 <!-- <span class="time support-time"><em class="icon ni ni-clock mr-1"></em>Updated 2 hours ago</span> -->
 </div>
@@ -109,27 +116,27 @@ form.verification_id=id;
 
 <div class="col-12 col-md-4">
 <label class="form-label" for="01">Crop Name</label>
- <el-select v-model="form.crop_name" placeholder="Select" class="form-control-like" id="01">
-    <el-option
-      v-for="item in crops"
-      :key="item.name"
-      :label="item.name"
-      :value="item.name"
-    />
-  </el-select>
+<el-select v-model="form.crop_name" placeholder="Select" class="form-control-like" id="01">
+<el-option
+v-for="item in crops"
+:key="item.name"
+:label="item.name"
+:value="item.name"
+/>
+</el-select>
 <InputError :message="form.errors.crop_name" class="mt-2" />
 </div>
 
 <div class="col-12 col-md-4">
 <label class="form-label" for="02">Crop Type</label>
 <el-select v-model="form.crop_type" placeholder="Select" class="form-control-like" id="02">
-    <el-option
-      v-for="item in crop_type"
-      :key="item.name"
-      :label="item.name"
-      :value="item.name"
-    />
-  </el-select>
+<el-option
+v-for="item in crop_type"
+:key="item.name"
+:label="item.name"
+:value="item.name"
+/>
+</el-select>
 <InputError :message="form.errors.crop_type" class="mt-2" />
 </div>
 
@@ -157,33 +164,55 @@ form.verification_id=id;
 <InputError :message="form.errors.date_of_harvest" class="mt-2" />
 </div>
 
-<div class="col-12 col-md-6">
+<div class="col-12 col-md-4">
 <label class="form-label" for="07">Crop Grade</label>
 <el-select v-model="form.crop_grade" placeholder="Select" class="form-control-like" id="07">
-     <el-option label="None" value="N/A"/>
-    <el-option
-      v-for="item in crop_grade"
-      :key="item.name"
-      :label="item.name"
-      :value="item.name"
-    />
-  </el-select>
+<el-option label="None" value="N/A"/>
+<el-option
+v-for="item in crop_grade"
+:key="item.name"
+:label="item.name"
+:value="item.name"
+/>
+</el-select>
 <InputError :message="form.errors.crop_grade" class="mt-2" />
 </div>
 
-<div class="col-12 col-md-6">
+<div class="col-12 col-md-4">
 <label class="form-label" for="08">Process Method</label>
 <el-select v-model="form.process_method" placeholder="Select" class="form-control-like" id="08">
-    <el-option label="None" value="N/A"/>
-    <el-option
-      v-for="item in process_methods"
-      :key="item.name"
-      :label="item.name"
-      :value="item.name"
-    />
-  </el-select>
+<el-option label="None" value="N/A"/>
+<el-option
+v-for="item in process_methods"
+:key="item.name"
+:label="item.name"
+:value="item.name"
+/>
+</el-select>
 <InputError :message="form.errors.process_method" class="mt-2" />
 </div>
+
+
+
+
+
+<div class="col-12 col-md-4">
+<label class="form-label" for="09">Farm</label>
+<el-select v-model="form.farm" placeholder="Select" class="form-control-like" id="09" multiple
+collapse-tags>
+<el-option
+v-for="item in farms"
+:key="item.farm_name"
+:label="item.farm_name"
+:value="item.id"
+/>
+</el-select>
+<InputError :message="form.errors.farm" class="mt-2" />
+</div>
+
+
+
+
 
 
 <div class="col-12 col-md-4 d-flex align-items-end mt-4">
@@ -198,59 +227,59 @@ form.verification_id=id;
 
 <style scoped>
 .support-ticket-list {
-  border-radius: 12px;
-  border: 1px solid #e5edf6 !important;
-  background: #ffffff;
-  overflow: hidden;
+border-radius: 12px;
+border: 1px solid #e5edf6 !important;
+background: #ffffff;
+overflow: hidden;
 }
 
 .support-avatar {
-  background: linear-gradient(135deg, #e6f0ff, #d8e8ff);
-  color: #1e40af;
-  font-weight: 700;
+background: linear-gradient(135deg, #e6f0ff, #d8e8ff);
+color: #1e40af;
+font-weight: 700;
 }
 
 .support-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 10px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 8px;
+margin-bottom: 10px;
 }
 
 .support-name {
-  color: #1f2b46;
-  font-weight: 700;
+color: #1f2b46;
+font-weight: 700;
 }
 
 .support-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 8px;
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+margin-bottom: 8px;
 }
 
 .meta-pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: #eef4fb;
-  color: #44566c;
-  font-size: 12px;
-  font-weight: 500;
+display: inline-flex;
+align-items: center;
+padding: 6px 10px;
+border-radius: 999px;
+background: #eef4fb;
+color: #44566c;
+font-size: 12px;
+font-weight: 500;
 }
 
 .support-time {
-  display: inline-flex;
-  align-items: center;
-  color: #8094ae;
-  font-size: 12px;
+display: inline-flex;
+align-items: center;
+color: #8094ae;
+font-size: 12px;
 }
 
 .verified-farmer-section {
-  border-bottom: 1px solid #e5edf6;
-  padding-bottom: 14px;
-  margin-bottom: 16px;
+border-bottom: 1px solid #e5edf6;
+padding-bottom: 14px;
+margin-bottom: 16px;
 }
 </style>

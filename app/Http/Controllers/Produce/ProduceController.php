@@ -22,7 +22,7 @@ use App\Models\FarmerBatchVerification;
 use App\Http\Resources\FarmerFullDetailsResource;
 use App\Http\Resources\ProduceResource;
 use App\Http\Resources\FarmersTableSummaryResource;
-
+use App\Http\Resources\FarmResource;
 
 
 
@@ -76,6 +76,7 @@ $validated = $request->validate([
 'crop_grade' => ['required', 'string', 'max:255'],
 'process_method' => ['required', 'string', 'max:255'],
 'verification_id' => ['required', 'string'],
+'farm'=>['required']
 ]);
 
 //check if the verification code is valid
@@ -202,18 +203,14 @@ return redirect()->route('cooperative.produce.create')->with('success',['status'
 
 
 $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
-$farms = Farm::query()
-->whereHas('farmer', function ($query) use ($cooperativeId) {
-$query->where('cooperative_id', $cooperativeId);
-})
-->orderBy('farm_name')
-->get(['id', 'farm_name']);
+
 $crops=Crops::get();
 $crop_type=CropType::get();
 $process_method=ProcessMethod::get();
 $grade=CropGrade::get();
 $farmer_id=$verification->cooperative_farmers_id;
 $farmer=CooperativeFarmer::where('id',$farmer_id)->first();
+$farms =Farm::select('id','farm_name')->where('cooperative_farmer_id',$farmer->id)->get();
 
 
 return Inertia::render('ProduceCreateAfterVerification', [

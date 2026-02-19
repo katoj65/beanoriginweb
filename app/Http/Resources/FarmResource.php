@@ -26,7 +26,7 @@ class FarmResource extends JsonResource
             'soil_type' => $this->soil_type,
             'water_source_type' => $this->water_source_type,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+            
         ];
     }
 }

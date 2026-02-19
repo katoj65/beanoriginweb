@@ -9,11 +9,10 @@ use App\Http\Controllers\Home\UserProfileController;
 use App\Services\FarmerVerificationService;
 
 Route::get('/', function () {
-
 if (auth()->check()) {
 return redirect()->route('dashboard');
 }
-return Inertia::render('Welcome', [
+return Inertia::render('IndexPage', [
 'canLogin' => Route::has('login'),
 'canRegister' => Route::has('register'),
 'laravelVersion' => Application::VERSION,
@@ -24,7 +23,9 @@ return Inertia::render('Welcome', [
 });
 
 
-
+Route::get('/demo',function(){
+return Inertia::render('IndexPage');
+});
 
 
 
