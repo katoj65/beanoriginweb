@@ -24,7 +24,7 @@ return Inertia::render('IndexPage', [
 
 
 Route::get('/demo',function(){
-return Inertia::render('IndexPage');
+return Inertia::render('TestPage');
 });
 
 
