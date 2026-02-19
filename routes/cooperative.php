@@ -7,6 +7,7 @@ use App\Http\Controllers\Cooperative\HelpController;
 use App\Http\Controllers\Cooperative\FarmerController;
 use App\Http\Controllers\Cooperative\FarmController;
 use App\Http\Controllers\Produce\ProduceController;
+use Inertia\Inertia;
 
 
 
@@ -56,6 +57,16 @@ Route::post('/verification/farmer/produce',[ProduceController::class,'store_veri
 Route::get('/cooperative/produce/create/{any}',[ProduceController::class,'create_batch'])->name('cooperative.produce.create.batch');
 
 Route::get('/cooperative/batch/{id}',[ProduceController::class,'show'])->name('cooperative.batch.show');
+
+
+Route::get('/cooperative/notifications', function () {
+    return Inertia::render('CooperativeNotificationPage');
+})->name('cooperative.notifications');
+
+
+
+
+
 
 
 

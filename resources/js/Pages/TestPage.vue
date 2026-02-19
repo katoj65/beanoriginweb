@@ -249,8 +249,8 @@ color: #1f2937;
 --accent-amber: #b8752d;
 --accent-forest: #1f7a5a;
 --accent-slate: #375a7f;
---card-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
---card-shadow-hover: 0 3px 8px rgba(15, 23, 42, 0.1);
+--card-shadow: none;
+--card-shadow-hover: none;
 }
 
 .index-page::before {
@@ -396,7 +396,7 @@ margin: 0 0 12px;
 
 h1 {
 font-family: var(--title-font);
-font-size: clamp(2rem, 3.9vw, 2.6rem);
+font-size: 30px;
 font-weight: 700;
 line-height: 1.2;
 letter-spacing: -0.02em;

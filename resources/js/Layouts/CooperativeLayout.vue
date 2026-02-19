@@ -248,7 +248,9 @@ Cooperative
 
 <div class="nk-header-tools d-flex align-items-center">
 <el-button size="medium" :icon="Search" round>Search</el-button>
-<el-button :icon="Bell" circle class="mr-2" />
+<Link :href="route('cooperative.notifications')" class="mr-2 d-inline-flex">
+<el-button :icon="Bell" circle />
+</Link>
 <el-dropdown trigger="click" placement="bottom-end" popper-class="user-dropdown-popper" class="p-0 m-0 ml-1">
 <span class="el-dropdown-link m-0 p-0 d-flex align-items-center cursor-pointer">
 <el-button :icon="User" circle />
