@@ -22,17 +22,13 @@ class DatabaseSeeder extends Seeder
 
 
 
-$this->call([
-UserRolesSeeder::class,
-CropTypeSeeder::class,
-ProcessMethodSeeder::class,
-CropGradeSeeder::class
-
-
-
-
-
-]);
+        $this->call([
+            UserRolesSeeder::class,
+            CropTypeSeeder::class,
+            ProcessMethodSeeder::class,
+            CropGradeSeeder::class,
+            ChainBatchStatusSeeder::class,
+        ]);
 
 
 

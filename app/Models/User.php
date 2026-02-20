@@ -75,4 +75,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(ChainBatch::class);
     }
+
+    public function chainBatchSplits(): HasMany
+    {
+        return $this->hasMany(ChainBatchSplit::class);
+    }
 }

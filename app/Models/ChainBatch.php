@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ChainBatch extends Model
 {
@@ -23,5 +24,25 @@ class ChainBatch extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function blocks(): HasMany
+    {
+        return $this->hasMany(ChainBlock::class, 'chain_batches_id');
+    }
+
+    public function batchStatus(): BelongsTo
+    {
+        return $this->belongsTo(ChainBatchStatus::class, 'status', 'name');
+    }
+
+    public function outgoingSplits(): HasMany
+    {
+        return $this->hasMany(ChainBatchSplit::class, 'chain_batches_id');
+    }
+
+    public function incomingSplits(): HasMany
+    {
+        return $this->hasMany(ChainBatchSplit::class, 'split_chain_batches_id');
     }
 }
