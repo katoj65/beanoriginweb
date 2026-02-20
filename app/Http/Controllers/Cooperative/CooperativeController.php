@@ -24,7 +24,7 @@ class CooperativeController extends Controller
         $totalQuantity = Produce::where('cooperative_id', $cooperative->id)->sum('quantity');
         $listedQuantityTotal = Produce::where('cooperative_id', $cooperative->id)->where('status', 'listed')->sum('quantity');
         $soldCount = Produce::where('cooperative_id', $cooperative->id)->where('status', 'sold')->count();
-        
+
 
 
 
@@ -63,6 +63,10 @@ class CooperativeController extends Controller
             'response' => [],
         ]);
     }
+
+
+
+
 
     public function store(Request $request)
     {

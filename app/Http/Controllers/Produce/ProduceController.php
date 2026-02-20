@@ -23,8 +23,12 @@ use App\Http\Resources\FarmerFullDetailsResource;
 use App\Http\Resources\ProduceResource;
 use App\Http\Resources\FarmersTableSummaryResource;
 use App\Http\Resources\FarmResource;
-
-
+use App\Http\Resources\CommodityResource;
+use App\Models\Commodity;
+use App\Models\CommodityFarm;
+use App\Services\Payments\PaymentService;
+use App\Models\CommodityPayment;
+use App\Http\Resources\CommodityPaymentResource;
 
 class ProduceController extends Controller
 {
@@ -53,8 +57,6 @@ return Inertia::render('ProducePage', [
 'listed_count' => $listedCount,
 'sold_count' => $soldCount,
 'total_quantity' => $totalQuantity,
-
-
 ]);
 }
 
@@ -66,15 +68,14 @@ return Inertia::render('ProducePage', [
  */
 public function store(Request $request)
 {
+
 $validated = $request->validate([
 'crop_name' => ['required', 'string', 'max:255'],
 'crop_type' => ['required', 'string', 'max:255'],
 'quantity' => ['required', 'numeric', 'min:0'],
 'price' => ['required', 'numeric', 'min:0'],
-'location' => ['required', 'string', 'max:255'],
 'date_of_harvest' => ['required', 'date'],
 'crop_grade' => ['required', 'string', 'max:255'],
-'process_method' => ['required', 'string', 'max:255'],
 'verification_id' => ['required', 'string'],
 'farm'=>['required']
 ]);
@@ -89,19 +90,40 @@ return redirect()->route('cooperative.produce.create')->with('success', ['status
 $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
 $verification = FarmerBatchVerification::where('verification_id', $validated['verification_id'])->first();
 
-$produce = Produce::create([
+//associate the produce with the farm
+$farm_id=$validated['farm'];
+$farm=$farm_id[0];
+$produce = Commodity::create([
 'cooperative_id' => $cooperativeId,
-'crop_name' => $validated['crop_name'],
-'crop_type' => $validated['crop_type'],
-'quantity' => $validated['quantity'],
-'price' => $validated['price'],
-'location' => $validated['location'],
-'date_of_harvest' => $validated['date_of_harvest'],
-'crop_grade' => $validated['crop_grade'],
-'process_method' => $validated['process_method'],
-'verification_code' => $verification?->verification_code,
+'farm_id' => $validated['farm'],
+'commodity_name' => $validated['crop_name'],
+'commodity_type' => $validated['crop_type'],
+'grade' => $validated['crop_grade'],
+'weight' => $validated['quantity'],
+'harvest_date' => $validated['date_of_harvest'],
+'farm_id'=>$farm
 ]);
 
+//associate the produce with the farm
+
+foreach($farm_id as $farm){
+CommodityFarm::create([
+'commodity_id'=>$produce->id,
+'farm_id'=>$farm
+]);
+}
+
+//prepare payment data
+$data=[
+'commodity_id'=>$produce->id,
+'buyer_id'=>$request->user()->id,
+'quantity'=>$validated['quantity'],
+'unit_price'=>$validated['price'],
+'notes'=>'Payment pending for commodity with ID: '.$produce->id
+];
+
+//payment is being processed in the background, so we can return the produce details immediately without waiting for payment confirmation
+PaymentService::commodity_payment($data);
 $verification?->update(['status' => 'expired']);
 
 return redirect()->route('cooperative.batch.show', ['id' => $produce->id])->with('success', 'Produce saved successfully.');
@@ -118,18 +140,38 @@ return redirect()->route('cooperative.batch.show', ['id' => $produce->id])->with
  */
 public function show(Request $request)
 {
-//
 $id = $request->segment(3);
-$produce = Produce::where('id', $id)->first();
+$produce = Commodity::query()
+->with([
+'farm',
+'payments' => fn ($query) => $query
+->with('buyer:id,fname,lname,email')
+->latest(),
+])
+->findOrFail($id);
+
 $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
-$farmer = CooperativeFarmer::where('id', FarmerBatchVerification::where('verification_code', $produce?->verification_code)->value('cooperative_farmers_id'))
-->where('cooperative_id', $cooperativeId)
+
+// Resolve farmer through farms table by using the produce farm_id.
+$farm = Farm::query()
+->where('id', $produce->farm_id)
+->whereHas('farmer', function ($query) use ($cooperativeId) {
+$query->where('cooperative_id', $cooperativeId);
+})
+->with('farmer')
+->first();
+$farmer = $farm?->farmer;
+$payment = CommodityPayment::query()
+->where('commodity_id', $produce->id)
+->with('buyer:id,fname,lname,email')
+->latest()
 ->first();
 
-return Inertia::render('BatchShowPage',[
-'produce'=> new ProduceResource($produce),
-'farmer' => new FarmerFullDetailsResource($farmer),
 
+return Inertia::render('BatchShowPage', [
+'produce' => new CommodityResource($produce),
+'farmer' => $farmer ? new FarmerFullDetailsResource($farmer) : null,
+'payment' => $payment ? new CommodityPaymentResource($payment) : null,
 
 ]);
 

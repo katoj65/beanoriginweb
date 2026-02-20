@@ -80,4 +80,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(ChainBatchSplit::class);
     }
+
+    public function commodityPayments(): HasMany
+    {
+        return $this->hasMany(CommodityPayment::class, 'buyer_id');
+    }
 }

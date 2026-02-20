@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Commodity extends Model
 {
@@ -40,6 +41,17 @@ class Commodity extends Model
         return $this->belongsTo(Farm::class, 'farm_id');
     }
 
+    public function farms(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Farm::class,
+            'commodity_farms',
+            'commodity_id',
+            'farm_id'
+        )->using(CommodityFarm::class)
+            ->withTimestamps();
+    }
+
     public function chainBatches(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -50,5 +62,10 @@ class Commodity extends Model
         )->using(CommodityBatch::class)
             ->withPivot(['weight', 'status'])
             ->withTimestamps();
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(CommodityPayment::class, 'commodity_id');
     }
 }

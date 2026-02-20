@@ -14,10 +14,8 @@ crop_name: '',
 crop_type: '',
 quantity: '',
 price: '',
-location: '',
 date_of_harvest: '',
 crop_grade: '',
-process_method: '',
 farm:''
 
 });
@@ -152,11 +150,6 @@ v-for="item in crop_type"
 <InputError :message="form.errors.price" class="mt-2" />
 </div>
 
-<div class="col-12 col-md-4">
-<label class="form-label" for="05">Location</label>
-<input v-model="form.location" type="text" class="form-control" placeholder="Enter location" id="05"/>
-<InputError :message="form.errors.location" class="mt-2" />
-</div>
 
 <div class="col-12 col-md-4">
 <label class="form-label" for="06">Date of Harvest</label>
@@ -178,25 +171,9 @@ v-for="item in crop_grade"
 <InputError :message="form.errors.crop_grade" class="mt-2" />
 </div>
 
-<div class="col-12 col-md-4">
-<label class="form-label" for="08">Process Method</label>
-<el-select v-model="form.process_method" placeholder="Select" class="form-control-like" id="08">
-<el-option label="None" value="N/A"/>
-<el-option
-v-for="item in process_methods"
-:key="item.name"
-:label="item.name"
-:value="item.name"
-/>
-</el-select>
-<InputError :message="form.errors.process_method" class="mt-2" />
-</div>
 
 
-
-
-
-<div class="col-12 col-md-4">
+<div class="col-12 col-md-12">
 <label class="form-label" for="09">Farm</label>
 <el-select v-model="form.farm" placeholder="Select" class="form-control-like" id="09" multiple
 collapse-tags>
@@ -215,7 +192,7 @@ v-for="item in farms"
 
 
 
-<div class="col-12 col-md-4 d-flex align-items-end mt-4">
+<div class="col-12 col-md-12 d-flex align-items-end mt-4">
 <SubmitButton :title="'Save Produce'" :status="form.processing" />
 </div>
 </form>

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Farm extends Model
 {
@@ -28,5 +29,16 @@ class Farm extends Model
     public function farmer(): BelongsTo
     {
         return $this->belongsTo(CooperativeFarmer::class, 'cooperative_farmer_id');
+    }
+
+    public function commodities(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Commodity::class,
+            'commodity_farms',
+            'farm_id',
+            'commodity_id'
+        )->using(CommodityFarm::class)
+            ->withTimestamps();
     }
 }
