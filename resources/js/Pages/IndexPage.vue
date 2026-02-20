@@ -64,6 +64,13 @@ const faqs = [
 { q: 'Do you support trading alerts and milestones?', a: 'Yes. Users can monitor pricing alerts and contract milestone status in one dashboard.' },
 { q: 'What commodities are supported?', a: 'The platform supports coffee and several key staple and export crops.' },
 ];
+
+const demandByMarket = [
+{ country: 'UAE', volume: '3,840 MT', segment: 'Specialty Roasters', trend: '+5.4%' },
+{ country: 'Saudi Arabia', volume: '3,360 MT', segment: 'Retail Chains', trend: '+4.1%' },
+{ country: 'EU', volume: '6,480 MT', segment: 'Importers & Roasters', trend: '+6.8%' },
+{ country: 'US', volume: '5,520 MT', segment: 'Commercial Buyers', trend: '+5.9%' },
+];
 </script>
 
 <template>
@@ -90,7 +97,7 @@ const faqs = [
 <section class="hero">
 <div class="hero-copy">
 <p class="eyebrow">Digital Commodity Exchange</p>
-<h1>Trade Smarter in a Trusted Commodity Marketplace</h1>
+<h1>Trade Verified Commodities With Confidence</h1>
 <p class="lead">Commodity Origin connects buyers, cooperatives, and suppliers in a trusted marketplace built for transparent pricing, dependable quality, and faster transactions.</p>
 <div class="hero-meta">
 <span><em class="icon ni ni-check-circle"></em>Verified participants</span>
@@ -98,8 +105,24 @@ const faqs = [
 <span><em class="icon ni ni-shield-check"></em>Audit-ready records</span>
 </div>
 <div class="hero-cta">
-<Link href="/register" class="btn btn-solid">Start Trading</Link>
-<Link href="/login" class="btn btn-outline">View Live Market</Link>
+
+<div class="hero-market-reach" style="width:100%">
+<p class="hero-market-title">Coffee demand by market</p>
+<ul class="hero-demand-list">
+<li v-for="market in demandByMarket" :key="market.country">
+<div class="market-left">
+<span class="market-country">{{ market.country }}</span>
+<small>{{ market.segment }}</small>
+</div>
+<div class="market-right">
+<strong>{{ market.volume }} / year</strong>
+<small :class="market.trend.startsWith('+') ? 'trend-up' : 'trend-down'">{{ market.trend }}</small>
+</div>
+</li>
+</ul>
+</div>
+
+
 </div>
 </div>
 <div class="hero-panel">
@@ -231,7 +254,7 @@ const faqs = [
 
 .index-page {
 min-height: 100vh;
-padding: 36px 24px 56px;
+padding: 74px 24px 56px;
 position: relative;
 overflow: hidden;
 background:
@@ -249,6 +272,7 @@ color: #1f2937;
 --accent-amber: #b8752d;
 --accent-forest: #1f7a5a;
 --accent-slate: #375a7f;
+--card-border: 1px solid rgba(111, 78, 55, 0.34);
 --card-shadow: none;
 --card-shadow-hover: none;
 }
@@ -259,7 +283,7 @@ position: absolute;
 top: 0;
 left: 0;
 width: 100%;
-height: 65vh;
+height: 80vh;
 background:
 linear-gradient(160deg, rgba(111, 78, 55, 0.09), rgba(51, 65, 85, 0.02)),
 radial-gradient(820px 360px at 10% -10%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0)),
@@ -274,7 +298,7 @@ position: absolute;
 top: 0;
 left: 0;
 width: 100%;
-height: 65vh;
+height: 80vh;
 background-image: url('../../images/bg2.jpg');
 background-size: cover;
 background-position: center top;
@@ -293,14 +317,19 @@ z-index: 1;
 display: flex;
 justify-content: space-between;
 align-items: center;
-max-width: 1100px;
-margin: 0 auto 28px;
-padding: 12px 16px;
-background: transparent;
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+z-index: 30;
+width: 100%;
+margin: 0;
+padding: 12px 24px;
+background: #fff;
 border: none;
-border-radius: 14px;
+border-radius: 0;
 backdrop-filter: none;
-box-shadow: none;
+box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
 }
 
 .brand {
@@ -337,7 +366,7 @@ gap: 10px;
 
 .hero {
 max-width: 1100px;
-margin: 0 auto;
+margin: 150px auto 0;
 display: grid;
 grid-template-columns: 1.2fr 1fr;
 gap: 24px;
@@ -396,9 +425,9 @@ margin: 0 0 12px;
 
 h1 {
 font-family: var(--title-font);
-font-size: 36px;
+font-size: 30px;
 font-weight: 700;
-line-height: 1.35;
+line-height: 1.2;
 letter-spacing: -0.02em;
 margin: 0 0 16px;
 max-width: 16ch;
@@ -438,6 +467,86 @@ gap: 12px;
 flex-wrap: wrap;
 }
 
+.hero-market-reach {
+margin-top: 8px;
+min-width: 250px;
+}
+
+.hero-market-title {
+margin: 0 0 6px;
+font-size: 0.76rem;
+font-weight: 700;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+color: #64748b;
+}
+
+.hero-demand-list {
+list-style: none;
+margin: 0;
+padding: 0;
+display: grid;
+gap: 6px;
+}
+
+.hero-demand-list li {
+display: flex;
+justify-content: space-between;
+gap: 10px;
+font-size: 0.78rem;
+padding: 7px 8px;
+border-radius: 8px;
+background: linear-gradient(180deg, rgba(255, 248, 240, 0.96), rgba(250, 243, 234, 0.92));
+}
+
+.market-left {
+display: flex;
+flex-direction: column;
+gap: 1px;
+}
+
+.market-country {
+font-weight: 600;
+color: #475569;
+}
+
+.market-left small {
+font-size: 0.7rem;
+color: #6b7280;
+}
+
+.market-right {
+display: flex;
+flex-direction: column;
+align-items: flex-end;
+gap: 1px;
+}
+
+.market-right strong {
+font-weight: 700;
+color: #1f2937;
+}
+
+.trend-up,
+.trend-down {
+font-size: 0.7rem;
+font-weight: 700;
+}
+
+.trend-up {
+color: #047857;
+}
+
+.trend-down {
+color: #b91c1c;
+}
+
+.hero-demand-total {
+margin: 8px 0 0;
+font-size: 0.74rem;
+color: #475569;
+}
+
 .panel-head {
 display: flex;
 align-items: center;
@@ -471,7 +580,7 @@ gap: 10px;
 
 .ticker-item {
 background: linear-gradient(180deg, rgba(248, 250, 252, 0.94), rgba(241, 245, 249, 0.9));
-border: none;
+border: var(--card-border);
 border-radius: 12px;
 padding: 14px 14px 14px 16px;
 display: flex;
@@ -508,6 +617,7 @@ margin-top: 10px;
 
 .metric-pill {
 background: linear-gradient(180deg, rgba(250, 243, 234, 0.95), rgba(241, 249, 248, 0.9));
+border: var(--card-border);
 border-radius: 10px;
 padding: 9px 10px;
 display: flex;
@@ -530,7 +640,7 @@ color: #1e293b;
 .trade-feed {
 margin-top: 12px;
 padding-top: 10px;
-border-top: 1px solid rgba(148, 163, 184, 0.22);
+border: 1px solid rgba(111, 78, 55, 0.28);
 background: rgba(255, 255, 255, 0.45);
 border-radius: 10px;
 padding-left: 10px;
@@ -714,7 +824,7 @@ margin-top: 14px;
 
 .stat-pill {
 background: linear-gradient(180deg, rgba(247, 251, 255, 0.95), rgba(255, 249, 242, 0.9));
-border: none;
+border: var(--card-border);
 border-radius: 12px;
 padding: 10px;
 text-align: center;
@@ -1080,10 +1190,12 @@ to { opacity: 1; transform: translateY(0); }
 .hero-copy,
 .hero-panel { padding: 22px; }
 .panel { padding: 20px; }
-.index-page { padding: 24px 16px 40px; }
+.index-page { padding: 66px 16px 40px; }
 .topbar {
-padding: 10px 12px;
-border-radius: 12px;
+width: 100%;
+margin: 0;
+padding: 10px 16px;
+border-radius: 0;
 }
 .brand-logo { width: 36px; height: 36px; }
 .brand { font-size: 1.05rem; }
