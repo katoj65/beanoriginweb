@@ -55,7 +55,7 @@ class ChainBatch extends Model
             'chain_batch_id',
             'commodity_id'
         )->using(CommodityBatch::class)
-            ->withPivot(['weight', 'status'])
+            ->withPivot(['status'])
             ->withTimestamps();
     }
 }

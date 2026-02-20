@@ -1,10 +1,7 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
 
 const currentYear = new Date().getFullYear();
-const billingCycle = ref('monthly');
-const activeFaq = ref('0');
 
 const marketRows = [
     { commodity: 'Arabica AA', region: 'Kilimanjaro', volume: '42 MT', bid: '$3.39/kg', ask: '$3.46/kg', spread: '2.1%' },
@@ -18,15 +15,6 @@ const metrics = [
     { label: 'Listed Lots', value: '9,200+' },
     { label: 'Monthly Volume', value: '48,000 MT' },
     { label: 'Avg Settlement', value: 'T+2 Days' },
-];
-
-const partners = [
-    'Atlas Roasters',
-    'Greenline Commodities',
-    'Harvest Guild',
-    'Northstar Foods',
-    'Horizon Export',
-    'Summit Trading',
 ];
 
 const features = [
@@ -84,41 +72,29 @@ const steps = [
 const plans = [
     {
         name: 'Starter',
-        monthly: '$0',
-        annual: '$0',
+        price: '$0',
+        period: '/month',
         note: 'For small cooperatives',
         points: ['Up to 20 monthly lots', 'Basic market dashboard', 'Email support'],
         featured: false,
     },
     {
         name: 'Growth',
-        monthly: '$149',
-        annual: '$129',
+        price: '$149',
+        period: '/month',
         note: 'For active trading teams',
         points: ['Unlimited listings', 'Counteroffer workflows', 'Contract templates'],
         featured: true,
     },
     {
         name: 'Enterprise',
-        monthly: 'Custom',
-        annual: 'Custom',
+        price: 'Custom',
+        period: '',
         note: 'For regional exchanges',
         points: ['Dedicated onboarding', 'Custom settlement stages', 'Priority SLA support'],
         featured: false,
     },
 ];
-
-const displayPlans = computed(() =>
-    plans.map((plan) => {
-        const isEnterprise = plan.monthly === 'Custom';
-
-        return {
-            ...plan,
-            price: billingCycle.value === 'annual' ? plan.annual : plan.monthly,
-            period: isEnterprise ? '' : billingCycle.value === 'annual' ? '/month, billed annually' : '/month',
-        };
-    }),
-);
 
 const testimonials = [
     {
@@ -156,14 +132,6 @@ const faqs = [
         a: 'Coffee, cocoa, sesame, and multiple staple/export crops are supported by default.',
     },
 ];
-
-const faqTopics = ['Accounts', 'Trading', 'Contracts', 'Settlement', 'Compliance'];
-
-const supportChannels = [
-    { title: 'Live Chat', detail: 'Avg response: < 5 min', icon: 'bi-chat-dots' },
-    { title: 'Help Center', detail: 'Guides and onboarding docs', icon: 'bi-life-preserver' },
-    { title: 'Email Support', detail: 'support@tradeharbor.com', icon: 'bi-envelope' },
-];
 </script>
 
 <template>
@@ -172,33 +140,31 @@ const supportChannels = [
             <div class="container">
                 <nav class="navbar navbar-expand-lg py-3">
                     <Link class="navbar-brand brandmark" href="/">
-                        <img src="../../images/logo.png" alt="Commodity Origin logo" class="brand-logo" />
-                        <span class="brand-title">Commodity Origin</span>
+                        <span class="brand-dot"></span>
+                        <span>TradeHarbor</span>
                     </Link>
-                    <div class="header-right">
-                        <div class="header-auth">
-                            <Link href="/login" class="header-auth-link">Login</Link>
-                            <Link href="/register" class="header-auth-link register-link">Register</Link>
-                        </div>
-                        <button
-                            class="navbar-toggler ms-2"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#modernNav"
-                            aria-controls="modernNav"
-                            aria-expanded="false"
-                            aria-label="Toggle navigation"
-                        >
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                    </div>
+                    <button
+                        class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#modernNav"
+                        aria-controls="modernNav"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation"
+                    >
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
                     <div id="modernNav" class="collapse navbar-collapse">
-                        <ul class="navbar-nav ms-auto">
+                        <ul class="navbar-nav ms-auto me-3">
                             <li class="nav-item"><a class="nav-link" href="#markets">Markets</a></li>
                             <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
                             <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
                             <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
                         </ul>
+                        <div class="d-flex gap-2">
+                            <Link href="/login" class="btn btn-outline-brand">Log In</Link>
+                            <Link href="/register" class="btn btn-brand">Get Started</Link>
+                        </div>
                     </div>
                 </nav>
             </div>
@@ -260,27 +226,6 @@ const supportChannels = [
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="ticker-section">
-            <div class="container">
-                <div class="ticker-shell">
-                    <div class="ticker-track">
-                        <span v-for="(row, index) in [...marketRows, ...marketRows]" :key="`${row.commodity}-${index}`">
-                            {{ row.commodity }} · {{ row.region }} · Bid {{ row.bid }} · Ask {{ row.ask }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="partners-section">
-            <div class="container">
-                <p class="partners-label">Trusted by cooperatives, exporters, and procurement teams</p>
-                <div class="partners-grid">
-                    <span v-for="partner in partners" :key="partner" class="partner-pill">{{ partner }}</span>
                 </div>
             </div>
         </section>
@@ -379,29 +324,10 @@ const supportChannels = [
                         <div class="section-head reveal">
                             <p class="eyebrow">Pricing</p>
                             <h2>Plans for Every Trading Team</h2>
-                            <div class="billing-toggle" role="group" aria-label="Billing cycle toggle">
-                                <button
-                                    type="button"
-                                    class="toggle-btn"
-                                    :class="{ active: billingCycle === 'monthly' }"
-                                    @click="billingCycle = 'monthly'"
-                                >
-                                    Monthly
-                                </button>
-                                <button
-                                    type="button"
-                                    class="toggle-btn"
-                                    :class="{ active: billingCycle === 'annual' }"
-                                    @click="billingCycle = 'annual'"
-                                >
-                                    Annual <span>Save 13%</span>
-                                </button>
-                            </div>
                         </div>
                         <div class="row g-3">
-                            <div v-for="plan in displayPlans" :key="plan.name" class="col-md-6 col-xl-4 col-lg-12">
+                            <div v-for="plan in plans" :key="plan.name" class="col-md-6 col-xl-4 col-lg-12">
                                 <article :class="['plan-card reveal', { featured: plan.featured }]">
-                                    <span v-if="plan.featured" class="featured-tag">Most Popular</span>
                                     <h5>{{ plan.name }}</h5>
                                     <div class="price-line">
                                         <span class="price">{{ plan.price }}</span>
@@ -445,48 +371,33 @@ const supportChannels = [
                 <div class="section-head reveal">
                     <p class="eyebrow">FAQ</p>
                     <h2>Common Questions</h2>
-                    <p>Answers to the most common onboarding, trading, and settlement questions.</p>
                 </div>
-                <div class="row g-4 faq-layout">
-                    <div class="col-lg-8">
-                        <div class="faq-topic-list reveal">
-                            <span v-for="topic in faqTopics" :key="topic" class="faq-topic-pill">{{ topic }}</span>
-                        </div>
-                        <el-collapse v-model="activeFaq" accordion class="custom-accordion reveal">
-                            <el-collapse-item
-                                v-for="(item, index) in faqs"
-                                :key="item.q"
-                                :name="String(index)"
-                                class="faq-collapse-item"
+                <div class="accordion custom-accordion reveal" id="faqAccordion">
+                    <div v-for="(item, index) in faqs" :key="item.q" class="accordion-item">
+                        <h2 :id="`heading-${index}`" class="accordion-header">
+                            <button
+                                class="accordion-button"
+                                :class="{ collapsed: index !== 0 }"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                :data-bs-target="`#collapse-${index}`"
+                                :aria-expanded="index === 0 ? 'true' : 'false'"
+                                :aria-controls="`collapse-${index}`"
                             >
-                                <template #title>
-                                    <span class="faq-item-title">
-                                        <span class="faq-index">Q{{ index + 1 }}</span>
-                                        <span>{{ item.q }}</span>
-                                    </span>
-                                </template>
-                                <div class="faq-answer">
-                                    {{ item.a }}
-                                </div>
-                            </el-collapse-item>
-                        </el-collapse>
-                    </div>
-                    <div class="col-lg-4">
-                        <aside class="faq-help-card reveal delay-1">
-                            <p class="help-kicker">Need more help?</p>
-                            <h4>Talk to our support team</h4>
-                            <p class="help-copy">Get tailored guidance for setup, compliance, and trade operations.</p>
-                            <div class="help-list">
-                                <article v-for="channel in supportChannels" :key="channel.title" class="help-item">
-                                    <div class="help-icon"><i :class="['bi', channel.icon]"></i></div>
-                                    <div>
-                                        <strong>{{ channel.title }}</strong>
-                                        <small>{{ channel.detail }}</small>
-                                    </div>
-                                </article>
+                                {{ item.q }}
+                            </button>
+                        </h2>
+                        <div
+                            :id="`collapse-${index}`"
+                            class="accordion-collapse collapse"
+                            :class="{ show: index === 0 }"
+                            :aria-labelledby="`heading-${index}`"
+                            data-bs-parent="#faqAccordion"
+                        >
+                            <div class="accordion-body">
+                                {{ item.a }}
                             </div>
-                            <Link href="/register" class="btn btn-brand w-100 mt-2">Contact Support</Link>
-                        </aside>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -510,7 +421,7 @@ const supportChannels = [
 
         <footer class="site-footer">
             <div class="container py-4 d-flex flex-column flex-lg-row justify-content-between gap-2">
-                <p class="mb-0">© {{ currentYear }} Commodity Origin. All rights reserved.</p>
+                <p class="mb-0">© {{ currentYear }} TradeHarbor Exchange. All rights reserved.</p>
                 <div class="d-flex gap-3">
                     <a href="#">Privacy</a>
                     <a href="#">Terms</a>
@@ -573,6 +484,7 @@ const supportChannels = [
     width: 1.1rem;
     height: 1.1rem;
     background-image: none;
+    display: inline-block;
     position: relative;
 }
 
@@ -604,54 +516,12 @@ const supportChannels = [
     color: var(--mx-text);
 }
 
-.brand-logo {
-    width: 34px;
-    height: 34px;
-    object-fit: contain;
-    border-radius: 10px;
-    background: #fff;
-    border: 1px solid #d7e7ef;
-    padding: 3px;
-}
-
-.brand-title {
-    line-height: 1;
-}
-
-.header-right {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-    order: 2;
-}
-
-.header-auth {
-    display: inline-flex;
-    gap: 12px;
-    align-items: center;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.site-nav #modernNav {
-    order: 3;
-    width: 100%;
-}
-
-.header-auth-link {
-    color: #334e68;
-    font-size: 0.92rem;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.header-auth-link:hover {
-    color: #0b6f65;
-}
-
-.header-auth-link.register-link {
-    color: #0b6f65;
+.brand-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--mx-brand), var(--mx-accent));
+    box-shadow: 0 8px 20px rgba(14, 138, 125, 0.28);
 }
 
 .nav-link {
@@ -693,61 +563,6 @@ const supportChannels = [
     padding: 4.5rem 0 2rem;
 }
 
-.ticker-section {
-    padding: 0 0 1rem;
-}
-
-.ticker-shell {
-    border: 1px solid var(--mx-border);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.8);
-    overflow: hidden;
-}
-
-.ticker-track {
-    white-space: nowrap;
-    display: inline-flex;
-    gap: 22px;
-    padding: 10px 18px;
-    min-width: 100%;
-    animation: tickerSlide 26s linear infinite;
-}
-
-.ticker-track span {
-    color: #486581;
-    font-size: 0.84rem;
-    font-weight: 600;
-}
-
-.partners-section {
-    padding: 0.3rem 0 1rem;
-}
-
-.partners-label {
-    font-size: 0.82rem;
-    color: #627d98;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 0.7rem;
-}
-
-.partners-grid {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 10px;
-}
-
-.partner-pill {
-    border: 1px solid var(--mx-border);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.88);
-    color: #334e68;
-    font-size: 0.84rem;
-    font-weight: 700;
-    padding: 10px 12px;
-    text-align: center;
-}
-
 .hero-copy h1 {
     font-size: clamp(1.85rem, 3.2vw, 2.85rem);
     margin-bottom: 1rem;
@@ -780,18 +595,6 @@ const supportChannels = [
     border-radius: 18px;
     background: linear-gradient(180deg, #ffffff, #f9fcfd);
     box-shadow: 0 16px 30px rgba(16, 42, 67, 0.08);
-    --hero-inner-radius: 14px;
-}
-
-.hero-panel .card-body {
-    border-radius: 16px;
-}
-
-.hero-panel .table-responsive {
-    border: 1px solid #d7e7ef;
-    border-radius: var(--hero-inner-radius);
-    overflow: hidden;
-    background: #fff;
 }
 
 .badge-live {
@@ -818,10 +621,6 @@ const supportChannels = [
     padding: 10px;
     display: grid;
     gap: 2px;
-}
-
-.hero-panel .metric-box {
-    border-radius: var(--hero-inner-radius);
 }
 
 .metric-box small {
@@ -869,34 +668,6 @@ const supportChannels = [
 .section-head h2 {
     font-size: clamp(1.4rem, 2.4vw, 2.05rem);
     margin-bottom: 0.7rem;
-}
-
-.billing-toggle {
-    display: inline-flex;
-    align-items: center;
-    border: 1px solid var(--mx-border);
-    background: #fff;
-    border-radius: 999px;
-    overflow: hidden;
-}
-
-.toggle-btn {
-    border: 0;
-    background: transparent;
-    color: #486581;
-    font-weight: 700;
-    font-size: 0.82rem;
-    padding: 8px 14px;
-}
-
-.toggle-btn span {
-    color: #0b6f65;
-    margin-left: 4px;
-}
-
-.toggle-btn.active {
-    background: #e7f7f3;
-    color: #0b6f65;
 }
 
 .glass-card {
@@ -1005,7 +776,6 @@ const supportChannels = [
     border-radius: 14px;
     background: #fff;
     padding: 16px;
-    position: relative;
 }
 
 .plan-card.featured {
@@ -1034,18 +804,6 @@ const supportChannels = [
     color: #627d98;
     margin-bottom: 10px;
     font-size: 0.9rem;
-}
-
-.featured-tag {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    border-radius: 999px;
-    background: #0f766e;
-    color: #fff;
-    font-size: 0.68rem;
-    font-weight: 700;
-    padding: 4px 9px;
 }
 
 .plan-list {
@@ -1077,166 +835,25 @@ const supportChannels = [
     color: #627d98;
 }
 
-.faq-layout {
-    align-items: flex-start;
-}
-
-.custom-accordion {
-    border: 0;
-}
-
-.custom-accordion :deep(.el-collapse) {
-    border-top: 0;
-    border-bottom: 0;
-    background: transparent;
-}
-
-.custom-accordion :deep(.el-collapse-item) {
+.custom-accordion .accordion-item {
     border: 1px solid var(--mx-border);
     border-radius: 12px;
     overflow: hidden;
     margin-bottom: 10px;
-    background: #fff;
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
 }
 
-.custom-accordion :deep(.el-collapse-item__header) {
-    border-bottom: 0;
-    height: auto;
-    min-height: 56px;
-    padding: 12px 16px;
+.custom-accordion .accordion-button {
     font-weight: 700;
     color: #243b53;
-    background: #fff;
-    line-height: 1.3;
 }
 
-.custom-accordion :deep(.el-collapse-item__header.is-active) {
-    color: #0b6f65;
+.custom-accordion .accordion-button:not(.collapsed) {
     background: #ecfaf7;
-}
-
-.custom-accordion :deep(.el-collapse-item__arrow) {
-    color: #486581;
-    font-weight: 700;
-}
-
-.custom-accordion :deep(.el-collapse-item__wrap) {
-    border-bottom: 0;
-}
-
-.custom-accordion :deep(.el-collapse-item__content) {
-    padding: 0 16px 14px;
-    color: #486581;
-    line-height: 1.65;
-}
-
-.faq-item-title {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.96rem;
-    white-space: normal;
-}
-
-.faq-answer {
-    font-size: 0.95rem;
-}
-
-.faq-topic-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 14px;
-}
-
-.faq-topic-pill {
-    border: 1px solid var(--mx-border);
-    background: #fff;
-    color: #486581;
-    border-radius: 999px;
-    padding: 6px 11px;
-    font-size: 0.76rem;
-    font-weight: 700;
-}
-
-.faq-index {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 42px;
-    border-radius: 999px;
-    padding: 3px 10px;
-    background: #e7f7f3;
     color: #0b6f65;
-    font-size: 0.72rem;
-    font-weight: 800;
 }
 
-.faq-help-card {
-    border: 1px solid var(--mx-border);
-    border-radius: 16px;
-    background: linear-gradient(180deg, #ffffff, #f6fbfc);
-    padding: 18px;
-    position: sticky;
-    top: 90px;
-}
-
-.help-kicker {
-    margin: 0 0 8px;
-    color: #0b6f65;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    font-size: 0.72rem;
-    font-weight: 800;
-}
-
-.faq-help-card h4 {
-    margin-bottom: 8px;
-}
-
-.help-copy {
-    margin: 0 0 12px;
-    color: #627d98;
-    font-size: 0.92rem;
-}
-
-.help-list {
-    display: grid;
-    gap: 8px;
-    margin-bottom: 10px;
-}
-
-.help-item {
-    border: 1px solid var(--mx-border);
-    border-radius: 12px;
-    background: #fff;
-    padding: 10px;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 10px;
-    align-items: center;
-}
-
-.help-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    background: #e7f7f3;
-    color: #0b6f65;
-    display: grid;
-    place-items: center;
-}
-
-.help-item strong {
-    display: block;
-    font-size: 0.88rem;
-    color: #243b53;
-}
-
-.help-item small {
-    color: #627d98;
-    font-size: 0.78rem;
+.custom-accordion .accordion-body {
+    color: #486581;
 }
 
 .final-cta {
@@ -1290,15 +907,6 @@ const supportChannels = [
     }
 }
 
-@keyframes tickerSlide {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-50%);
-    }
-}
-
 @media (max-width: 991.98px) {
     .hero-section {
         padding-top: 2.6rem;
@@ -1308,29 +916,8 @@ const supportChannels = [
         padding-top: 10px;
     }
 
-    .partners-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
     .cta-box {
         padding: 1.4rem;
-    }
-
-    .faq-help-card {
-        margin-top: 4px;
-        position: static;
-    }
-}
-
-@media (min-width: 992px) {
-    .site-nav #modernNav {
-        order: 2;
-        width: auto;
-    }
-
-    .header-right {
-        order: 3;
-        margin-left: 16px;
     }
 }
 
@@ -1343,37 +930,8 @@ const supportChannels = [
         font-size: 1.62rem;
     }
 
-    .header-auth {
-        gap: 8px;
-    }
-
-    .header-auth-link {
-        font-size: 0.84rem;
-    }
-
-    .ticker-track {
-        gap: 16px;
-        padding: 8px 14px;
-    }
-
-    .partners-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .billing-toggle {
-        width: 100%;
-    }
-
-    .toggle-btn {
-        flex: 1;
-    }
-
     .plan-list {
         padding-left: 15px;
-    }
-
-    .faq-index {
-        min-width: 36px;
     }
 }
 </style>

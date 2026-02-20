@@ -18,47 +18,40 @@ onFinish: () => form.reset('password', 'password_confirmation'),
 </script>
 
 <template>
-<div class="nk-body bg-white npc-general pg-auth">
-<div class="nk-app-root">
-<div class="nk-split nk-split-page nk-split-lg">
-<div class="nk-split-content nk-block-area nk-block-area-column nk-auth-container bg-white w-lg-45">
-<div class="absolute-top-right d-lg-none p-3 p-sm-5">
-<a href="#" class="toggle btn btn-white btn-icon btn-light" data-target="athPromo"><em class="icon ni ni-info"></em></a>
-</div>
-<div class="nk-block nk-block-middle nk-auth-body">
-<div class="brand-logo pb-0 text-center">
-<a href="/" class="logo-link">
-<img class="" src="../../../images/logo.png" srcset="" alt="logo-dark" style="width:110px;">
-</a>
-</div>
-<div class="nk-block-head">
-<div class="nk-block-head-content">
-<h5 class="nk-block-title">Join Commodity Origin</h5>
-<div class="nk-block-des">
-<p>Create your account and start your coffee journey</p>
-</div>
-</div>
-</div>
+<div class="auth-page">
+<header class="auth-header">
+<Link href="/" class="auth-brand">
+<img src="../../../images/logo.png" alt="Commodity Origin logo" class="auth-logo" />
+<span>Commodity Origin</span>
+</Link>
+</header>
 
-<form @submit.prevent="submit">
+<main class="auth-main">
+<section class="auth-card">
+<p class="auth-kicker">Create Account</p>
+<h1>Join Commodity Origin</h1>
+<p class="auth-subtitle">Set up your account and start trading with verified market participants.</p>
+
+<form @submit.prevent="submit" class="auth-form">
 <div class="form-group">
-<label class="form-label" for="name">First name<InputError class="mt-2" :message="form.errors.fname" /></label>
+<label class="form-label" for="name">First name</label>
+<InputError class="mb-2" :message="form.errors.fname" />
 <div class="form-control-wrap">
-<input type="text" class="form-control form-control-lg" id="name" placeholder="Enter your name" v-model="form.fname">
+<input type="text" class="form-control form-control-lg" id="name" placeholder="Enter your first name" v-model="form.fname">
 </div>
 </div>
 
 <div class="form-group">
 <label class="form-label" for="lname">Last name</label>
-<InputError class="mt-2" :message="form.errors.lname" />
+<InputError class="mb-2" :message="form.errors.lname" />
 <div class="form-control-wrap">
-<input type="text" class="form-control form-control-lg" id="lname" placeholder="Enter your name" v-model="form.lname">
+<input type="text" class="form-control form-control-lg" id="lname" placeholder="Enter your last name" v-model="form.lname">
 </div>
 </div>
 
 <div class="form-group">
 <label class="form-label" for="email">Email</label>
-<InputError class="mt-2" :message="form.errors.email" />
+<InputError class="mb-2" :message="form.errors.email" />
 <div class="form-control-wrap">
 <input type="text" class="form-control form-control-lg" id="email" placeholder="Enter your email address" v-model="form.email">
 </div>
@@ -66,7 +59,7 @@ onFinish: () => form.reset('password', 'password_confirmation'),
 
 <div class="form-group">
 <label class="form-label" for="password">Password</label>
-<InputError class="mt-2" :message="form.errors.password" />
+<InputError class="mb-2" :message="form.errors.password" />
 <div class="form-control-wrap">
 <input type="password" class="form-control form-control-lg" id="password" placeholder="Enter your password" v-model="form.password">
 </div>
@@ -74,7 +67,7 @@ onFinish: () => form.reset('password', 'password_confirmation'),
 
 <div class="form-group">
 <label class="form-label" for="password_confirmation">Confirm Password</label>
-<InputError class="mt-2" :message="form.errors.password_confirmation" />
+<InputError class="mb-2" :message="form.errors.password_confirmation" />
 <div class="form-control-wrap">
 <input type="password" class="form-control form-control-lg" id="password_confirmation" placeholder="Confirm your password" v-model="form.password_confirmation">
 </div>
@@ -85,227 +78,184 @@ onFinish: () => form.reset('password', 'password_confirmation'),
 </div>
 </form>
 
-<div class="form-note-s2 pt-4"> Already have an account ?
-<Link href="/login"><strong>Sign in instead</strong></Link>
+<div class="form-note-s2">Already have an account?
+<Link href="/login"><strong>Login</strong></Link>
 </div>
 
-<div class="text-center pt-4 pb-3">
-<h6 class="overline-title overline-title-sap"><span>OR</span></h6>
+<div class="auth-footer-links">
+<a href="#">Terms</a>
+<a href="#">Privacy</a>
+<a href="#">Help</a>
 </div>
-<ul class="nav justify-center gx-8">
-<li class="nav-item"><a class="link link-primary fw-normal py-2 px-3" href="#">Facebook</a></li>
-<li class="nav-item"><a class="link link-primary fw-normal py-2 px-3" href="#">Google</a></li>
-</ul>
-</div>
-<div class="nk-block nk-auth-footer">
-<div class="nk-block-between">
-<ul class="nav nav-sm">
-<li class="nav-item"><a class="link link-primary fw-normal py-2 px-3" href="#">Terms & Condition</a></li>
-<li class="nav-item"><a class="link link-primary fw-normal py-2 px-3" href="#">Privacy Policy</a></li>
-<li class="nav-item"><a class="link link-primary fw-normal py-2 px-3" href="#">Help</a></li>
-<li class="nav-item dropup">
-<a class="dropdown-toggle dropdown-indicator has-indicator link link-primary fw-normal py-2 px-3" data-bs-toggle="dropdown" data-offset="0,10"><small>English</small></a>
-<div class="dropdown-menu dropdown-menu-sm dropdown-menu-end"></div>
-</li>
-</ul>
-</div>
-<div class="mt-3">
-<p>&copy; 2026 Commodity Origin. All Rights Reserved.</p>
-</div>
-</div>
-</div>
-
-<div class="nk-split-content nk-split-stretch bg-lighter d-flex toggle-break-lg toggle-slide toggle-slide-right" data-toggle-body="true" data-content="athPromo" data-toggle-screen="lg" data-toggle-overlay="true" id="background">
-<div class="slider-wrap w-100 w-max-550px p-3 p-sm-5 m-auto">
-<div class="slider-init" data-slick='{"dots":true, "arrows":false}'>
-<div class="slider-item">
-<div class="nk-feature nk-feature-center">
-<div class="nk-feature-content py-4 p-sm-5">
-<span class="promo-badge">From Highlands To Cup</span>
-<h4>Uganda's Finest Coffee, Traced To Its True Origin</h4>
-<p>Commodity Origin links buyers to verified cooperatives and smallholder farmers growing exceptional Arabica at 1,200-2,300m. Every batch is transparently tracked from harvest to market.</p>
-<div class="promo-divider"></div>
-
-<div class="promo-stats">
-<div class="promo-stat"><strong>2,000+</strong><span>Batches Listed</span></div>
-<div class="promo-stat"><strong>120+</strong><span>Active Cooperatives</span></div>
-<div class="promo-stat"><strong>100%</strong><span>Traceable Lots</span></div>
-</div>
-
-<div class="promo-tags">
-<span class="promo-tag"><em class="icon ni ni-growth mr-1"></em>Highland Arabica</span>
-<span class="promo-tag"><em class="icon ni ni-map-pin mr-1"></em>Origin Verified</span>
-<span class="promo-tag"><em class="icon ni ni-shield-check mr-1"></em>Trusted Supply</span>
-</div>
-<p class="promo-footnote"><em class="icon ni ni-check-circle mr-1"></em>Trusted by exporters, roasters, and cooperatives across Uganda.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="slider-dots"></div>
-<div class="slider-arrows"></div>
-</div>
-</div>
-</div>
-</div>
+</section>
+</main>
 </div>
 </template>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 
-.brand-logo .logo-link { display: inline-block; }
-
-#background{
-background-image: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('../../../images/bg2.jpg');
-background-size: cover;
-background-position: center center;
-background-repeat: no-repeat;
-background-attachment: scroll;
-position: relative;
-overflow: hidden;
+.auth-page {
+--mx-bg: #f4f9fb;
+--mx-bg-2: #eef4f7;
+--mx-text: #102a43;
+--mx-muted: #5f7386;
+--mx-brand: #0e8a7d;
+--mx-brand-dark: #0b6f65;
+--mx-border: #dbe7ee;
+min-height: 100vh;
+background:
+radial-gradient(900px 400px at 0% -10%, rgba(14, 138, 125, 0.14), transparent 70%),
+radial-gradient(820px 360px at 100% -5%, rgba(242, 167, 75, 0.12), transparent 70%),
+linear-gradient(180deg, var(--mx-bg), var(--mx-bg-2) 60%, #ffffff);
+font-family: 'Manrope', sans-serif;
+color: var(--mx-text);
 }
 
-#background::before {
-content: '';
-position: absolute;
-top: 0;
-left: 0;
-right: 0;
-bottom: 0;
-background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(80, 200, 120, 0.1));
-pointer-events: none;
+.auth-header {
+padding: 1rem 1.25rem;
+display: flex;
+justify-content: center;
 }
 
-#background::after {
-content: '';
-position: absolute;
-top: 8%;
-right: 10%;
-width: 220px;
-height: 220px;
-border-radius: 50%;
-background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0) 70%);
-pointer-events: none;
-}
-
-#background .slider-wrap { position: relative; z-index: 2; }
-
-#background .nk-feature-content h4 {
-color: #ffffff;
-font-family: 'Playfair Display', serif;
+.auth-brand {
+display: inline-flex;
+align-items: center;
+gap: 10px;
+font-family: 'Space Grotesk', sans-serif;
 font-weight: 700;
-font-size: 2rem;
-text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.7);
-margin-bottom: 1.5rem;
-letter-spacing: -0.5px;
-line-height: 1.2;
-text-align: center;
+color: var(--mx-text);
+text-decoration: none;
 }
 
-#background .nk-feature-content p {
-color: #f1f3f4;
-font-family: 'Inter', sans-serif;
-font-size: 1rem;
-line-height: 1.7;
-text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
-font-weight: 300;
-letter-spacing: 0.3px;
-text-align: center;
-max-width: 500px;
-margin: 0 auto;
+.auth-logo {
+width: 36px;
+height: 36px;
+object-fit: contain;
+border-radius: 10px;
+background: #fff;
+border: 1px solid #d7e7ef;
+padding: 3px;
 }
 
-.promo-badge { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 999px; margin-bottom: 1rem; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.25); color: #fef3c7; }
-.promo-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 1.25rem; }
-.promo-divider { width: 72px; height: 2px; margin: 1rem auto 0.25rem; border-radius: 999px; background: linear-gradient(90deg, rgba(255, 215, 0, 0.9), rgba(255, 215, 0, 0.2)); }
-.promo-stat { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 12px; padding: 10px; text-align: center; transform: translateY(0); transition: transform 0.25s ease, background 0.25s ease; }
-.promo-stat:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.14); }
-.promo-stat strong { display: block; font-size: 0.9rem; font-weight: 700; color: #ffffff; }
-.promo-stat span { font-size: 0.7rem; color: rgba(255, 255, 255, 0.85); }
-.promo-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem; justify-content: center; }
-.promo-tag { display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 999px; font-size: 0.68rem; font-weight: 600; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2); color: #ffffff; }
-.promo-footnote { margin-top: 1rem; margin-bottom: 0; font-size: 0.78rem !important; font-weight: 500 !important; color: rgba(255, 255, 255, 0.9) !important; text-align: center; }
-
-#background .slider-dots .slick-dots { bottom: 20px; }
-#background .slider-dots .slick-dots li button:before { color: rgba(255, 255, 255, 0.7); font-size: 12px; }
-#background .slider-dots .slick-dots li.slick-active button:before { color: #ffffff; }
-
-#background .nk-feature-content {
-padding: 3.5rem 2.5rem;
-border-radius: 20px;
-backdrop-filter: none;
--webkit-backdrop-filter: none;
-background: rgba(255, 255, 255, 0.08);
-border: 1px solid rgba(255, 255, 255, 0.15);
-box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
-transition: all 0.4s ease;
-max-width: 550px;
-margin: 0 auto;
+.auth-main {
+min-height: calc(100vh - 72px);
+display: grid;
+place-items: center;
+padding: 24px 16px 34px;
 }
 
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-#background .nk-feature-content { background: rgba(20, 20, 20, 0.55); }
+.auth-card {
+width: 100%;
+max-width: 460px;
+padding: 28px;
+border: 1px solid var(--mx-border);
+border-radius: 18px;
+background: linear-gradient(180deg, #ffffff, #f9fcfd);
+box-shadow: 0 16px 30px rgba(16, 42, 67, 0.08);
 }
 
-#background .nk-feature-content:hover {
-transform: translateY(-5px);
-box-shadow: 0 35px 90px rgba(0, 0, 0, 0.5);
-background: rgba(255, 255, 255, 0.12);
+.auth-kicker {
+margin: 0;
+font-size: 0.74rem;
+font-weight: 700;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+color: var(--mx-brand-dark);
 }
 
-.nk-block-title { font-family: 'Playfair Display', serif !important; font-weight: 600 !important; color: #6F4E37 !important; font-size: 2rem !important; letter-spacing: -0.3px !important; }
-.nk-block-des p { font-family: 'Inter', sans-serif !important; font-weight: 400 !important; color: #6c757d !important; font-size: 1.1rem !important; letter-spacing: 0.2px !important; }
+.auth-card h1 {
+margin: 8px 0 10px;
+font-family: 'Space Grotesk', sans-serif;
+font-size: 1.72rem;
+letter-spacing: -0.02em;
+}
 
-#background .nk-feature { animation: elegantFadeIn 0.8s ease-out; }
-@keyframes elegantFadeIn { from { opacity: 0; transform: translateY(30px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.auth-subtitle {
+margin: 0 0 18px;
+color: var(--mx-muted);
+font-size: 0.95rem;
+}
 
-#background .nk-feature-content h4::after {
-content: '';
-display: block;
-width: 60px;
-height: 3px;
-background: linear-gradient(90deg, #ffd700, #ffed4e);
-margin: 1rem auto;
-border-radius: 2px;
-box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+.auth-form .form-group {
+margin-bottom: 14px;
+}
+
+.form-label {
+color: #334e68;
+font-weight: 700;
+font-size: 0.86rem;
+}
+
+.form-control {
+border: 1px solid var(--mx-border);
+border-radius: 12px;
+height: 48px;
+background: #ffffff;
+color: #102a43;
+}
+
+.form-control:focus {
+border-color: #93d4ca;
+box-shadow: 0 0 0 3px rgba(14, 138, 125, 0.12);
 }
 
 .btn-primary {
-background: linear-gradient(135deg, #6F4E37, #8B5A2B) !important;
-border-color: #6F4E37 !important;
-font-family: 'Inter', sans-serif !important;
-font-weight: 600 !important;
-letter-spacing: 0.5px !important;
-transition: all 0.3s ease !important;
+height: 48px;
+border: 0;
+border-radius: 12px;
+font-weight: 700;
+background: linear-gradient(135deg, var(--mx-brand), var(--mx-brand-dark));
 }
 
 .btn-primary:hover {
-background: linear-gradient(135deg, #5A3E2B, #6F4E37) !important;
-transform: translateY(-2px) !important;
-border-color: #5A3E2B !important;
+filter: brightness(0.98);
 }
 
-.btn-primary:active,
-.btn-primary:focus {
-background: linear-gradient(135deg, #4A2E1B, #5A3E2B) !important;
-border-color: #4A2E1B !important;
+.form-note-s2 {
+margin-top: 8px;
+font-size: 0.9rem;
+color: #486581;
 }
 
-@media (max-width: 768px) {
-#background .nk-feature-content { padding: 2.5rem 1.5rem; border-radius: 16px; }
-#background .nk-feature-content h4 { font-size: 1.7rem; line-height: 1.3; }
-#background .nk-feature-content p { font-size: 0.95rem; line-height: 1.6; }
-.promo-stats { grid-template-columns: 1fr; }
-#background::after { display: none; }
-.nk-block-title { font-size: 1.75rem !important; }
-.nk-block-des p { font-size: 1rem !important; }
+.form-note-s2 a {
+color: var(--mx-brand-dark);
+text-decoration: none;
+margin-left: 4px;
 }
 
-@media (max-width: 480px) {
-#background .nk-feature-content { padding: 2rem 1.25rem; }
-#background .nk-feature-content h4 { font-size: 1.5rem; }
-#background .nk-feature-content p { font-size: 0.9rem; }
-.nk-block-title { font-size: 1.5rem !important; }
+.form-note-s2 a:hover {
+text-decoration: underline;
+}
+
+.auth-footer-links {
+display: flex;
+gap: 14px;
+flex-wrap: wrap;
+padding-top: 18px;
+margin-top: 16px;
+border-top: 1px solid #e7eff4;
+}
+
+.auth-footer-links a {
+font-size: 0.84rem;
+font-weight: 600;
+color: #627d98;
+text-decoration: none;
+}
+
+.auth-footer-links a:hover {
+color: var(--mx-brand-dark);
+}
+
+@media (max-width: 575.98px) {
+.auth-card {
+padding: 22px 16px;
+border-radius: 14px;
+}
+
+.auth-card h1 {
+font-size: 1.42rem;
+}
 }
 </style>

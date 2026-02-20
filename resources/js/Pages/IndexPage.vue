@@ -1,1204 +1,1347 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 
-const highlights = [
-{ name: 'Arabica Coffee', price: '$3.42 / kg', change: '+2.1%' },
-{ name: 'Cocoa', price: '$4.88 / kg', change: '+1.4%' },
-{ name: 'Maize', price: '$0.31 / kg', change: '-0.6%' },
-{ name: 'Sesame', price: '$1.72 / kg', change: '+0.9%' },
+const currentYear = new Date().getFullYear();
+const billingCycle = ref('monthly');
+const activeFaq = ref('0');
+
+const marketRows = [
+{ commodity: 'Arabica AA', region: 'Kilimanjaro', volume: '42 MT', bid: '$3.39/kg', ask: '$3.46/kg', spread: '2.1%' },
+{ commodity: 'Cocoa Grade 1', region: 'Ashanti', volume: '30 MT', bid: '$4.80/kg', ask: '$4.92/kg', spread: '2.4%' },
+{ commodity: 'Sesame Premium', region: 'Dodoma', volume: '18 MT', bid: '$1.70/kg', ask: '$1.76/kg', spread: '3.4%' },
+{ commodity: 'Robusta FAQ', region: 'Bukoba', volume: '27 MT', bid: '$2.68/kg', ask: '$2.74/kg', spread: '2.2%' },
 ];
 
-const marketMetrics = [
-{ label: 'Open Lots', value: '2,184' },
-{ label: 'Best Bid', value: '$3.39 / kg' },
-{ label: 'Best Ask', value: '$3.46 / kg' },
+const metrics = [
+{ label: 'Active Buyers', value: '1,850+' },
+{ label: 'Listed Lots', value: '9,200+' },
+{ label: 'Monthly Volume', value: '48,000 MT' },
+{ label: 'Avg Settlement', value: 'T+2 Days' },
 ];
 
-const recentTrades = [
-{ commodity: 'Arabica AA', volume: '42 MT', price: '$3.44 / kg', time: '2m ago' },
-{ commodity: 'Cocoa Grade 1', volume: '30 MT', price: '$4.91 / kg', time: '7m ago' },
-{ commodity: 'Sesame Premium', volume: '18 MT', price: '$1.74 / kg', time: '12m ago' },
+const partners = [
+'Atlas Roasters',
+'Greenline Commodities',
+'Harvest Guild',
+'Northstar Foods',
+'Horizon Export',
+'Summit Trading',
 ];
 
 const features = [
-{ title: 'Verified Listings', text: 'Only approved cooperatives and suppliers can publish market-ready lots.', icon: 'ni-shield-check' },
-{ title: 'Transparent Pricing', text: 'Monitor offers, bids, and contract terms with full visibility.', icon: 'ni-coins' },
-{ title: 'Efficient Settlement', text: 'Move from listing to confirmed trade through a streamlined process.', icon: 'ni-link-h' },
-{ title: 'Live Bid Board', text: 'Track bid and ask movements in real time across active commodity categories.', icon: 'ni-activity-round' },
-{ title: 'Counteroffer Threads', text: 'Negotiate with structured counteroffers and maintain full audit history.', icon: 'ni-chat-fill' },
-{ title: 'Contract Templates', text: 'Generate standardized trade contracts with configurable delivery and payment terms.', icon: 'ni-file-docs' },
+{
+title: 'Verified Counterparties',
+text: 'Every cooperative, supplier, and buyer is screened before they can trade.',
+icon: 'bi-shield-check',
+},
+{
+title: 'Live Price Discovery',
+text: 'Monitor bid and ask movement in real time across commodity categories.',
+icon: 'bi-graph-up-arrow',
+},
+{
+title: 'Digital Contracts',
+text: 'Generate and sign trade contracts with clear terms and milestone tracking.',
+icon: 'bi-file-earmark-text',
+},
+{
+title: 'Settlement Workflows',
+text: 'Track payment, delivery, and completion steps from one dashboard.',
+icon: 'bi-check2-circle',
+},
+{
+title: 'Quality Metadata',
+text: 'Store grade, moisture, origin, and process details on each lot.',
+icon: 'bi-award',
+},
+{
+title: 'Audit Trail',
+text: 'All status updates are recorded for transparent reporting and compliance.',
+icon: 'bi-journal-check',
+},
 ];
 
-const platformStats = [
-{ label: 'Active Buyers', value: '1,250+' },
-{ label: 'Listed Batches', value: '8,400+' },
-{ label: 'Cooperatives', value: '180+' },
-{ label: 'Countries', value: '14' },
+const steps = [
+{
+title: 'List Commodity Lots',
+text: 'Publish quantity, grade, location, and reserve terms with document attachments.',
+},
+{
+title: 'Receive and Negotiate',
+text: 'Buyers compare lots and negotiate through structured offer threads.',
+},
+{
+title: 'Confirm Contracts',
+text: 'Lock final pricing, payment conditions, and delivery milestones.',
+},
+{
+title: 'Settle and Close',
+text: 'Track fulfillment and close trades with immutable transaction history.',
+},
 ];
 
-const workflow = [
-{ step: '1', title: 'List', text: 'Cooperatives publish verified commodity lots with quantity, grade, and location.', icon: 'ni-plus-circle' },
-{ step: '2', title: 'Negotiate', text: 'Buyers review offers, compare lots, and agree on transparent contract terms.', icon: 'ni-chat-fill' },
-{ step: '3', title: 'Contract', text: 'Both parties lock terms with digitally recorded contracts and milestone checkpoints.', icon: 'ni-file-text' },
-{ step: '4', title: 'Settle', text: 'Trades are confirmed and tracked through a clear settlement workflow.', icon: 'ni-check-circle' },
+const plans = [
+{
+name: 'Starter',
+monthly: '$0',
+annual: '$0',
+note: 'For small cooperatives',
+points: ['Up to 20 monthly lots', 'Basic market dashboard', 'Email support'],
+featured: false,
+},
+{
+name: 'Growth',
+monthly: '$149',
+annual: '$129',
+note: 'For active trading teams',
+points: ['Unlimited listings', 'Counteroffer workflows', 'Contract templates'],
+featured: true,
+},
+{
+name: 'Enterprise',
+monthly: 'Custom',
+annual: 'Custom',
+note: 'For regional exchanges',
+points: ['Dedicated onboarding', 'Custom settlement stages', 'Priority SLA support'],
+featured: false,
+},
 ];
 
-const categories = ['Arabica Coffee', 'Robusta Coffee', 'Cocoa', 'Sesame', 'Maize', 'Beans', 'Groundnuts', 'Sorghum'];
+const displayPlans = computed(() =>
+plans.map((plan) => {
+const isEnterprise = plan.monthly === 'Custom';
 
-const tradingTools = [
-{ title: 'Price Alerts', text: 'Get notified when target bid, ask, or spread levels are reached.', icon: 'ni-bell' },
-{ title: 'Lot Comparison', text: 'Compare quality, origin, volume, and price side by side.', icon: 'ni-list-thumb' },
-{ title: 'Delivery Milestones', text: 'Track shipment and settlement checkpoints per contract.', icon: 'ni-truck' },
-{ title: 'Dispute Flags', text: 'Escalate and resolve quality or delivery issues with full context.', icon: 'ni-alert-circle' },
-];
+return {
+...plan,
+price: billingCycle.value === 'annual' ? plan.annual : plan.monthly,
+period: isEnterprise ? '' : billingCycle.value === 'annual' ? '/month, billed annually' : '/month',
+};
+}),
+);
 
-const trustSignals = [
-{ title: 'Identity Verified', text: 'Every cooperative and trading account is validated before joining the marketplace.' },
-{ title: 'Batch Traceability', text: 'Each lot is linked to source details, quality attributes, and listing history.' },
-{ title: 'Audit-Friendly Records', text: 'Transactions and status updates are stored for clear reporting and compliance.' },
+const testimonials = [
+{
+name: 'Amina J.',
+role: 'Export Lead, Umoja Coop',
+quote: 'We moved from spreadsheet chaos to clean lot-level execution in under two weeks.',
+},
+{
+name: 'Daniel R.',
+role: 'Procurement Manager, Gulf Roasters',
+quote: 'The live board and clear contract milestones drastically reduced back-and-forth.',
+},
+{
+name: 'Susan K.',
+role: 'Operations Director, TraceBean',
+quote: 'Traceability and settlement visibility gave our compliance team exactly what it needed.',
+},
 ];
 
 const faqs = [
-{ q: 'Who can list commodities?', a: 'Registered cooperatives and approved suppliers can create and manage listings.' },
-{ q: 'Can buyers compare multiple lots?', a: 'Yes. Buyers can review price, quantity, grade, and location before negotiating.' },
-{ q: 'Do you support trading alerts and milestones?', a: 'Yes. Users can monitor pricing alerts and contract milestone status in one dashboard.' },
-{ q: 'What commodities are supported?', a: 'The platform supports coffee and several key staple and export crops.' },
+{
+q: 'Who can list commodities?',
+a: 'Approved cooperatives and verified suppliers can create and manage lots.',
+},
+{
+q: 'Can buyers compare multiple listings?',
+a: 'Yes. Buyers can compare grade, quantity, price, and origin side by side.',
+},
+{
+q: 'Does the platform support contracts and milestones?',
+a: 'Yes. Contract terms and milestone checkpoints are tracked in each trade lifecycle.',
+},
+{
+q: 'Which commodities are supported?',
+a: 'Coffee, cocoa, sesame, and multiple staple/export crops are supported by default.',
+},
 ];
 
-const demandByMarket = [
-{ country: 'UAE', volume: '3,840 MT', segment: 'Specialty Roasters', trend: '+5.4%' },
-{ country: 'Saudi Arabia', volume: '3,360 MT', segment: 'Retail Chains', trend: '+4.1%' },
-{ country: 'EU', volume: '6,480 MT', segment: 'Importers & Roasters', trend: '+6.8%' },
-{ country: 'US', volume: '5,520 MT', segment: 'Commercial Buyers', trend: '+5.9%' },
+const faqTopics = ['Accounts', 'Trading', 'Contracts', 'Settlement', 'Compliance'];
+
+const supportChannels = [
+{ title: 'Live Chat', detail: 'Avg response: < 5 min', icon: 'bi-chat-dots' },
+{ title: 'Help Center', detail: 'Guides and onboarding docs', icon: 'bi-life-preserver' },
+{ title: 'Email Support', detail: 'support@tradeharbor.com', icon: 'bi-envelope' },
 ];
 </script>
 
 <template>
-<div class="index-page">
-
-<header class="topbar">
-<Link href="/" class="brand" aria-label="Commodity Origin home">
+<div class="modern-exchange">
+<header class="site-nav">
+<div class="container">
+<nav class="navbar navbar-expand-lg py-3">
+<Link class="navbar-brand brandmark" href="/">
 <img src="../../images/logo.png" alt="Commodity Origin logo" class="brand-logo" />
-<span class="brand-text">Commodity Origin</span>
+<span class="brand-title">Commodity Origin</span>
 </Link>
-<nav class="actions">
-<Link href="/login" class="btn btn-ghost">Log In</Link>
-<Link href="/register" class="btn btn-solid">Get Started</Link>
+<div class="header-auth">
+<Link href="/login" class="header-auth-link">Login</Link>
+<Link href="/register" class="header-auth-link register-link">Register</Link>
+</div>
+
 </nav>
+</div>
 </header>
 
-
-
-
-
-
-
-
-<section class="hero">
-<div class="hero-copy">
-<p class="eyebrow">Digital Commodity Exchange</p>
-<h1>Trade Verified Commodities With Confidence</h1>
-<p class="lead">Commodity Origin connects buyers, cooperatives, and suppliers in a trusted marketplace built for transparent pricing, dependable quality, and faster transactions.</p>
-<div class="hero-meta">
-<span><em class="icon ni ni-check-circle"></em>Verified participants</span>
-<span><em class="icon ni ni-clock"></em>Faster deal cycles</span>
-<span><em class="icon ni ni-shield-check"></em>Audit-ready records</span>
-</div>
-<div class="hero-cta">
-
-<div class="hero-market-reach" style="width:100%">
-<p class="hero-market-title">Coffee demand by market</p>
-<ul class="hero-demand-list">
-<li v-for="market in demandByMarket" :key="market.country">
-<div class="market-left">
-<span class="market-country">{{ market.country }}</span>
-<small>{{ market.segment }}</small>
-</div>
-<div class="market-right">
-<strong>{{ market.volume }} / year</strong>
-<small :class="market.trend.startsWith('+') ? 'trend-up' : 'trend-down'">{{ market.trend }}</small>
-</div>
-</li>
-</ul>
-</div>
-
-
+<section class="hero-section">
+<div class="container">
+<div class="row align-items-center g-4">
+<div class="col-lg-6">
+<div class="hero-copy reveal">
+<p class="hero-kicker">Commodity Trading Platform</p>
+<h1 class="hero-focus-title">Trade Agricultural Commodities With Speed and Trust</h1>
+<p class="hero-lead">
+A digital marketplace for cooperatives, suppliers, and buyers to list lots, negotiate
+prices, and settle trades with full transparency.
+</p>
+<div class="d-flex flex-wrap gap-2 mt-4">
+<Link href="/register" class="btn btn-brand btn-lg">Start Trading</Link>
+<a href="#markets" class="btn btn-soft btn-lg">View Live Markets</a>
 </div>
 </div>
-<div class="hero-panel">
-<div class="panel-head">
-<h3>Live Market Snapshot</h3>
-<span class="live-pill"><em class="icon ni ni-activity"></em>Live</span>
 </div>
-<div class="ticker mt-4">
-<article v-for="item in highlights" :key="item.name" class="ticker-item">
-<span class="name">{{ item.name }}</span>
-<strong>{{ item.price }}</strong>
-<small :class="item.change.startsWith('+') ? 'up' : 'down'">{{ item.change }}</small>
-</article>
+<div class="col-lg-6">
+<div class="card hero-panel reveal delay-1">
+<div class="card-body p-4">
+<div class="d-flex justify-content-between align-items-center mb-3">
+<h5 class="mb-0">Live Market Board</h5>
+<span class="badge badge-live">Live</span>
 </div>
-<div class="snapshot-metrics">
-<article v-for="metric in marketMetrics" :key="metric.label" class="metric-pill">
-<span>{{ metric.label }}</span>
+<div class="table-responsive">
+<table class="table align-middle mb-0 market-table">
+<thead>
+<tr>
+<th>Commodity</th>
+<th>Bid</th>
+<th>Ask</th>
+</tr>
+</thead>
+<tbody>
+<tr v-for="row in marketRows.slice(0, 3)" :key="row.commodity">
+<td>
+<strong class="d-block">{{ row.commodity }}</strong>
+<small class="text-muted">{{ row.region }}</small>
+</td>
+<td>{{ row.bid }}</td>
+<td>{{ row.ask }}</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="row g-2 mt-2">
+<div v-for="metric in metrics.slice(0, 2)" :key="metric.label" class="col-6">
+<div class="metric-box">
+<small>{{ metric.label }}</small>
 <strong>{{ metric.value }}</strong>
-</article>
 </div>
-<div class="trade-feed">
-<p class="feed-title">Recent Trade Activity</p>
-<article v-for="trade in recentTrades" :key="trade.commodity + trade.time" class="feed-row">
-<div class="feed-main">
-<h5>{{ trade.commodity }}</h5>
-<p>{{ trade.volume }} traded</p>
 </div>
-<div class="feed-meta">
-<strong>{{ trade.price }}</strong>
-<small>{{ trade.time }}</small>
 </div>
-</article>
+</div>
+</div>
+</div>
 </div>
 </div>
 </section>
 
+<section class="ticker-section">
+<div class="container">
+<div class="ticker-shell">
+<div class="ticker-track">
+<span v-for="(row, index) in [...marketRows, ...marketRows]" :key="`${row.commodity}-${index}`">
+{{ row.commodity }} · {{ row.region }} · Bid {{ row.bid }} · Ask {{ row.ask }}
+</span>
+</div>
+</div>
+</div>
+</section>
 
+<section class="partners-section">
+<div class="container">
+<p class="partners-label">Trusted by cooperatives, exporters, and procurement teams</p>
+<div class="partners-grid">
+<span v-for="partner in partners" :key="partner" class="partner-pill">{{ partner }}</span>
+</div>
+</div>
+</section>
 
+<section class="metrics-section">
+<div class="container">
+<div class="row g-3">
+<div v-for="metric in metrics" :key="metric.label" class="col-6 col-lg-3">
+<div class="metric-card reveal">
+<p>{{ metric.label }}</p>
+<h3>{{ metric.value }}</h3>
+</div>
+</div>
+</div>
+</div>
+</section>
 
+<section id="markets" class="section-block">
+<div class="container">
+<div class="section-head reveal">
+<p class="eyebrow">Markets</p>
+<h2>Active Lots and Price Discovery</h2>
+<p>Track live bids, asks, and spread movement across high-demand commodities.</p>
+</div>
+<div class="card glass-card reveal delay-1">
+<div class="card-body p-0">
+<div class="table-responsive">
+<table class="table table-hover align-middle mb-0">
+<thead>
+<tr>
+<th>Commodity</th>
+<th>Region</th>
+<th>Volume</th>
+<th>Best Bid</th>
+<th>Best Ask</th>
+<th>Spread</th>
+</tr>
+</thead>
+<tbody>
+<tr v-for="row in marketRows" :key="row.commodity + row.region">
+<td><strong>{{ row.commodity }}</strong></td>
+<td>{{ row.region }}</td>
+<td>{{ row.volume }}</td>
+<td>{{ row.bid }}</td>
+<td>{{ row.ask }}</td>
+<td><span class="spread-pill">{{ row.spread }}</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</section>
 
-
-
-<section class="overview">
-<article class="panel panel-overview">
-<h3>Platform Overview</h3>
-<p class="panel-intro">Commodity Origin combines verified listings, transparent pricing, and clear settlement workflows in a single space for modern commodity teams.</p>
-<div class="feature-list">
-<div v-for="feature in features" :key="feature.title" class="feature-row">
-<div class="card-icon"><em class="icon ni" :class="feature.icon"></em></div>
-<div>
-<h4>{{ feature.title }}</h4>
-<p>{{ feature.text }}</p>
+<section id="features" class="section-block alt-block">
+<div class="container">
+<div class="section-head reveal">
+<p class="eyebrow">Platform Features</p>
+<h2>Everything Needed to Run Modern Trade Operations</h2>
+<p>From listing and negotiation to contract execution and settlement visibility.</p>
 </div>
+<div class="row g-3">
+<div v-for="item in features" :key="item.title" class="col-md-6 col-xl-4">
+<article class="feature-card reveal">
+<div class="icon-wrap">
+<i :class="['bi', item.icon]"></i>
 </div>
-</div>
-<div class="stat-strip">
-<div v-for="s in platformStats" :key="s.label" class="stat-pill">
-<strong>{{ s.value }}</strong>
-<span>{{ s.label }}</span>
-</div>
-</div>
-</article>
-
-<article class="panel panel-market">
-<h3>Supported Commodities</h3>
-<div class="chips">
-<span v-for="c in categories" :key="c" class="chip">{{ c }}</span>
-</div>
-<h4 class="subhead">Trading Tools</h4>
-<div class="tools-grid">
-<article v-for="tool in tradingTools" :key="tool.title" class="tool-item">
-<div class="tool-icon"><em class="icon ni" :class="tool.icon"></em></div>
-<div>
-<h5>{{ tool.title }}</h5>
-<p>{{ tool.text }}</p>
-</div>
-</article>
-</div>
-<h4 class="subhead">Why Teams Trust Commodity Origin</h4>
-<div class="trust-list">
-<article v-for="item in trustSignals" :key="item.title" class="trust-row">
 <h5>{{ item.title }}</h5>
 <p>{{ item.text }}</p>
 </article>
 </div>
-</article>
-</section>
-
-<section class="operations">
-<article class="panel panel-workflow">
-<h3>How Trading Works</h3>
-<div class="workflow-list">
-<article v-for="item in workflow" :key="item.step" class="workflow-row">
-<span class="step">{{ item.step }}</span>
-<div class="workflow-copy">
-<h4>{{ item.title }}</h4>
-<p>{{ item.text }}</p>
 </div>
-<div class="workflow-icon"><em class="icon ni" :class="item.icon"></em></div>
-</article>
-</div>
-</article>
-
-<article class="panel panel-faq">
-<h3>Frequently Asked Questions</h3>
-<div class="faq-list">
-<article v-for="item in faqs" :key="item.q" class="faq-row">
-<h4>{{ item.q }}</h4>
-<p>{{ item.a }}</p>
-</article>
-</div>
-</article>
-</section>
-
-<section class="cta">
-<p class="cta-kicker">Ready to Start</p>
-<h2 class="text-white">Built for Modern Commodity Operations</h2>
-<p>Manage listing, pricing, negotiation, and settlement in one trusted workspace built for cooperatives, buyers, and trading teams.</p>
-<div class="cta-actions">
-<Link href="/register" class="btn btn-solid">Create Account</Link>
-<Link href="/login" class="btn btn-cta-outline">Sign In</Link>
 </div>
 </section>
+
+<section class="section-block">
+<div class="container">
+<div class="row g-4 align-items-start">
+<div class="col-lg-6">
+<div class="section-head reveal">
+<p class="eyebrow">How It Works</p>
+<h2>From Listing to Settlement in Four Steps</h2>
+</div>
+<div class="timeline">
+<article v-for="(step, idx) in steps" :key="step.title" class="timeline-step reveal">
+<span class="step-badge">{{ idx + 1 }}</span>
+<div>
+<h5>{{ step.title }}</h5>
+<p>{{ step.text }}</p>
+</div>
+</article>
+</div>
+</div>
+<div id="pricing" class="col-lg-6">
+<div class="section-head reveal">
+<p class="eyebrow">Pricing</p>
+<h2>Plans for Every Trading Team</h2>
+<div class="billing-toggle" role="group" aria-label="Billing cycle toggle">
+<button
+type="button"
+class="toggle-btn"
+:class="{ active: billingCycle === 'monthly' }"
+@click="billingCycle = 'monthly'"
+>
+Monthly
+</button>
+<button
+type="button"
+class="toggle-btn"
+:class="{ active: billingCycle === 'annual' }"
+@click="billingCycle = 'annual'"
+>
+Annual <span>Save 13%</span>
+</button>
+</div>
+</div>
+<div class="row g-3">
+<div v-for="plan in displayPlans" :key="plan.name" class="col-md-6 col-xl-4 col-lg-12">
+<article :class="['plan-card reveal', { featured: plan.featured }]">
+<span v-if="plan.featured" class="featured-tag">Most Popular</span>
+<h5>{{ plan.name }}</h5>
+<div class="price-line">
+<span class="price">{{ plan.price }}</span>
+<span class="period">{{ plan.period }}</span>
+</div>
+<p class="plan-note">{{ plan.note }}</p>
+<ul class="plan-list">
+<li v-for="point in plan.points" :key="point">{{ point }}</li>
+</ul>
+<button class="btn btn-sm w-100" :class="plan.featured ? 'btn-brand' : 'btn-soft'">
+Choose Plan
+</button>
+</article>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section-block alt-block">
+<div class="container">
+<div class="section-head reveal">
+<p class="eyebrow">Testimonials</p>
+<h2>Trusted by Cooperative and Procurement Teams</h2>
+</div>
+<div class="row g-3">
+<div v-for="quote in testimonials" :key="quote.name" class="col-lg-4">
+<article class="testimonial-card reveal">
+<p>"{{ quote.quote }}"</p>
+<strong>{{ quote.name }}</strong>
+<small>{{ quote.role }}</small>
+</article>
+</div>
+</div>
+</div>
+</section>
+
+<section id="faq" class="section-block">
+<div class="container">
+<div class="section-head reveal">
+<p class="eyebrow">FAQ</p>
+<h2>Common Questions</h2>
+<p>Answers to the most common onboarding, trading, and settlement questions.</p>
+</div>
+<div class="row g-4 faq-layout">
+<div class="col-lg-8">
+<div class="faq-topic-list reveal">
+<span v-for="topic in faqTopics" :key="topic" class="faq-topic-pill">{{ topic }}</span>
+</div>
+<el-collapse v-model="activeFaq" accordion class="custom-accordion reveal">
+<el-collapse-item
+v-for="(item, index) in faqs"
+:key="item.q"
+:name="String(index)"
+class="faq-collapse-item"
+>
+<template #title>
+<span class="faq-item-title">
+<span class="faq-index">Q{{ index + 1 }}</span>
+<span>{{ item.q }}</span>
+</span>
+</template>
+<div class="faq-answer">
+{{ item.a }}
+</div>
+</el-collapse-item>
+</el-collapse>
+</div>
+<div class="col-lg-4">
+<aside class="faq-help-card reveal delay-1">
+<p class="help-kicker">Need more help?</p>
+<h4>Talk to our support team</h4>
+<p class="help-copy">Get tailored guidance for setup, compliance, and trade operations.</p>
+<div class="help-list">
+<article v-for="channel in supportChannels" :key="channel.title" class="help-item">
+<div class="help-icon"><i :class="['bi', channel.icon]"></i></div>
+<div>
+<strong>{{ channel.title }}</strong>
+<small>{{ channel.detail }}</small>
+</div>
+</article>
+</div>
+<Link href="/register" class="btn btn-brand w-100 mt-2">Contact Support</Link>
+</aside>
+</div>
+</div>
+</div>
+</section>
+
+<section class="final-cta">
+<div class="container">
+<div class="cta-box reveal">
+<div>
+<p class="eyebrow mb-2">Ready to Trade Better?</p>
+<h2>Launch Your Commodity Marketplace Workflow Today</h2>
+<p>Onboard teams, list verified lots, and execute contracts with confidence.</p>
+</div>
+<div class="d-flex gap-2 flex-wrap">
+<Link href="/register" class="btn btn-brand btn-lg">Create Account</Link>
+<Link href="/login" class="btn btn-outline-brand btn-lg">Sign In</Link>
+</div>
+</div>
+</div>
+</section>
+
+<footer class="site-footer">
+<div class="container py-4 d-flex flex-column flex-lg-row justify-content-between gap-2">
+<p class="mb-0">© {{ currentYear }} Commodity Origin. All rights reserved.</p>
+<div class="d-flex gap-3">
+<a href="#">Privacy</a>
+<a href="#">Terms</a>
+<a href="#">Support</a>
+</div>
+</div>
+</footer>
 </div>
 </template>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css');
 
-.index-page {
-min-height: 100vh;
-padding: 74px 24px 56px;
-position: relative;
-overflow: hidden;
+.modern-exchange {
+--mx-bg: #f4f9fb;
+--mx-bg-2: #eef4f7;
+--mx-text: #102a43;
+--mx-muted: #5f7386;
+--mx-brand: #0e8a7d;
+--mx-brand-dark: #0b6f65;
+--mx-accent: #f2a74b;
+--mx-border: #dbe7ee;
+--mx-card: #ffffff;
 background:
-linear-gradient(180deg, #f8fbff 0%, #fefcf8 58%, #ffffff 100%);
-background-size: cover;
-background-position: center center;
-background-repeat: no-repeat;
-background-attachment: scroll;
-font-family: 'Plus Jakarta Sans', sans-serif;
-color: #1f2937;
---title-font: 'Sora', sans-serif;
---section-gap: 30px;
---surface: rgba(255, 255, 255, 0.84);
---muted-text: #64748b;
---accent-amber: #b8752d;
---accent-forest: #1f7a5a;
---accent-slate: #375a7f;
---card-border: 1px solid rgba(111, 78, 55, 0.34);
---card-shadow: none;
---card-shadow-hover: none;
+radial-gradient(900px 400px at 0% -10%, rgba(14, 138, 125, 0.16), transparent 70%),
+radial-gradient(800px 380px at 100% 0%, rgba(242, 167, 75, 0.15), transparent 70%),
+linear-gradient(180deg, var(--mx-bg), var(--mx-bg-2) 60%, #ffffff);
+color: var(--mx-text);
+font-family: 'Manrope', sans-serif;
 }
 
-.index-page::before {
+.modern-exchange h1,
+.modern-exchange h2,
+.modern-exchange h3,
+.modern-exchange h4,
+.modern-exchange h5 {
+font-family: 'Space Grotesk', sans-serif;
+letter-spacing: -0.02em;
+}
+
+.site-nav {
+position: sticky;
+top: 0;
+z-index: 40;
+backdrop-filter: blur(8px);
+background: rgba(244, 249, 251, 0.88);
+border-bottom: 1px solid rgba(219, 231, 238, 0.9);
+}
+
+.navbar-toggler {
+border-color: #b6c8d5;
+}
+
+.navbar-toggler:focus {
+box-shadow: none;
+}
+
+.navbar-toggler-icon {
+width: 1.1rem;
+height: 1.1rem;
+background-image: none;
+position: relative;
+}
+
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after {
 content: '';
 position: absolute;
-top: 0;
 left: 0;
 width: 100%;
-height: 80vh;
-background:
-linear-gradient(160deg, rgba(111, 78, 55, 0.09), rgba(51, 65, 85, 0.02)),
-radial-gradient(820px 360px at 10% -10%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0)),
-radial-gradient(920px 420px at 85% -20%, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
-pointer-events: none;
-z-index: 0;
+height: 2px;
+background: #1f3a56;
+border-radius: 2px;
 }
 
-.index-page::after {
-content: '';
-position: absolute;
-top: 0;
-left: 0;
-width: 100%;
-height: 80vh;
-background-image: url('../../images/bg2.jpg');
-background-size: cover;
-background-position: center top;
-background-repeat: no-repeat;
-opacity: 0.35;
-pointer-events: none;
-z-index: 0;
+.navbar-toggler-icon::before {
+top: 3px;
+box-shadow: 0 5px 0 #1f3a56;
 }
 
-.index-page > * {
-position: relative;
-z-index: 1;
+.navbar-toggler-icon::after {
+top: 13px;
 }
 
-.topbar {
-display: flex;
-justify-content: space-between;
-align-items: center;
-position: fixed;
-top: 0;
-left: 0;
-right: 0;
-z-index: 30;
-width: 100%;
-margin: 0;
-padding: 12px 24px;
-background: #fff;
-border: none;
-border-radius: 0;
-backdrop-filter: none;
-box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
-}
-
-.brand {
+.brandmark {
 display: inline-flex;
 align-items: center;
 gap: 10px;
-font-family: var(--title-font);
-font-size: 1.08rem;
 font-weight: 700;
-color: var(--app-coffee-700);
-text-decoration: none;
-letter-spacing: -0.01em;
+color: var(--mx-text);
 }
 
 .brand-logo {
-width: 42px;
-height: 42px;
-object-fit: contain;
-border-radius: 50%;
-background: #fff;
-padding: 4px;
-}
-
-.brand-text {
-line-height: 1;
-font-size: 1.35rem;
-letter-spacing: -0.015em;
-}
-
-.actions {
-display: flex;
-gap: 10px;
-}
-
-.hero {
-max-width: 1100px;
-margin: 150px auto 0;
-display: grid;
-grid-template-columns: 1.2fr 1fr;
-gap: 24px;
-align-items: stretch;
-}
-
-.hero-copy,
-.hero-panel {
-background: linear-gradient(180deg, rgba(255, 248, 240, 0.96), rgba(255, 255, 255, 0.88));
-border: none;
-border-radius: 18px;
-padding: 30px;
-box-shadow: var(--card-shadow);
-animation: fadeUp 0.5s ease both;
-transition: transform 0.25s ease, box-shadow 0.25s ease;
-backdrop-filter: blur(2px);
-}
-
-.hero-panel {
-background: linear-gradient(180deg, rgba(238, 248, 248, 0.95), rgba(255, 255, 255, 0.88));
-}
-
-.hero-copy {
-position: relative;
-isolation: isolate;
-}
-
-.hero-copy::after {
-content: '';
-position: absolute;
-right: -40px;
-bottom: -56px;
-width: 190px;
-height: 190px;
-border-radius: 999px;
-background: radial-gradient(circle, rgba(111, 78, 55, 0.2), rgba(111, 78, 55, 0));
-z-index: -1;
-}
-
-.hero-panel { animation-delay: 0.1s; }
-
-.hero-copy:hover,
-.hero-panel:hover {
-transform: translateY(-4px);
-box-shadow: var(--card-shadow-hover);
-}
-
-.eyebrow {
-font-size: 0.78rem;
-letter-spacing: 0.08em;
-text-transform: uppercase;
-font-weight: 700;
-color: var(--app-coffee-700);
-margin: 0 0 12px;
-}
-
-h1 {
-font-family: var(--title-font);
-font-size: 30px;
-font-weight: 700;
-line-height: 1.2;
-letter-spacing: -0.02em;
-margin: 0 0 16px;
-max-width: 16ch;
-}
-
-.lead {
-font-size: 1.02rem;
-line-height: 1.72;
-color: #475569;
-margin: 0 0 22px;
-max-width: 58ch;
-}
-
-.hero-meta {
-display: flex;
-flex-wrap: wrap;
-gap: 10px;
-margin-bottom: 20px;
-}
-
-.hero-meta span {
-display: inline-flex;
-align-items: center;
-gap: 6px;
-padding: 7px 11px;
-border-radius: 999px;
-font-size: 0.78rem;
-font-weight: 600;
-background: rgba(245, 232, 220, 0.82);
-border: none;
-color: #334155;
-}
-
-.hero-cta {
-display: flex;
-gap: 12px;
-flex-wrap: wrap;
-}
-
-.hero-market-reach {
-margin-top: 8px;
-min-width: 250px;
-}
-
-.hero-market-title {
-margin: 0 0 6px;
-font-size: 0.76rem;
-font-weight: 700;
-letter-spacing: 0.06em;
-text-transform: uppercase;
-color: #64748b;
-}
-
-.hero-demand-list {
-list-style: none;
-margin: 0;
-padding: 0;
-display: grid;
-gap: 6px;
-}
-
-.hero-demand-list li {
-display: flex;
-justify-content: space-between;
-gap: 10px;
-font-size: 0.78rem;
-padding: 7px 8px;
-border-radius: 8px;
-background: linear-gradient(180deg, rgba(255, 248, 240, 0.96), rgba(250, 243, 234, 0.92));
-}
-
-.market-left {
-display: flex;
-flex-direction: column;
-gap: 1px;
-}
-
-.market-country {
-font-weight: 600;
-color: #475569;
-}
-
-.market-left small {
-font-size: 0.7rem;
-color: #6b7280;
-}
-
-.market-right {
-display: flex;
-flex-direction: column;
-align-items: flex-end;
-gap: 1px;
-}
-
-.market-right strong {
-font-weight: 700;
-color: #1f2937;
-}
-
-.trend-up,
-.trend-down {
-font-size: 0.7rem;
-font-weight: 700;
-}
-
-.trend-up {
-color: #047857;
-}
-
-.trend-down {
-color: #b91c1c;
-}
-
-.hero-demand-total {
-margin: 8px 0 0;
-font-size: 0.74rem;
-color: #475569;
-}
-
-.panel-head {
-display: flex;
-align-items: center;
-justify-content: space-between;
-gap: 10px;
-margin-bottom: 4px;
-}
-
-.panel-head h3 {
-margin: 0;
-}
-
-.live-pill {
-display: inline-flex;
-align-items: center;
-gap: 6px;
-padding: 6px 11px;
-border-radius: 999px;
-font-size: 0.74rem;
-font-weight: 700;
-color: #0f6a4d;
-background: rgba(16, 185, 129, 0.22);
-border: 1px solid rgba(16, 185, 129, 0.34);
-}
-
-.ticker {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 10px;
-}
-
-.ticker-item {
-background: linear-gradient(180deg, rgba(248, 250, 252, 0.94), rgba(241, 245, 249, 0.9));
-border: var(--card-border);
-border-radius: 12px;
-padding: 14px 14px 14px 16px;
-display: flex;
-flex-direction: column;
-gap: 6px;
-transition: transform 0.2s ease, box-shadow 0.2s ease;
-position: relative;
-overflow: hidden;
-box-shadow: var(--card-shadow);
-}
-
-.ticker-item::before {
-content: '';
-position: absolute;
-top: 0;
-left: 0;
-width: 4px;
-height: 100%;
-background: linear-gradient(180deg, var(--app-coffee-700), var(--app-coffee-800));
-opacity: 0.7;
-}
-
-.ticker-item:hover {
-transform: translateY(-2px);
-box-shadow: var(--card-shadow-hover);
-}
-
-.snapshot-metrics {
-display: grid;
-grid-template-columns: repeat(3, minmax(0, 1fr));
-gap: 8px;
-margin-top: 10px;
-}
-
-.metric-pill {
-background: linear-gradient(180deg, rgba(250, 243, 234, 0.95), rgba(241, 249, 248, 0.9));
-border: var(--card-border);
-border-radius: 10px;
-padding: 9px 10px;
-display: flex;
-flex-direction: column;
-gap: 3px;
-box-shadow: var(--card-shadow);
-}
-
-.metric-pill span {
-font-size: 0.7rem;
-font-weight: 600;
-color: var(--muted-text);
-}
-
-.metric-pill strong {
-font-size: 0.84rem;
-color: #1e293b;
-}
-
-.trade-feed {
-margin-top: 12px;
-padding-top: 10px;
-border: 1px solid rgba(111, 78, 55, 0.28);
-background: rgba(255, 255, 255, 0.45);
-border-radius: 10px;
-padding-left: 10px;
-padding-right: 10px;
-padding-bottom: 6px;
-}
-
-.feed-title {
-margin: 0 0 8px;
-font-size: 0.76rem;
-font-weight: 700;
-letter-spacing: 0.06em;
-text-transform: uppercase;
-color: #475569;
-}
-
-.feed-row {
-display: grid;
-grid-template-columns: 1fr auto;
-gap: 8px;
-padding: 8px 0;
-border-bottom: 1px solid rgba(148, 163, 184, 0.16);
-}
-
-.feed-row:last-child {
-border-bottom: none;
-padding-bottom: 0;
-}
-
-.feed-main h5 {
-margin: 0;
-font-size: 0.82rem;
-font-weight: 600;
-color: #1f2937;
-}
-
-.feed-main p {
-margin: 2px 0 0;
-font-size: 0.75rem;
-color: var(--muted-text);
-}
-
-.feed-meta {
-display: flex;
-flex-direction: column;
-align-items: flex-end;
-gap: 2px;
-}
-
-.feed-meta strong {
-font-size: 0.8rem;
-color: #334155;
-}
-
-.feed-meta small {
-font-size: 0.72rem;
-color: var(--muted-text);
-}
-
-.name {
-font-size: 0.8rem;
-color: var(--muted-text);
-letter-spacing: 0.02em;
-}
-
-.up { color: #047857; font-weight: 700; }
-.down { color: #b91c1c; font-weight: 700; }
-
-.overview,
-.operations {
-max-width: 1100px;
-margin: var(--section-gap) auto 0;
-display: grid;
-grid-template-columns: 1.45fr 1fr;
-gap: 18px;
-}
-
-.panel {
-background: linear-gradient(180deg, var(--surface), rgba(255, 255, 255, 0.74));
-border: none;
-border-radius: 16px;
-padding: 26px;
-box-shadow: var(--card-shadow);
-backdrop-filter: blur(3px);
-transition: transform 0.24s ease, box-shadow 0.24s ease;
-}
-
-.panel-overview {
-background: linear-gradient(180deg, rgba(255, 246, 236, 0.94), rgba(255, 255, 255, 0.82));
-}
-
-.panel-market {
-background: linear-gradient(180deg, rgba(238, 248, 246, 0.94), rgba(255, 255, 255, 0.84));
-}
-
-.panel-workflow {
-background: linear-gradient(180deg, rgba(239, 246, 255, 0.94), rgba(255, 255, 255, 0.84));
-}
-
-.panel-faq {
-background: linear-gradient(180deg, rgba(247, 244, 255, 0.92), rgba(255, 255, 255, 0.84));
-}
-
-.panel:hover {
-transform: translateY(-3px);
-box-shadow: var(--card-shadow-hover);
-}
-
-.panel h3 {
-margin: 0 0 14px;
-font-family: var(--title-font);
-font-size: 1.22rem;
-font-weight: 700;
-letter-spacing: -0.01em;
-}
-
-.panel-intro {
-margin: 0 0 20px;
-color: #475569;
-line-height: 1.65;
-font-size: 0.96rem;
-max-width: 62ch;
-}
-
-.feature-list {
-display: grid;
-gap: 12px;
-}
-
-.feature-row {
-display: grid;
-grid-template-columns: auto 1fr;
-gap: 10px;
-align-items: flex-start;
-padding: 10px 0;
-border-bottom: 1px solid rgba(148, 163, 184, 0.18);
-transition: background-color 0.2s ease, border-color 0.2s ease;
-border-radius: 10px;
-}
-
-.feature-row:hover {
-background: rgba(248, 250, 252, 0.72);
-border-color: rgba(148, 163, 184, 0.28);
-}
-
-.feature-row:last-child {
-border-bottom: none;
-}
-
-.card-icon {
 width: 34px;
 height: 34px;
+object-fit: contain;
+border-radius: 10px;
+background: #fff;
+border: 1px solid #d7e7ef;
+padding: 3px;
+}
+
+.brand-title {
+line-height: 1;
+}
+
+.header-auth {
+margin-left: auto;
+display: inline-flex;
+gap: 12px;
+align-items: center;
+}
+
+.header-auth-link {
 display: inline-flex;
 align-items: center;
 justify-content: center;
+padding: 8px 14px;
 border-radius: 10px;
-background: rgba(184, 117, 45, 0.16);
-color: #93581f;
+border: 1px solid #b9d5ce;
+background: #ffffff;
+color: #334e68;
+font-size: 0.9rem;
+font-weight: 700;
+text-decoration: none;
+line-height: 1;
+transition: all 0.2s ease;
 }
 
-.feature-row h4 {
-margin: 0 0 6px;
-font-family: var(--title-font);
-font-size: 0.98rem;
-font-weight: 600;
+.header-auth-link:hover {
+color: #0b6f65;
+border-color: #0b6f65;
+background: #f4fbf9;
 }
 
-.feature-row p {
-margin: 0;
-color: var(--muted-text);
-font-size: 0.92rem;
-line-height: 1.6;
+.header-auth-link.register-link {
+background: linear-gradient(135deg, var(--mx-brand), var(--mx-brand-dark));
+border-color: var(--mx-brand-dark);
+color: #ffffff;
 }
 
-.stat-strip {
-display: grid;
-grid-template-columns: repeat(4, minmax(0, 1fr));
-gap: 10px;
-margin-top: 14px;
-}
-
-.stat-pill {
-background: linear-gradient(180deg, rgba(247, 251, 255, 0.95), rgba(255, 249, 242, 0.9));
-border: var(--card-border);
-border-radius: 12px;
-padding: 10px;
-text-align: center;
-transition: transform 0.2s ease, box-shadow 0.2s ease;
-box-shadow: var(--card-shadow);
-}
-
-.stat-pill:hover {
-transform: translateY(-2px);
-box-shadow: var(--card-shadow-hover);
-}
-
-.stat-pill strong {
-display: block;
-font-size: 1.05rem;
-color: var(--app-coffee-700);
-}
-
-.stat-pill span {
-font-size: 0.78rem;
-color: var(--muted-text);
-}
-
-.subhead {
-margin: 22px 0 12px;
-font-family: var(--title-font);
-font-size: 0.98rem;
-font-weight: 600;
-color: #1e293b;
-}
-
-.chips {
-display: flex;
-flex-wrap: wrap;
-gap: 8px;
-}
-
-.chip {
-display: inline-flex;
-align-items: center;
-padding: 7px 11px;
-border-radius: 999px;
-background: #f8fafc;
-border: 1px solid rgba(148, 163, 184, 0.45);
-font-size: 0.82rem;
-color: #334155;
-transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
-}
-
-.chip:nth-child(4n + 1) { background: #fef3e7; color: #8c4d14; border-color: rgba(184, 117, 45, 0.45); }
-.chip:nth-child(4n + 2) { background: #e8f7f2; color: #0f5d45; border-color: rgba(31, 122, 90, 0.42); }
-.chip:nth-child(4n + 3) { background: #e8f0ff; color: #294f8a; border-color: rgba(41, 79, 138, 0.4); }
-.chip:nth-child(4n + 4) { background: #f2ecff; color: #5a3c94; border-color: rgba(90, 60, 148, 0.4); }
-
-.chip:hover {
-transform: translateY(-1px);
+.header-auth-link.register-link:hover {
+color: #ffffff;
 filter: brightness(0.98);
 }
 
-.tools-grid {
-display: grid;
-gap: 10px;
-margin-bottom: 10px;
-}
-
-.tool-item {
-display: grid;
-grid-template-columns: auto 1fr;
-gap: 10px;
-align-items: flex-start;
-padding: 10px 0;
-border-bottom: 1px solid rgba(148, 163, 184, 0.18);
-border-radius: 10px;
-transition: background-color 0.2s ease;
-}
-
-.tool-item:hover {
-background: rgba(248, 250, 252, 0.72);
-}
-
-.tool-item:last-child {
-border-bottom: none;
-}
-
-.tool-icon {
-width: 34px;
-height: 34px;
-display: inline-flex;
-align-items: center;
-justify-content: center;
-border-radius: 10px;
-background: rgba(31, 122, 90, 0.14);
-color: #165f45;
-}
-
-.tool-item h5 {
-margin: 0 0 6px;
-font-family: var(--title-font);
-font-size: 0.92rem;
+.nav-link {
+color: var(--mx-muted);
 font-weight: 600;
 }
 
-.tool-item p {
-margin: 0;
-font-size: 0.88rem;
-line-height: 1.55;
-color: var(--muted-text);
+.nav-link:hover {
+color: var(--mx-brand-dark);
 }
 
-.trust-list {
-display: grid;
-gap: 10px;
-}
-
-.trust-row {
-padding: 10px 0;
-border-bottom: 1px solid rgba(148, 163, 184, 0.18);
-border-radius: 10px;
-transition: background-color 0.2s ease;
-}
-
-.trust-row:hover {
-background: rgba(248, 250, 252, 0.72);
-}
-
-.trust-row:last-child {
-border-bottom: none;
-}
-
-.trust-row h5 {
-margin: 0 0 6px;
-font-family: var(--title-font);
-font-size: 0.92rem;
-font-weight: 600;
-}
-
-.trust-row p {
-margin: 0;
-font-size: 0.9rem;
-line-height: 1.6;
-color: var(--muted-text);
-}
-
-.workflow-list,
-.faq-list {
-display: grid;
-gap: 10px;
-}
-
-.workflow-row {
-display: grid;
-grid-template-columns: auto 1fr auto;
-gap: 10px;
-align-items: flex-start;
-padding: 10px 0;
-border-bottom: 1px solid rgba(148, 163, 184, 0.18);
-border-radius: 10px;
-transition: background-color 0.2s ease;
-}
-
-.workflow-row:hover {
-background: rgba(248, 250, 252, 0.72);
-}
-
-.workflow-row:last-child {
-border-bottom: none;
-}
-
-.step {
-display: inline-flex;
-width: 28px;
-height: 28px;
-align-items: center;
-justify-content: center;
-border-radius: 999px;
-background: rgba(55, 90, 127, 0.14);
-color: #2a4f79;
-font-weight: 800;
-font-size: 0.8rem;
-margin-top: 2px;
-}
-
-.workflow-copy h4 {
-margin: 0 0 6px;
-font-family: var(--title-font);
-font-size: 0.98rem;
-font-weight: 600;
-}
-
-.workflow-copy p {
-margin: 0;
-font-size: 0.9rem;
-line-height: 1.6;
-color: var(--muted-text);
-}
-
-.workflow-icon {
-color: rgba(111, 78, 55, 0.6);
-font-size: 1rem;
-margin-top: 4px;
-}
-
-.faq-row {
-padding: 10px 0;
-border-bottom: 1px solid rgba(148, 163, 184, 0.18);
-border-radius: 10px;
-transition: background-color 0.2s ease;
-}
-
-.faq-row:hover {
-background: rgba(248, 250, 252, 0.72);
-}
-
-.faq-row:last-child {
-border-bottom: none;
-}
-
-.faq-row h4 {
-margin: 0 0 8px;
-font-family: var(--title-font);
-font-size: 0.95rem;
-font-weight: 600;
-}
-
-.faq-row p {
-margin: 0;
-font-size: 0.9rem;
-line-height: 1.6;
-color: var(--muted-text);
-}
-
-.cta {
-max-width: 1100px;
-margin: calc(var(--section-gap) + 4px) auto 0;
-padding: 30px 24px;
-border-radius: 16px;
-background:
-linear-gradient(135deg, var(--app-coffee-700), var(--app-coffee-800)),
-radial-gradient(800px 280px at 5% -20%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0)),
-radial-gradient(700px 280px at 95% 120%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0));
+.btn-brand {
+background: linear-gradient(135deg, var(--mx-brand), var(--mx-brand-dark));
+border: none;
 color: #fff;
-text-align: center;
-box-shadow: none;
-position: relative;
+font-weight: 700;
+}
+
+.btn-brand:hover {
+color: #fff;
+transform: translateY(-1px);
+}
+
+.btn-outline-brand {
+border: 1px solid var(--mx-brand);
+color: var(--mx-brand-dark);
+font-weight: 700;
+background: #fff;
+}
+
+.btn-soft {
+background: #e8f4f2;
+border: 1px solid #c6e7e2;
+color: var(--mx-brand-dark);
+font-weight: 700;
+}
+
+.hero-section {
+padding: 4.5rem 0 2rem;
+}
+
+.ticker-section {
+padding: 0 0 1rem;
+}
+
+.ticker-shell {
+border: 1px solid var(--mx-border);
+border-radius: 999px;
+background: rgba(255, 255, 255, 0.8);
 overflow: hidden;
 }
 
-.cta::before {
-content: '';
-position: absolute;
-inset: 0;
-background:
-radial-gradient(560px 220px at 20% 0%, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0)),
-radial-gradient(460px 180px at 100% 100%, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0));
-pointer-events: none;
+.ticker-track {
+white-space: nowrap;
+display: inline-flex;
+gap: 22px;
+padding: 10px 18px;
+min-width: 100%;
+animation: tickerSlide 26s linear infinite;
 }
 
-.cta > * {
-position: relative;
-z-index: 1;
+.ticker-track span {
+color: #486581;
+font-size: 0.84rem;
+font-weight: 600;
 }
 
-.cta-kicker {
-margin: 0 0 10px;
-font-size: 0.75rem;
-font-weight: 700;
-letter-spacing: 0.08em;
+.partners-section {
+padding: 0.3rem 0 1rem;
+}
+
+.partners-label {
+font-size: 0.82rem;
+color: #627d98;
+letter-spacing: 0.06em;
 text-transform: uppercase;
-opacity: 0.9;
+margin-bottom: 0.7rem;
 }
 
-.cta h2 {
-margin: 0 0 14px;
-font-family: var(--title-font);
+.partners-grid {
+display: grid;
+grid-template-columns: repeat(6, minmax(0, 1fr));
+gap: 10px;
+}
+
+.partner-pill {
+border: 1px solid var(--mx-border);
+border-radius: 12px;
+background: rgba(255, 255, 255, 0.88);
+color: #334e68;
+font-size: 0.84rem;
 font-weight: 700;
-letter-spacing: -0.015em;
-font-size: 1.5rem;
+padding: 10px 12px;
+text-align: center;
 }
 
-.cta p {
-margin: 0 auto 22px;
-opacity: 0.95;
-max-width: 700px;
+.hero-copy h1 {
+font-size: clamp(1.85rem, 3.2vw, 2.85rem);
+margin-bottom: 1rem;
+}
+
+.hero-focus-title {
+font-family: 'Manrope', sans-serif !important;
+font-weight: 800;
+letter-spacing: -0.01em;
+}
+
+.hero-kicker,
+.eyebrow {
+color: var(--mx-brand-dark);
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 0.08em;
+font-size: 0.74rem;
+margin-bottom: 0.75rem;
+}
+
+.hero-lead,
+.section-head p {
+color: var(--mx-muted);
+max-width: 62ch;
+}
+
+.hero-panel {
+border: 1px solid var(--mx-border);
+border-radius: 18px;
+background: linear-gradient(180deg, #ffffff, #f9fcfd);
+box-shadow: 0 16px 30px rgba(16, 42, 67, 0.08);
+--hero-inner-radius: 14px;
+}
+
+.hero-panel .card-body {
+border-radius: 16px;
+}
+
+.hero-panel .table-responsive {
+border: 1px solid #d7e7ef;
+border-radius: var(--hero-inner-radius);
+overflow: hidden;
+background: #fff;
+}
+
+.badge-live {
+background: #daf7f2;
+color: #0b6f65;
+border: 1px solid #b7eadf;
+font-weight: 700;
+}
+
+.market-table th {
+color: #486581;
+font-weight: 700;
+font-size: 0.84rem;
+}
+
+.market-table td {
+font-size: 0.92rem;
+}
+
+.metric-box {
+background: #f2f8fb;
+border: 1px solid var(--mx-border);
+border-radius: 12px;
+padding: 10px;
+display: grid;
+gap: 2px;
+}
+
+.hero-panel .metric-box {
+border-radius: var(--hero-inner-radius);
+}
+
+.metric-box small {
+color: #627d98;
+}
+
+.metrics-section {
+padding: 1.4rem 0 2rem;
+}
+
+.metric-card {
+border: 1px solid var(--mx-border);
+border-radius: 14px;
+background: rgba(255, 255, 255, 0.8);
+padding: 16px;
+height: 100%;
+}
+
+.metric-card p {
+margin: 0;
+color: #627d98;
+font-weight: 600;
+font-size: 0.86rem;
+}
+
+.metric-card h3 {
+margin: 6px 0 0;
+font-size: 1.45rem;
+}
+
+.section-block {
+padding: 3.4rem 0;
+}
+
+.alt-block {
+background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(244, 249, 251, 0.9));
+border-top: 1px solid #e7eff4;
+border-bottom: 1px solid #e7eff4;
+}
+
+.section-head {
+margin-bottom: 1.4rem;
+}
+
+.section-head h2 {
+font-size: clamp(1.4rem, 2.4vw, 2.05rem);
+margin-bottom: 0.7rem;
+}
+
+.billing-toggle {
+display: inline-flex;
+align-items: center;
+border: 1px solid var(--mx-border);
+background: #fff;
+border-radius: 999px;
+overflow: hidden;
+}
+
+.toggle-btn {
+border: 0;
+background: transparent;
+color: #486581;
+font-weight: 700;
+font-size: 0.82rem;
+padding: 8px 14px;
+}
+
+.toggle-btn span {
+color: #0b6f65;
+margin-left: 4px;
+}
+
+.toggle-btn.active {
+background: #e7f7f3;
+color: #0b6f65;
+}
+
+.glass-card {
+border: 1px solid var(--mx-border);
+border-radius: 16px;
+overflow: hidden;
+box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+background: rgba(255, 255, 255, 0.86);
+}
+
+.table thead th {
+background: #f5f9fc;
+border-bottom-width: 1px;
+color: #486581;
+font-size: 0.82rem;
+text-transform: uppercase;
+letter-spacing: 0.04em;
+}
+
+.table td {
+vertical-align: middle;
+}
+
+.spread-pill {
+background: #e6f6f4;
+color: #0b6f65;
+border: 1px solid #b7eadf;
+border-radius: 999px;
+padding: 5px 10px;
+font-size: 0.8rem;
+font-weight: 700;
+}
+
+.feature-card {
+height: 100%;
+border: 1px solid var(--mx-border);
+border-radius: 14px;
+background: var(--mx-card);
+padding: 18px;
+box-shadow: 0 10px 24px rgba(16, 42, 67, 0.06);
+transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+transform: translateY(-4px);
+box-shadow: 0 16px 32px rgba(16, 42, 67, 0.1);
+}
+
+.icon-wrap {
+width: 42px;
+height: 42px;
+border-radius: 12px;
+background: linear-gradient(135deg, #e8f5f3, #fff2df);
+color: var(--mx-brand-dark);
+display: grid;
+place-items: center;
+margin-bottom: 10px;
+font-size: 1.1rem;
+}
+
+.feature-card h5 {
+margin-bottom: 8px;
+}
+
+.feature-card p {
+margin: 0;
+color: var(--mx-muted);
+}
+
+.timeline {
+display: grid;
+gap: 12px;
+}
+
+.timeline-step {
+display: grid;
+grid-template-columns: auto 1fr;
+gap: 12px;
+align-items: flex-start;
+border: 1px solid var(--mx-border);
+border-radius: 14px;
+background: #fff;
+padding: 14px;
+}
+
+.step-badge {
+width: 28px;
+height: 28px;
+border-radius: 50%;
+background: var(--mx-brand);
+color: #fff;
+display: grid;
+place-items: center;
+font-size: 0.8rem;
+font-weight: 700;
+}
+
+.timeline-step p {
+margin: 4px 0 0;
+color: var(--mx-muted);
+}
+
+.plan-card {
+height: 100%;
+border: 1px solid var(--mx-border);
+border-radius: 14px;
+background: #fff;
+padding: 16px;
+position: relative;
+}
+
+.plan-card.featured {
+border-color: #9ddad2;
+background: linear-gradient(180deg, #ffffff, #f0fbf8);
+box-shadow: 0 12px 24px rgba(14, 138, 125, 0.12);
+}
+
+.price-line {
+display: flex;
+align-items: baseline;
+gap: 5px;
+margin: 8px 0;
+}
+
+.price {
+font-size: 1.6rem;
+font-weight: 800;
+}
+
+.period {
+color: #627d98;
+}
+
+.plan-note {
+color: #627d98;
+margin-bottom: 10px;
+font-size: 0.9rem;
+}
+
+.featured-tag {
+position: absolute;
+top: 10px;
+right: 10px;
+border-radius: 999px;
+background: #0f766e;
+color: #fff;
+font-size: 0.68rem;
+font-weight: 700;
+padding: 4px 9px;
+}
+
+.plan-list {
+margin: 0 0 12px;
+padding-left: 18px;
+color: #334e68;
+display: grid;
+gap: 6px;
+font-size: 0.9rem;
+}
+
+.testimonial-card {
+height: 100%;
+border: 1px solid var(--mx-border);
+border-radius: 14px;
+background: #fff;
+padding: 16px;
+}
+
+.testimonial-card p {
+color: #334e68;
+}
+
+.testimonial-card strong {
+display: block;
+}
+
+.testimonial-card small {
+color: #627d98;
+}
+
+.faq-layout {
+align-items: flex-start;
+}
+
+.custom-accordion {
+border: 0;
+}
+
+.custom-accordion :deep(.el-collapse) {
+border-top: 0;
+border-bottom: 0;
+background: transparent;
+}
+
+.custom-accordion :deep(.el-collapse-item) {
+border: 1px solid var(--mx-border);
+border-radius: 12px;
+overflow: hidden;
+margin-bottom: 10px;
+background: #fff;
+box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+}
+
+.custom-accordion :deep(.el-collapse-item__header) {
+border-bottom: 0;
+height: auto;
+min-height: 56px;
+padding: 12px 16px;
+font-weight: 700;
+color: #243b53;
+background: #fff;
+line-height: 1.3;
+}
+
+.custom-accordion :deep(.el-collapse-item__header.is-active) {
+color: #0b6f65;
+background: #ecfaf7;
+}
+
+.custom-accordion :deep(.el-collapse-item__arrow) {
+color: #486581;
+font-weight: 700;
+}
+
+.custom-accordion :deep(.el-collapse-item__wrap) {
+border-bottom: 0;
+}
+
+.custom-accordion :deep(.el-collapse-item__content) {
+padding: 0 16px 14px;
+color: #486581;
 line-height: 1.65;
 }
 
-.cta-actions {
+.faq-item-title {
 display: inline-flex;
+align-items: center;
 gap: 10px;
-flex-wrap: wrap;
-justify-content: center;
+font-size: 0.96rem;
+white-space: normal;
 }
 
-.btn {
+.faq-answer {
+font-size: 0.95rem;
+}
+
+.faq-topic-list {
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+margin-bottom: 14px;
+}
+
+.faq-topic-pill {
+border: 1px solid var(--mx-border);
+background: #fff;
+color: #486581;
+border-radius: 999px;
+padding: 6px 11px;
+font-size: 0.76rem;
+font-weight: 700;
+}
+
+.faq-index {
 display: inline-flex;
 align-items: center;
 justify-content: center;
-padding: 10px 16px;
-border-radius: 10px;
-text-decoration: none;
-font-weight: 700;
+min-width: 42px;
+border-radius: 999px;
+padding: 3px 10px;
+background: #e7f7f3;
+color: #0b6f65;
+font-size: 0.72rem;
+font-weight: 800;
+}
+
+.faq-help-card {
+border: 1px solid var(--mx-border);
+border-radius: 16px;
+background: linear-gradient(180deg, #ffffff, #f6fbfc);
+padding: 18px;
+position: sticky;
+top: 90px;
+}
+
+.help-kicker {
+margin: 0 0 8px;
+color: #0b6f65;
+letter-spacing: 0.07em;
+text-transform: uppercase;
+font-size: 0.72rem;
+font-weight: 800;
+}
+
+.faq-help-card h4 {
+margin-bottom: 8px;
+}
+
+.help-copy {
+margin: 0 0 12px;
+color: #627d98;
 font-size: 0.92rem;
-line-height: 1;
-transition: transform 0.18s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-white-space: nowrap;
 }
 
-.btn-solid {
-background: linear-gradient(135deg, var(--app-coffee-700), var(--app-coffee-800));
-color: #fff;
-border: none;
-box-shadow: none;
+.help-list {
+display: grid;
+gap: 8px;
+margin-bottom: 10px;
 }
 
-.btn-ghost {
+.help-item {
+border: 1px solid var(--mx-border);
+border-radius: 12px;
 background: #fff;
-border: 1px solid var(--app-border);
-color: #334155;
+padding: 10px;
+display: grid;
+grid-template-columns: auto 1fr;
+gap: 10px;
+align-items: center;
 }
 
-.btn-outline {
-background: transparent;
-border: 1px solid rgba(111, 78, 55, 0.35);
-color: var(--app-coffee-800);
+.help-icon {
+width: 34px;
+height: 34px;
+border-radius: 10px;
+background: #e7f7f3;
+color: #0b6f65;
+display: grid;
+place-items: center;
 }
 
-.cta .btn-solid {
-background: #fff;
-color: var(--app-coffee-700);
-border-color: #fff;
-box-shadow: none;
+.help-item strong {
+display: block;
+font-size: 0.88rem;
+color: #243b53;
 }
 
-.btn-cta-outline {
-background: transparent;
+.help-item small {
+color: #627d98;
+font-size: 0.78rem;
+}
+
+.final-cta {
+padding: 3.5rem 0;
+}
+
+.cta-box {
+border-radius: 18px;
+background:
+radial-gradient(500px 220px at 0% 0%, rgba(255, 255, 255, 0.22), transparent 70%),
+linear-gradient(135deg, #0f766e, #0b6f65 52%, #115f8f);
 color: #fff;
-border: 1px solid rgba(255, 255, 255, 0.6);
+padding: 2rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 16px;
+flex-wrap: wrap;
 }
 
-.btn:hover {
-transform: translateY(-1px);
-box-shadow: none;
-filter: brightness(0.97);
-}
-
-.btn:focus-visible {
-outline: 2px solid rgba(111, 78, 55, 0.35);
-outline-offset: 2px;
-}
-
-@keyframes fadeUp {
-from { opacity: 0; transform: translateY(12px); }
-to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 900px) {
-.hero { grid-template-columns: 1fr; }
-.overview { grid-template-columns: 1fr; }
-.operations { grid-template-columns: 1fr; }
-.ticker { grid-template-columns: 1fr; }
-.snapshot-metrics { grid-template-columns: 1fr; }
-.stat-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.hero-copy,
-.hero-panel { padding: 22px; }
-.panel { padding: 20px; }
-.index-page { padding: 66px 16px 40px; }
-.topbar {
-width: 100%;
+.cta-box p {
 margin: 0;
-padding: 10px 16px;
-border-radius: 0;
+color: rgba(255, 255, 255, 0.88);
 }
-.brand-logo { width: 36px; height: 36px; }
-.brand { font-size: 1.05rem; }
-h1 { line-height: 1.24; }
+
+.site-footer {
+border-top: 1px solid #dbe7ee;
+background: #fff;
+color: #627d98;
+}
+
+.site-footer a {
+color: #486581;
+text-decoration: none;
+}
+
+.reveal {
+opacity: 0;
+transform: translateY(12px);
+animation: revealUp 0.6s ease forwards;
+}
+
+.delay-1 {
+animation-delay: 0.14s;
+}
+
+@keyframes revealUp {
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+@keyframes tickerSlide {
+0% {
+transform: translateX(0);
+}
+100% {
+transform: translateX(-50%);
+}
+}
+
+@media (max-width: 991.98px) {
+.hero-section {
+padding-top: 2.6rem;
+}
+
+.site-nav .navbar-collapse {
+padding-top: 10px;
+}
+
+.header-auth {
+margin-top: 10px;
+}
+
+.partners-grid {
+grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cta-box {
+padding: 1.4rem;
+}
+
+.faq-help-card {
+margin-top: 4px;
+position: static;
+}
+}
+
+@media (max-width: 575.98px) {
+.section-block {
+padding: 2.6rem 0;
+}
+
+.hero-copy h1 {
+font-size: 1.62rem;
+}
+
+.ticker-track {
+gap: 16px;
+padding: 8px 14px;
+}
+
+.partners-grid {
+grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.billing-toggle {
+width: 100%;
+}
+
+.toggle-btn {
+flex: 1;
+}
+
+.plan-list {
+padding-left: 15px;
+}
+
+.faq-index {
+min-width: 36px;
+}
 }
 </style>
