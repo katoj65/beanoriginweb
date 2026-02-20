@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ChainBatch extends Model
@@ -44,5 +45,17 @@ class ChainBatch extends Model
     public function incomingSplits(): HasMany
     {
         return $this->hasMany(ChainBatchSplit::class, 'split_chain_batches_id');
+    }
+
+    public function commodities(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Commodity::class,
+            'commodity_batches',
+            'chain_batch_id',
+            'commodity_id'
+        )->using(CommodityBatch::class)
+            ->withPivot(['weight', 'status'])
+            ->withTimestamps();
     }
 }

@@ -15,7 +15,6 @@ class ChainBatchSplit extends Model
         'weight',
         'reason',
         'notes',
-
     ];
 
     protected $casts = [
