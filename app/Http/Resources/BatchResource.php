@@ -29,10 +29,17 @@ class BatchResource extends JsonResource
             'created_at' => optional($this->created_at)->toDateTimeString(),
             'updated_at' => optional($this->updated_at)->toDateTimeString(),
             'owner' => $this->whenLoaded('owner', function () {
+                $ownerName = trim(($this->owner?->fname ?? '') . ' ' . ($this->owner?->lname ?? ''));
+                $ownerPhone = $this->owner?->userProfile?->tel;
+                $ownerAddress = $this->owner?->userProfile?->address;
+                $ownerEmail = $this->owner?->email;
+
                 return [
                     'id' => $this->owner?->id,
-                    'name' => trim(($this->owner?->fname ?? '') . ' ' . ($this->owner?->lname ?? '')),
-                    'email' => $this->owner?->email,
+                    'name' => $ownerName !== '' ? $ownerName : null,
+                    'phone' => $ownerPhone,
+                    'address' => $ownerAddress,
+                    'email' => $ownerEmail,
                 ];
             }),
         ];

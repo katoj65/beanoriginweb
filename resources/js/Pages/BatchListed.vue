@@ -142,26 +142,26 @@ class="market-search"
 placeholder="Search by batch number, hash, commodity..."
 />
 <div class="market-app-buttons">
-<el-button size="large" type="primary" plain :icon="Plus" @click="goToCreate">
-Add Batch
-</el-button>
+
 <el-button
 size="large"
 plain
-:type="selectedStatus === 'all' ? 'primary' : 'default'"
+type="default"
 @click="selectedStatus = 'all'"
 >
 All
 </el-button>
 <el-button
 size="large"
+type="default"
 plain
-:type="selectedStatus === 'listed' ? 'primary' : 'default'"
 @click="selectedStatus = 'listed'"
 >
 Listed
 </el-button>
-<el-button size="large" :icon="Refresh" plain @click="resetFilters" />
+<el-button size="large" type="default" plain :icon="Plus" @click="goToCreate">
+Add Batch
+</el-button>
 </div>
 </div>
 </div>

@@ -6,25 +6,17 @@ import InputError from '@/Components/InputError.vue';
 import SubmitButton from '@/Components/SubmitButton.vue';
 
 const page = usePage();
-
-const commodities = computed(() => page.props.commodities ?? []);
-const statusOptions = computed(() => page.props.status_options ?? []);
+const grades = computed(() => page.props.grades ?? []);
+const crops = computed(() => page.props.crops ?? []);
 
 const form = useForm({
-batch_number: '',
-grade: '',
+batch_code: '',
+commodity_name: '',
+commodity_type: '',
 weight: '',
-status: 'listed',
-commodity_ids: [],
-ask_price: '',
-notes: '',
-});
-
-const selectedCommodityWeight = computed(() => {
-if (!form.commodity_ids.length) return 0;
-return commodities.value
-.filter((item) => form.commodity_ids.includes(item.id))
-.reduce((sum, item) => sum + Number(item.weight ?? 0), 0);
+grade: '',
+moisture: '',
+warehouse: '',
 });
 
 const submit = () => {
@@ -36,102 +28,102 @@ preserveScroll: true,
 const goBack = () => {
 router.get(route('cooperative.batches.listed'));
 };
+
 </script>
 
 <template>
 <CooperativeLayout>
+
 <div class="container">
 <div class="card card-bordered batch-create-card">
 <div class="card-inner border-bottom batch-create-head">
 <div class="batch-create-head-content">
 <div class="batch-create-title-wrap">
-<h6 class="title mb-1"><em class="icon ni ni-plus-circle mr-1"></em>Add Blockchain Batch</h6>
-<p class="sub-text mb-0">Create a trade-ready batch and link commodities to the blockchain ledger.</p>
+<h6 class="title mb-1"><em class="icon ni ni-plus-circle mr-1"></em>Add Batch</h6>
+<p class="sub-text mb-0">Create a new batch using commodity details and warehouse information.</p>
 </div>
 <el-button plain class="back-btn" @click="goBack">Back</el-button>
 </div>
 </div>
 
+
+
+
 <div class="card-inner batch-create-body theme-no-highlight">
 <form class="row g-4 form-shell" @submit.prevent="submit">
 <div class="col-12 col-md-6 field-block">
-<label class="form-label">Batch Number</label>
-<el-input v-model="form.batch_number" size="large" placeholder="e.g. BATCH-2026-001" />
-<InputError :message="form.errors.batch_number" class="mt-2" />
-</div>
-
-<div class="col-12 col-md-3 field-block">
-<label class="form-label">Grade</label>
-<el-input v-model="form.grade" size="large" placeholder="A / AA / Premium" />
-<InputError :message="form.errors.grade" class="mt-2" />
-</div>
-
-<div class="col-12 col-md-3 field-block">
-<label class="form-label">Status</label>
-<el-select v-model="form.status" class="w-100" size="large" placeholder="Select status" popper-class="batch-select-popper">
-<el-option
-v-for="item in statusOptions"
-:key="item"
-:label="item"
-:value="item"
-/>
-</el-select>
-<InputError :message="form.errors.status" class="mt-2" />
+<label class="form-label">Batch Code</label>
+<el-input v-model="form.batch_code" size="large" placeholder="e.g. BATCH-2026-001" />
+<InputError :message="form.errors.batch_code" class="mt-2" />
 </div>
 
 <div class="col-12 col-md-6 field-block">
-<label class="form-label">Total Weight (kg)</label>
-<el-input v-model="form.weight" size="large" type="number" min="0.01" step="0.01" placeholder="Enter total batch weight" />
-<div class="sub-text mt-1">Selected commodities weight: {{ selectedCommodityWeight.toFixed(2) }} kg</div>
+<label class="form-label" for="01">Commodity Name</label>
+<el-select
+v-model="form.commodity_name"
+class="w-100 theme-no-highlight-select"
+size="large"
+clearable
+filterable
+popper-class="theme-no-highlight-select-popper"
+placeholder="Select commodity"
+>
+<el-option
+v-for="item in crops"
+:key="item.id"
+:label="item.name"
+:value="item.name"
+/>
+</el-select>
+<InputError :message="form.errors.commodity_name" class="mt-2" />
+</div>
+
+<div class="col-12 col-md-6 field-block">
+<label class="form-label" for="02">Commodity Type</label>
+<el-input v-model="form.commodity_type" size="large" placeholder="e.g. Green Bean" id="02" />
+<InputError :message="form.errors.commodity_type" class="mt-2" />
+</div>
+
+<div class="col-12 col-md-6 field-block">
+<label class="form-label" for="03">Weight (kg)</label>
+<el-input v-model="form.weight" size="large" type="number" min="0.01" step="0.01" placeholder="Enter batch weight" if="03" />
 <InputError :message="form.errors.weight" class="mt-2" />
 </div>
 
 <div class="col-12 col-md-6 field-block">
-<label class="form-label">Ask Price (optional)</label>
-<el-input v-model="form.ask_price" size="large" type="number" min="0" step="0.01" placeholder="Enter asking price" />
-<InputError :message="form.errors.ask_price" class="mt-2" />
-</div>
-
-<div class="col-12 field-block">
-<label class="form-label">Linked Commodities</label>
+<label class="form-label">Grade</label>
 <el-select
-v-model="form.commodity_ids"
-class="w-100"
+v-model="form.grade"
+class="w-100 theme-no-highlight-select"
 size="large"
-multiple
 filterable
-collapse-tags
-collapse-tags-tooltip
-popper-class="batch-select-popper"
-placeholder="Select commodities to include in this batch"
+popper-class="theme-no-highlight-select-popper"
+placeholder="Select grade"
 >
 <el-option
-v-for="item in commodities"
+v-for="item in grades"
 :key="item.id"
-:label="`${item.commodity_name} • ${item.commodity_type} • ${item.weight} kg`"
-:value="item.id"
+:label="item.name"
+:value="item.name"
 />
 </el-select>
-<InputError :message="form.errors.commodity_ids" class="mt-2" />
+<InputError :message="form.errors.grade" class="mt-2" />
+</div>
+
+<div class="col-12 col-md-6 field-block">
+<label class="form-label">Moisture (%) (optional)</label>
+<el-input v-model="form.moisture" size="large" type="number" min="0" step="0.01" placeholder="Enter moisture level" />
+<InputError :message="form.errors.moisture" class="mt-2" />
 </div>
 
 <div class="col-12 field-block">
-<label class="form-label">Notes (optional)</label>
-<el-input
-v-model="form.notes"
-size="large"
-type="textarea"
-:rows="4"
-placeholder="Add any trade notes, quality notes, or conditions"
-/>
-<InputError :message="form.errors.notes" class="mt-2" />
+<label class="form-label">Warehouse</label>
+<el-input v-model="form.warehouse" size="large" placeholder="Enter warehouse location or code" />
+<InputError :message="form.errors.warehouse" class="mt-2" />
 </div>
 
-<div class="col-12 col-md-4 action-row">
+<div class="col-12 col-md-3 action-row">
 <SubmitButton :title="'Create Batch'" :status="form.processing" />
-</div>
-<div class="col-12 col-md-3 action-row cancel-wrap">
-<el-button plain class="w-100 cancel-btn" @click="goBack">Cancel</el-button>
 </div>
 </form>
 </div>

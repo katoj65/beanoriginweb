@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use App\Models\Crops;
 use App\Http\Resources\CropResource;
-use App\models\CropType;
+use App\Models\CropType;
 use App\Http\Resources\CropTypeResource;
 use App\Models\ProcessMethod;
 use App\Http\Resources\ProcessMethodResource;
@@ -113,96 +113,18 @@ return Inertia::render('BatchListed', [
 ]);
 }
 
-public function createBatchForm(Request $request)
-{
-$cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
 
-$commodities = Commodity::query()
-->where('cooperative_id', $cooperativeId)
-->orderByDesc('created_at')
-->get(['id', 'commodity_name', 'commodity_type', 'grade', 'weight', 'harvest_date']);
 
-return Inertia::render('BatchCreate', [
-'commodities' => $commodities,
-'status_options' => ['created', 'processing', 'processed', 'hulled', 'graded', 'listed', 'sold'],
-]);
-}
 
-public function storeBatch(Request $request)
-{
-$cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
 
-$validated = $request->validate([
-'batch_number' => ['required', 'string', 'max:255', 'unique:chain_batches,batch_number'],
-'grade' => ['nullable', 'string', 'max:100'],
-'weight' => ['required', 'numeric', 'min:0.01'],
-'status' => ['required', 'in:created,processing,processed,hulled,graded,listed,sold'],
-'commodity_ids' => ['required', 'array', 'min:1'],
-'commodity_ids.*' => ['required', 'integer', 'exists:commodities,id'],
-'ask_price' => ['nullable', 'numeric', 'min:0'],
-'notes' => ['nullable', 'string', 'max:1000'],
-]);
 
-$commodityIds = Commodity::query()
-->where('cooperative_id', $cooperativeId)
-->whereIn('id', $validated['commodity_ids'])
-->pluck('id');
 
-if ($commodityIds->count() !== count($validated['commodity_ids'])) {
-throw ValidationException::withMessages([
-'commodity_ids' => 'One or more selected commodities do not belong to your cooperative.',
-]);
-}
 
-DB::transaction(function () use ($request, $validated, $commodityIds) {
-$chainBatch = ChainBatch::create([
-'user_id' => $request->user()->id,
-'batch_number' => $validated['batch_number'],
-'grade' => $validated['grade'] ?: null,
-'weight' => $validated['weight'],
-'status' => $validated['status'],
-]);
 
-$chainBatch->commodities()->attach(
-$commodityIds->all(),
-['status' => $validated['status']]
-);
 
-$latestBlock = ChainBlock::query()->latest('block_index')->first();
-$blockIndex = ($latestBlock?->block_index ?? 0) + 1;
-$previousHash = $latestBlock?->current_hash ?? hash('sha256', 'GENESIS-BLOCK');
-$randomSalt = bin2hex(random_bytes(8));
 
-$currentHash = hash('sha256', implode('|', [
-$chainBatch->id,
-$chainBatch->batch_number,
-$blockIndex,
-$previousHash,
-$validated['status'],
-strval($validated['ask_price'] ?? ''),
-now()->toDateTimeString(),
-$randomSalt,
-]));
 
-ChainBlock::create([
-'chain_batches_id' => $chainBatch->id,
-'block_index' => $blockIndex,
-'event_type' => 'batch_created',
-'event_data' => [
-'status' => $validated['status'],
-'ask_price' => $validated['ask_price'] ?? null,
-'commodity_ids' => $commodityIds->values()->all(),
-'notes' => $validated['notes'] ?? null,
-],
-'current_hash' => $currentHash,
-'previous_hash' => $previousHash,
-]);
-});
 
-return redirect()
-->route('cooperative.batches.listed')
-->with('success', 'Batch created successfully and added to blockchain ledger.');
-}
 
 
 
@@ -274,6 +196,8 @@ $data=[
 
 PaymentService::commodity_payment($data);
 $verification?->update(['status' => 'expired']);
+
+
 return redirect()->route('cooperative.batch.show', ['id' => $produce->id])->with('success', 'Produce saved successfully.');
 
 }

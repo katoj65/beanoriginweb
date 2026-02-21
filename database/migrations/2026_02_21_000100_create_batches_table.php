@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('grade')->nullable();
             $table->decimal('moisture', 5, 2)->nullable();
             $table->string('warehouse')->nullable();
-            $table->boolean('is_on_chain')->default(false);
+            $table->enum('is_on_chain',['true','false'])->default('false');
             $table->string('status')->default('created');
             $table->timestamps();
         });

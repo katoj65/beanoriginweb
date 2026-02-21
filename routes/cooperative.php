@@ -7,6 +7,7 @@ use App\Http\Controllers\Cooperative\HelpController;
 use App\Http\Controllers\Cooperative\FarmerController;
 use App\Http\Controllers\Cooperative\FarmController;
 use App\Http\Controllers\Produce\ProduceController;
+use App\Http\Controllers\Batch\BatchController;
 use Inertia\Inertia;
 
 
@@ -58,8 +59,9 @@ Route::get('/cooperative/produce/create/{any}',[ProduceController::class,'create
 
 Route::get('/cooperative/batch/{id}',[ProduceController::class,'show'])->name('cooperative.batch.show');
 Route::get('/cooperative/batches/listed',[ProduceController::class,'batchListed'])->name('cooperative.batches.listed');
-Route::get('/cooperative/batches/create',[ProduceController::class,'createBatchForm'])->name('cooperative.batches.create');
-Route::post('/cooperative/batches',[ProduceController::class,'storeBatch'])->name('cooperative.batches.store');
+Route::get('/cooperative/batches/create',[BatchController::class,'create'])->name('cooperative.batches.create');
+Route::get('/cooperative/batches/{id}',[BatchController::class,'show'])->whereNumber('id')->name('cooperative.batches.show');
+Route::post('/cooperative/batches',[BatchController::class,'store'])->name('cooperative.batches.store');
 
 
 Route::get('/cooperative/notifications', function () {

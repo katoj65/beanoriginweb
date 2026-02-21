@@ -239,16 +239,14 @@ h2 {
   width: 100%;
 }
 
-.form-control-like .el-input__wrapper,
-.form-control-like .el-select__wrapper {
+.form-control-like .el-input__wrapper {
   height: calc(1.5em + 0.75rem + 2px) !important;
   min-height: calc(1.5em + 0.75rem + 2px) !important;
   border-radius: 4px !important;
   padding: 0 0.75rem !important;
 }
 
-.form-control-like .el-input__inner,
-.form-control-like .el-select__selected-item {
+.form-control-like .el-input__inner {
   line-height: 1.5;
 }
 
@@ -258,11 +256,11 @@ h2 {
 
 /* Theme utility: keep Element Plus form controls visually neutral on focus */
 .theme-no-highlight .el-input,
-.theme-no-highlight .el-select,
 .theme-no-highlight .el-textarea {
   --el-color-primary: #dcdfe6;
   --el-color-primary-light-3: #dcdfe6;
   --el-color-primary-light-5: #dcdfe6;
+  --el-border-color-hover: #dcdfe6;
 }
 
 .theme-no-highlight .el-input {
@@ -277,13 +275,10 @@ h2 {
 .theme-no-highlight .el-input__wrapper,
 .theme-no-highlight .el-input__wrapper:hover,
 .theme-no-highlight .el-input__wrapper.is-focus,
-.theme-no-highlight .el-input__wrapper:focus-within,
-.theme-no-highlight .el-select__wrapper,
-.theme-no-highlight .el-select__wrapper:hover,
-.theme-no-highlight .el-select__wrapper.is-focused,
-.theme-no-highlight .el-select__wrapper:focus-within {
+.theme-no-highlight .el-input__wrapper:focus-within {
   box-shadow: 0 0 0 1px #dcdfe6 inset !important;
   border-color: #dcdfe6 !important;
+  outline: none !important;
   transition: none !important;
   background-color: #ffffff !important;
 }
@@ -319,19 +314,64 @@ h2 {
   transition: background-color 9999s ease-out 0s !important;
 }
 
-.theme-no-highlight .el-select__tags .el-tag {
-  --el-tag-bg-color: #f5f7fa;
-  --el-tag-border-color: #dcdfe6;
-  --el-tag-text-color: #606266;
+/* Theme utility: Element Plus select without blue focus/selection highlight */
+.theme-no-highlight-select {
+  --el-color-primary: #606266;
+  --el-color-primary-light-3: #ffffff;
+  --el-color-primary-light-5: #ffffff;
+  --el-select-input-focus-border-color: #dcdfe6;
+  --el-border-color-hover: #dcdfe6;
 }
 
-.batch-select-popper .el-select-dropdown__item.is-selected {
+.theme-no-highlight-select .el-select__wrapper,
+.theme-no-highlight-select .el-select__wrapper:hover,
+.theme-no-highlight-select .el-select__wrapper.is-focus,
+.theme-no-highlight-select .el-select__wrapper.is-focused,
+.theme-no-highlight-select .el-select__wrapper:focus-within {
+  box-shadow: 0 0 0 1px #dcdfe6 inset !important;
+  border-color: #dcdfe6 !important;
+  background: #ffffff !important;
+  outline: none !important;
+}
+
+.theme-no-highlight-select .el-select__selection,
+.theme-no-highlight-select .el-select__selected-item,
+.theme-no-highlight-select .el-select__input {
+  background: transparent !important;
+}
+
+.theme-no-highlight-select .el-select__input,
+.theme-no-highlight-select .el-select__input:focus,
+.theme-no-highlight-select .el-select__input:focus-visible,
+.theme-no-highlight-select .el-input__inner,
+.theme-no-highlight-select .el-input__inner:focus,
+.theme-no-highlight-select .el-input__inner:focus-visible,
+.theme-no-highlight-select *:focus,
+.theme-no-highlight-select *:focus-visible {
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.theme-no-highlight-select-popper {
+  --el-fill-color-light: #ffffff !important;
+  --el-color-primary: #606266 !important;
+  --el-color-primary-light-8: #ffffff !important;
+  --el-color-primary-light-9: #ffffff !important;
+}
+
+.theme-no-highlight-select-popper .el-select-dropdown__item,
+.theme-no-highlight-select-popper .el-select-dropdown__item.hover,
+.theme-no-highlight-select-popper .el-select-dropdown__item:hover,
+.theme-no-highlight-select-popper .el-select-dropdown__item.is-hovering,
+.theme-no-highlight-select-popper .el-select-dropdown__item.is-selected,
+.theme-no-highlight-select-popper .el-select-dropdown__item.is-selected:hover,
+.theme-no-highlight-select-popper .el-select-dropdown__item.is-selected.is-hovering {
+  background: #ffffff !important;
   color: #606266 !important;
-  background-color: #f5f7fa !important;
-  font-weight: 500 !important;
+  font-weight: 400 !important;
 }
 
-.batch-select-popper .el-select-dropdown__item.hover,
-.batch-select-popper .el-select-dropdown__item:hover {
-  background-color: #f5f7fa !important;
+.theme-no-highlight-select-popper .el-select-dropdown__item.is-selected::after {
+  color: #606266 !important;
 }

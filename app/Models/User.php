@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -89,5 +90,15 @@ class User extends Authenticatable
     public function batches(): HasMany
     {
         return $this->hasMany(Batch::class, 'owner_id');
+    }
+
+    public function cooperative(): HasOne
+    {
+        return $this->hasOne(Cooperative::class, 'user_id');
+    }
+
+    public function userProfile(): HasOne
+    {
+        return $this->hasOne(UserProfile::class, 'user_id');
     }
 }
