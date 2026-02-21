@@ -58,7 +58,7 @@ class BatchController extends Controller
             'warehouse' => ['required', 'string', 'max:255'],
         ]);
 
-        $batch = DB::transaction(function () use ($request, $validated) {
+        $batch = DB::transaction(function () use ($request, $validated, $batchChainService) {
             $batch = Batch::create([
                 'owner_id' => $request->user()->id,
                 'batch_code' => $validated['batch_code'],
@@ -92,6 +92,7 @@ class BatchController extends Controller
         $batch = Batch::query()
             ->with('owner:id,fname,lname,email')
             ->where('owner_id', auth()->id())
+            ->where('is_on_chain', 1)
             ->findOrFail($id);
 
         // Query profile using the user who owns this batch.

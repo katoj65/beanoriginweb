@@ -47,11 +47,9 @@ status: item.status ?? 'listed',
 grade: item.grade ?? 'N/A',
 weight: Number(item.weight ?? 0),
 listedAt: item.listed_at ?? item.created_at ?? null,
-latestBlockHash: item.latest_block_hash ?? item.current_hash ?? null,
 commodityNames,
 commodityCount: item.commodity_count ?? commodityNames.length,
 askPrice: item.ask_price ?? null,
-viewCommodityId: item.commodity_id ?? item.commodities?.[0]?.id ?? null,
 };
 });
 });
@@ -65,7 +63,6 @@ batch.batchNumber,
 batch.status,
 batch.grade,
 batch.commodityNames.join(' '),
-batch.latestBlockHash ?? '',
 ].join(' ').toLowerCase();
 const matchesSearch = !q || haystack.includes(q);
 return matchesStatus && matchesSearch;
@@ -96,19 +93,8 @@ if (Number.isNaN(amount)) return value;
 return amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
-const truncateHash = (value) => {
-if (!value) return 'N/A';
-if (value.length <= 16) return value;
-return `${value.slice(0, 10)}...${value.slice(-6)}`;
-};
-
 const viewBatch = (batch) => {
-if (batch.viewCommodityId) {
-router.get(route('cooperative.batch.show', { id: batch.viewCommodityId }));
-return;
-}
-
-router.get(route('cooperative.produce'));
+router.get(route('cooperative.batches.show', { id: batch.id }));
 };
 
 const resetFilters = () => {
@@ -139,7 +125,7 @@ size="large"
 clearable
 :prefix-icon="Search"
 class="market-search"
-placeholder="Search by batch number, hash, commodity..."
+placeholder="Search by batch number, status, commodity..."
 />
 <div class="market-app-buttons">
 
@@ -177,12 +163,11 @@ Add Batch
 <th>Ask Price</th>
 <th>Status</th>
 <th>Listed Date</th>
-<th>Block Hash</th>
 <th class="text-end">Action</th>
 </tr>
 </thead>
 <tbody>
-<tr v-for="batch in filteredBatches" :key="batch.id">
+<tr v-for="batch in filteredBatches" :key="batch.id" class="batch-row" @click="viewBatch(batch)">
 <td>
 <strong>{{ batch.batchNumber }}</strong>
 <div class="sub-text">#{{ batch.id }}</div>
@@ -198,17 +183,14 @@ Add Batch
 <span :class="statusClass(batch.status)">{{ batch.status }}</span>
 </td>
 <td>{{ formatDate(batch.listedAt) }}</td>
-<td>
-<span class="hash-chip" :title="batch.latestBlockHash ?? ''">{{ truncateHash(batch.latestBlockHash) }}</span>
-</td>
 <td class="text-end">
-<el-button type="primary" plain size="small" @click="viewBatch(batch)">
+<el-button type="default" plain size="small" @click.stop="viewBatch(batch)">
 View
 </el-button>
 </td>
 </tr>
 <tr v-if="!filteredBatches.length">
-<td colspan="9" class="text-center py-4 text-muted">
+<td colspan="8" class="text-center py-4 text-muted">
 No blockchain batches found for the current filters.
 </td>
 </tr>
@@ -238,16 +220,12 @@ color: #364a63;
 white-space: nowrap;
 }
 
-.hash-chip {
-display: inline-flex;
-align-items: center;
-border: 1px dashed #cbd5e1;
+.batch-row {
+cursor: pointer;
+}
+
+.batch-row:hover td {
 background: #f8fafc;
-border-radius: 999px;
-padding: 2px 8px;
-font-size: 12px;
-font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-color: #475569;
 }
 
 .market-card-header {

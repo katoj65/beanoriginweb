@@ -28,6 +28,7 @@ use App\Http\Resources\FarmResource;
 use App\Http\Resources\CommodityResource;
 use App\Models\Commodity;
 use App\Models\CommodityFarm;
+use App\Models\Batch;
 use App\Models\ChainBatch;
 use App\Models\ChainBlock;
 use App\Services\Payments\PaymentService;
@@ -71,40 +72,29 @@ return Inertia::render('ProducePage', [
 
 public function batchListed(Request $request)
 {
-$cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+$user = $request->user();
 
-$batches = ChainBatch::query()
-->whereHas('commodities', function ($query) use ($cooperativeId) {
-$query->where('cooperative_id', $cooperativeId);
-})
-->with([
-'user:id,fname,lname,email',
-'commodities:id,commodity_name,cooperative_id',
-'blocks',
-])
+$batches = Batch::query()
+->where('owner_id', auth()->id())
+->where('is_on_chain', 1)
 ->latest()
 ->get()
-->map(function (ChainBatch $batch) {
-$latestBlock = $batch->blocks->sortByDesc('block_index')->first();
-$eventData = is_array($latestBlock?->event_data) ? $latestBlock->event_data : [];
-$commodityIds = $batch->commodities->pluck('id')->filter()->values();
-$commodityNames = $batch->commodities->pluck('commodity_name')->filter()->values();
-
+->map(function (Batch $batch) use ($user) {
 return [
 'id' => $batch->id,
-'batch_number' => $batch->batch_number,
+'batch_number' => $batch->batch_code,
 'status' => $batch->status,
 'grade' => $batch->grade,
 'weight' => $batch->weight,
 'created_at' => $batch->created_at?->toDateTimeString(),
 'listed_at' => $batch->created_at?->toDateString(),
-'commodity_id' => $commodityIds->first(),
-'commodity_names' => $commodityNames,
-'commodity_count' => $commodityNames->count(),
-'seller_name' => trim(($batch->user?->fname ?? '') . ' ' . ($batch->user?->lname ?? '')),
-'latest_block_hash' => $latestBlock?->current_hash,
-'chain_height' => $latestBlock?->block_index,
-'ask_price' => $eventData['ask_price'] ?? null,
+'commodity_id' => null,
+'commodity_names' => $batch->commodity_name ? [$batch->commodity_name] : [],
+'commodity_count' => $batch->commodity_name ? 1 : 0,
+'seller_name' => trim(($user?->fname ?? '') . ' ' . ($user?->lname ?? '')),
+'latest_block_hash' => null,
+'chain_height' => null,
+'ask_price' => null,
 ];
 });
 

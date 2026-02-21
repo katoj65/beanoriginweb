@@ -12,16 +12,19 @@ class BatchChainService
      */
     public function addBlock(Batch $batch, array $eventData = []): ChainBlock
     {
+        // Stage 1: Read the latest block under lock so index/hash sequencing stays consistent.
         $latestBlock = ChainBlock::query()
             ->select(['id', 'block_index', 'current_hash'])
             ->lockForUpdate()
             ->latest('block_index')
             ->first();
 
+        // Stage 2: Derive the next chain position and previous hash reference.
         $blockIndex = ($latestBlock?->block_index ?? 0) + 1;
         $previousHash = $latestBlock?->current_hash ?? hash('sha256', 'GENESIS-BLOCK');
         $randomSalt = bin2hex(random_bytes(8));
 
+        // Stage 3: Build a deterministic hash payload for this block.
         $currentHash = hash('sha256', implode('|', [
             $batch->id,
             $batch->batch_code,
@@ -32,6 +35,7 @@ class BatchChainService
             $randomSalt,
         ]));
 
+        // Stage 4: Persist the new block into the chain_blocks table.
         return ChainBlock::create([
             'batch_id' => $batch->id,
             'block_index' => $blockIndex,
@@ -51,4 +55,29 @@ class BatchChainService
             'previous_hash' => $previousHash,
         ]);
     }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+    }
