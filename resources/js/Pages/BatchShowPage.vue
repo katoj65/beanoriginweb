@@ -5,12 +5,14 @@ import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import { Edit, Back } from '@element-plus/icons-vue'
 
 const page = usePage();
-const batch = computed(() => page.props.produce?.data ?? page.props.produce ?? {});
+const batch = computed(() => page.props.produce.data);
 const farmer = computed(() => page.props.farmer?.data ?? page.props.farmer ?? {});
+
 const latestPayment = computed(() => {
 const raw = batch.value?.latest_payment;
 return raw?.data ?? raw ?? null;
 });
+
 const paymentHistory = computed(() => {
 const raw = batch.value?.payments;
 const items = raw?.data ?? raw ?? [];
@@ -24,6 +26,7 @@ if (status === 'expired') return 'badge bg-danger-subtle text-danger';
 if (status === 'sold') return 'badge bg-info-subtle text-info';
 return 'badge bg-light text-dark';
 });
+
 const paymentStatusClass = (status) => {
 if (status === 'completed') return 'badge bg-success-subtle text-success';
 if (status === 'pending') return 'badge bg-warning-subtle text-warning';
@@ -36,6 +39,29 @@ const batchTitle = computed(() => `Batch #${batch.value?.id ?? 'N/A'}`);
 
 const formatDate = (value) => {
 if (!value) return 'N/A';
+if (typeof value === 'string') {
+const dateOnlyMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+if (dateOnlyMatch) {
+const [, year, month, day] = dateOnlyMatch;
+const date = new Date(Number(year), Number(month) - 1, Number(day));
+return date.toLocaleDateString();
+}
+
+const dateTimeMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+if (dateTimeMatch) {
+const [, year, month, day, hour, minute, second] = dateTimeMatch;
+const date = new Date(
+Number(year),
+Number(month) - 1,
+Number(day),
+Number(hour),
+Number(minute),
+Number(second ?? 0),
+);
+return date.toLocaleDateString();
+}
+}
+
 const date = new Date(value);
 if (Number.isNaN(date.getTime())) return value;
 return date.toLocaleDateString();
@@ -51,6 +77,23 @@ return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFraction
 const goBackToList = () => {
 router.get(route('cooperative.produce'));
 };
+
+const payment = computed(() => {
+const raw = page.props.payment;
+return raw?.data ?? raw ?? latestPayment.value;
+});
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
 
 <template>
@@ -70,7 +113,6 @@ router.get(route('cooperative.produce'));
   </el-button-group>
 
 
-
 </div>
 
 <div class="card-inner">
@@ -79,10 +121,7 @@ router.get(route('cooperative.produce'));
 <span class="sub-text"><em class="icon ni ni-hash mr-1"></em>Batch ID</span>
 <strong>{{ batch.id }}</strong>
 </div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-flag mr-1"></em>Status</span>
-<strong><span :class="statusClass">{{ batch.status }}</span></strong>
-</div>
+
 <div class="detail-item">
 <span class="sub-text"><em class="icon ni ni-growth mr-1"></em>Crop Name</span>
 <strong>{{ batch.commodity_name }}</strong>
@@ -93,21 +132,21 @@ router.get(route('cooperative.produce'));
 </div>
 <div class="detail-item">
 <span class="sub-text"><em class="icon ni ni-package mr-1"></em>Quantity</span>
-<strong>{{ batch.quantity }} kg</strong>
+<strong>{{ batch.weight }} kg</strong>
 </div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-coins mr-1"></em>Price</span>
-<strong>{{ formatMoney(batch.price) }}</strong>
-</div>
+
 <div class="detail-item">
 <span class="sub-text"><em class="icon ni ni-calendar mr-1"></em>Date of Harvest</span>
-<strong>{{ formatDate(batch.date_of_harvest) }}</strong>
+<strong>{{ batch.harvest_date }}</strong>
 </div>
 <div class="detail-item">
 <span class="sub-text"><em class="icon ni ni-award mr-1"></em>Crop Grade</span>
-<strong>{{ batch.crop_grade }}</strong>
+<strong>{{ batch.grade }}</strong>
 </div>
-
+<div class="detail-item detail-item-full">
+<span class="sub-text"><em class="icon ni ni-flag mr-1"></em>Status</span>
+<strong><span :class="statusClass">{{ batch.status }}</span></strong>
+</div>
 </div>
 </div>
 
@@ -135,10 +174,7 @@ router.get(route('cooperative.produce'));
 <span class="sub-text"><em class="icon ni ni-map-pin mr-1 label-icon"></em>Location</span>
 <strong>{{ farmer.location ?? 'N/A' }}</strong>
 </div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-check-circle mr-1 label-icon"></em>Status</span>
-<strong>{{ farmer.status ?? 'N/A' }}</strong>
-</div>
+
 <div class="detail-item">
 <span class="sub-text"><em class="icon ni ni-call mr-1 label-icon"></em>Telephone</span>
 <strong>{{ farmer.telephone ?? 'N/A' }}</strong>
@@ -147,39 +183,55 @@ router.get(route('cooperative.produce'));
 <span class="sub-text"><em class="icon ni ni-mail mr-1 label-icon"></em>Email</span>
 <strong>{{ farmer.email ?? 'N/A' }}</strong>
 </div>
+
+
+<div class="detail-item detail-item-full">
+<span class="sub-text"><em class="icon ni ni-check-circle mr-1 label-icon"></em>Status</span>
+<strong>{{ farmer.status ?? 'N/A' }}</strong>
+</div>
+
 </div>
 </div>
+
+
+
+
+
+
+
+
 
 <div class="card-inner border-top">
 <h6 class="title mb-3"><em class="icon ni ni-coins mr-1"></em>Payment Details</h6>
 <div class="details-grid">
 <div class="detail-item">
 <span class="sub-text"><em class="icon ni ni-hash mr-1 label-icon"></em>Payment ID</span>
-<strong>{{ latestPayment?.id ?? 'N/A' }}</strong>
+<strong>{{ payment?.id ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item">
 <span class="sub-text"><em class="icon ni ni-flag mr-1 label-icon"></em>Status</span>
-<strong><span :class="paymentStatusClass(latestPayment?.status)">{{ latestPayment?.status ?? 'N/A' }}</span></strong>
+<strong><span :class="paymentStatusClass(payment?.status)">
+    {{ payment?.status ?? 'N/A' }}</span></strong>
 </div>
 <div class="detail-item">
 <span class="sub-text"><em class="icon ni ni-package mr-1 label-icon"></em>Quantity</span>
-<strong>{{ latestPayment?.quantity ?? 'N/A' }} kg</strong>
+<strong>{{ payment?.quantity ?? 'N/A' }} kg</strong>
 </div>
 <div class="detail-item">
 <span class="sub-text"><em class="icon ni ni-coins mr-1 label-icon"></em>Unit Price</span>
-<strong>{{ formatMoney(latestPayment?.unit_price) }}</strong>
+<strong>{{ formatMoney(payment?.unit_price) }}</strong>
 </div>
 <div class="detail-item">
 <span class="sub-text"><em class="icon ni ni-wallet mr-1 label-icon"></em>Total Amount</span>
-<strong>{{ formatMoney(latestPayment?.total_amount) }}</strong>
+<strong>{{ formatMoney(payment?.total_amount) }}</strong>
 </div>
 <div class="detail-item">
 <span class="sub-text"><em class="icon ni ni-user mr-1 label-icon"></em>Buyer</span>
-<strong>{{ latestPayment?.buyer?.name ?? 'N/A' }}</strong>
+<strong>{{ payment?.buyer?.name ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item detail-item-full">
 <span class="sub-text"><em class="icon ni ni-file-text mr-1 label-icon"></em>Notes</span>
-<strong>{{ latestPayment?.notes ?? 'N/A' }}</strong>
+<strong>{{ payment?.notes ?? 'N/A' }}</strong>
 </div>
 </div>
 

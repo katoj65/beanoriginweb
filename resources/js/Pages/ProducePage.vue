@@ -10,7 +10,7 @@ const produces = computed(() => page.props.produces?.data ?? page.props.produces
 const totalBatches = computed(() => produces.value.length);
 const listedCount = computed(() => Number(page.props.listed_count ?? produces.value.filter((b) => b.status === 'listed').length));
 const soldCount = computed(() => Number(page.props.sold_count ?? produces.value.filter((b) => b.status === 'sold').length));
-const totalVolume = computed(() => Number(page.props.total_quantity ?? produces.value.reduce((sum, b) => sum + Number(b.quantity || 0), 0)));
+const totalVolume = computed(() => page.props.total_quantity);
 
 const statusClass = (status) => {
 if (status === 'listed') return 'badge bg-success-subtle text-success';
@@ -36,7 +36,7 @@ router.get(route('cooperative.produce.create'));
 <div class="col-12 col-md-6 col-lg-3">
 <div class="stat-tile">
 <em class="icon ni ni-layers stat-icon"></em>
-<span class="sub-text">Total Batches</span>
+<span class="sub-text">Total Commodity</span>
 <h5 class="mb-0">{{ totalBatches }}</h5>
 </div>
 </div>
@@ -58,7 +58,7 @@ router.get(route('cooperative.produce.create'));
 <div class="stat-tile">
 <em class="icon ni ni-growth stat-icon"></em>
 <span class="sub-text">Total Volume</span>
-<h5 class="mb-0">{{ totalVolume }} kg</h5>
+<h5 class="mb-0">{{ totalVolume }} kgs</h5>
 </div>
 </div>
 </div>
@@ -84,11 +84,8 @@ router.get(route('cooperative.produce.create'));
 <th>Crop Name</th>
 <th><em class="icon ni ni-tree-view mr-1"></em>Crop Type</th>
 <th><em class="icon ni ni-package mr-1"></em>Quantity</th>
-<th><em class="icon ni ni-coins mr-1"></em>Price</th>
-<th><em class="icon ni ni-map-pin mr-1"></em>Location</th>
 <th><em class="icon ni ni-calendar mr-1"></em>Date Of Harvest</th>
-<th><em class="icon ni ni-award mr-1"></em>Crop Grade</th>
-<th>Process Method</th>
+<th style="width:70px;"><em class="icon ni ni-award mr-1"></em>Crop Grade</th>
 <th><em class="icon ni ni-flag mr-1"></em>Status</th>
 </tr>
 </thead>
@@ -100,14 +97,11 @@ class="clickable-row"
 @click="goToBatch(produce.id)"
 >
 <td>{{ produce.id }}</td>
-<td>{{ produce.crop_name }}</td>
-<td>{{ produce.crop_type }}</td>
-<td>{{ produce.quantity }}</td>
-<td>{{ produce.price }}</td>
-<td>{{ produce.location }}</td>
-<td>{{ produce.date_of_harvest }}</td>
-<td>{{ produce.crop_grade }}</td>
-<td>{{ produce.process_method }}</td>
+<td>{{ produce.commodity_name }}</td>
+<td>{{ produce.commodity_type }}</td>
+<td>{{ produce.weight }}</td>
+<td>{{ produce.harvest_date }}</td>
+<td>{{ produce.grade }}</td>
 <td>
 <span :class="statusClass(produce.status)">{{ produce.status }}</span>
 </td>

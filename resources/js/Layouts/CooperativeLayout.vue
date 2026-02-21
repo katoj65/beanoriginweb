@@ -193,9 +193,14 @@ Cooperative
 </li>
 <li class="nk-menu-item">
 <Link :href="route('cooperative.produce')" class="nk-menu-link">
-<span class="nk-menu-text">Batches</span>
+<span class="nk-menu-text">Commodity</span>
 </Link>
 </li><!-- .nk-menu-item -->
+<li class="nk-menu-item">
+<Link :href="route('cooperative.batches.listed')" class="nk-menu-link">
+<span class="nk-menu-text">Batch Listed</span>
+</Link>
+</li>
 </ul>
 
 
@@ -272,12 +277,22 @@ Sign Out
 <li class="nk-menu-heading">
 <h6 class="overline-title text-primary-alt">Trading Operations</h6>
 </li>
+
 <li class="nk-menu-item">
 <Link :href="route('dashboard')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-dashboard"></em></span>
 <span class="nk-menu-text">Operations Dashboard</span>
 </Link>
 </li>
+
+
+<li class="nk-menu-item">
+<Link :href="route('cooperative.batches.listed')" class="nk-menu-link">
+<span class="nk-menu-icon"><em class="icon ni ni-package"></em></span>
+<span class="nk-menu-text">Batch Listed</span>
+</Link>
+</li>
+
 <li class="nk-menu-item">
 <Link :href="route('cooperative.produce')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-bag"></em></span>

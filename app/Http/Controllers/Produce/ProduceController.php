@@ -8,6 +8,8 @@ use App\Models\Farm;
 use App\Models\Produce;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use App\Models\Crops;
 use App\Http\Resources\CropResource;
 use App\models\CropType;
@@ -26,9 +28,12 @@ use App\Http\Resources\FarmResource;
 use App\Http\Resources\CommodityResource;
 use App\Models\Commodity;
 use App\Models\CommodityFarm;
+use App\Models\ChainBatch;
+use App\Models\ChainBlock;
 use App\Services\Payments\PaymentService;
 use App\Models\CommodityPayment;
 use App\Http\Resources\CommodityPaymentResource;
+
 
 class ProduceController extends Controller
 {
@@ -38,26 +43,165 @@ class ProduceController extends Controller
 public function index()
 {
 $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
-$produces = Produce::where('cooperative_id', $cooperativeId)
-->latest()
-->get();
-$listedCount = Produce::where('cooperative_id', $cooperativeId)
+$produces = Commodity::where('cooperative_id', $cooperativeId)->get();
+$listedCount = Commodity::where('cooperative_id', $cooperativeId)
 ->where('status', 'listed')
 ->count();
-$soldCount = Produce::where('cooperative_id', $cooperativeId)
+$soldCount = Commodity::where('cooperative_id', $cooperativeId)
 ->where('status', 'sold')
 ->count();
-$totalQuantity = Produce::where('cooperative_id', $cooperativeId)->sum('quantity');
 
-
+$totalQuantity = Commodity::where('cooperative_id', $cooperativeId)->sum('weight');
 
 return Inertia::render('ProducePage', [
 'title' => 'Add Produce',
-'produces' => ProduceResource::collection($produces),
+'produces' => CommodityResource::collection($produces),
 'listed_count' => $listedCount,
 'sold_count' => $soldCount,
 'total_quantity' => $totalQuantity,
 ]);
+
+}
+
+
+
+
+
+
+
+public function batchListed(Request $request)
+{
+$cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+
+$batches = ChainBatch::query()
+->whereHas('commodities', function ($query) use ($cooperativeId) {
+$query->where('cooperative_id', $cooperativeId);
+})
+->with([
+'user:id,fname,lname,email',
+'commodities:id,commodity_name,cooperative_id',
+'blocks',
+])
+->latest()
+->get()
+->map(function (ChainBatch $batch) {
+$latestBlock = $batch->blocks->sortByDesc('block_index')->first();
+$eventData = is_array($latestBlock?->event_data) ? $latestBlock->event_data : [];
+$commodityIds = $batch->commodities->pluck('id')->filter()->values();
+$commodityNames = $batch->commodities->pluck('commodity_name')->filter()->values();
+
+return [
+'id' => $batch->id,
+'batch_number' => $batch->batch_number,
+'status' => $batch->status,
+'grade' => $batch->grade,
+'weight' => $batch->weight,
+'created_at' => $batch->created_at?->toDateTimeString(),
+'listed_at' => $batch->created_at?->toDateString(),
+'commodity_id' => $commodityIds->first(),
+'commodity_names' => $commodityNames,
+'commodity_count' => $commodityNames->count(),
+'seller_name' => trim(($batch->user?->fname ?? '') . ' ' . ($batch->user?->lname ?? '')),
+'latest_block_hash' => $latestBlock?->current_hash,
+'chain_height' => $latestBlock?->block_index,
+'ask_price' => $eventData['ask_price'] ?? null,
+];
+});
+
+return Inertia::render('BatchListed', [
+'batches' => $batches,
+]);
+}
+
+public function createBatchForm(Request $request)
+{
+$cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+
+$commodities = Commodity::query()
+->where('cooperative_id', $cooperativeId)
+->orderByDesc('created_at')
+->get(['id', 'commodity_name', 'commodity_type', 'grade', 'weight', 'harvest_date']);
+
+return Inertia::render('BatchCreate', [
+'commodities' => $commodities,
+'status_options' => ['created', 'processing', 'processed', 'hulled', 'graded', 'listed', 'sold'],
+]);
+}
+
+public function storeBatch(Request $request)
+{
+$cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+
+$validated = $request->validate([
+'batch_number' => ['required', 'string', 'max:255', 'unique:chain_batches,batch_number'],
+'grade' => ['nullable', 'string', 'max:100'],
+'weight' => ['required', 'numeric', 'min:0.01'],
+'status' => ['required', 'in:created,processing,processed,hulled,graded,listed,sold'],
+'commodity_ids' => ['required', 'array', 'min:1'],
+'commodity_ids.*' => ['required', 'integer', 'exists:commodities,id'],
+'ask_price' => ['nullable', 'numeric', 'min:0'],
+'notes' => ['nullable', 'string', 'max:1000'],
+]);
+
+$commodityIds = Commodity::query()
+->where('cooperative_id', $cooperativeId)
+->whereIn('id', $validated['commodity_ids'])
+->pluck('id');
+
+if ($commodityIds->count() !== count($validated['commodity_ids'])) {
+throw ValidationException::withMessages([
+'commodity_ids' => 'One or more selected commodities do not belong to your cooperative.',
+]);
+}
+
+DB::transaction(function () use ($request, $validated, $commodityIds) {
+$chainBatch = ChainBatch::create([
+'user_id' => $request->user()->id,
+'batch_number' => $validated['batch_number'],
+'grade' => $validated['grade'] ?: null,
+'weight' => $validated['weight'],
+'status' => $validated['status'],
+]);
+
+$chainBatch->commodities()->attach(
+$commodityIds->all(),
+['status' => $validated['status']]
+);
+
+$latestBlock = ChainBlock::query()->latest('block_index')->first();
+$blockIndex = ($latestBlock?->block_index ?? 0) + 1;
+$previousHash = $latestBlock?->current_hash ?? hash('sha256', 'GENESIS-BLOCK');
+$randomSalt = bin2hex(random_bytes(8));
+
+$currentHash = hash('sha256', implode('|', [
+$chainBatch->id,
+$chainBatch->batch_number,
+$blockIndex,
+$previousHash,
+$validated['status'],
+strval($validated['ask_price'] ?? ''),
+now()->toDateTimeString(),
+$randomSalt,
+]));
+
+ChainBlock::create([
+'chain_batches_id' => $chainBatch->id,
+'block_index' => $blockIndex,
+'event_type' => 'batch_created',
+'event_data' => [
+'status' => $validated['status'],
+'ask_price' => $validated['ask_price'] ?? null,
+'commodity_ids' => $commodityIds->values()->all(),
+'notes' => $validated['notes'] ?? null,
+],
+'current_hash' => $currentHash,
+'previous_hash' => $previousHash,
+]);
+});
+
+return redirect()
+->route('cooperative.batches.listed')
+->with('success', 'Batch created successfully and added to blockchain ledger.');
 }
 
 
@@ -68,6 +212,8 @@ return Inertia::render('ProducePage', [
  */
 public function store(Request $request)
 {
+
+// Validate the incoming request data
 
 $validated = $request->validate([
 'crop_name' => ['required', 'string', 'max:255'],
@@ -81,16 +227,18 @@ $validated = $request->validate([
 ]);
 
 //check if the verification code is valid
-$validity = FarmerVerificationService::check_id_validity($validated['verification_id']);
 
+$validity = FarmerVerificationService::check_id_validity($validated['verification_id']);
 if ($validity['status'] == false) {
 return redirect()->route('cooperative.produce.create')->with('success', ['status' => false, 'message' => 'Farmer validation code expired, try again.']);
 }
 
+//get cooperative id
 $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
 $verification = FarmerBatchVerification::where('verification_id', $validated['verification_id'])->first();
 
 //associate the produce with the farm
+
 $farm_id=$validated['farm'];
 $farm=$farm_id[0];
 $produce = Commodity::create([
@@ -123,14 +271,14 @@ $data=[
 ];
 
 //payment is being processed in the background, so we can return the produce details immediately without waiting for payment confirmation
+
 PaymentService::commodity_payment($data);
 $verification?->update(['status' => 'expired']);
-
 return redirect()->route('cooperative.batch.show', ['id' => $produce->id])->with('success', 'Produce saved successfully.');
 
-
-
 }
+
+
 
 
 
@@ -140,6 +288,7 @@ return redirect()->route('cooperative.batch.show', ['id' => $produce->id])->with
  */
 public function show(Request $request)
 {
+
 $id = $request->segment(3);
 $produce = Commodity::query()
 ->with([
@@ -161,11 +310,14 @@ $query->where('cooperative_id', $cooperativeId);
 ->with('farmer')
 ->first();
 $farmer = $farm?->farmer;
+
+// Get the latest payment for the produce
 $payment = CommodityPayment::query()
 ->where('commodity_id', $produce->id)
 ->with('buyer:id,fname,lname,email')
 ->latest()
 ->first();
+
 
 
 return Inertia::render('BatchShowPage', [
@@ -187,6 +339,11 @@ return Inertia::render('BatchShowPage', [
 public function update(Request $request, string $id)
 {
 //
+
+
+
+
+
 }
 
 /**
@@ -195,6 +352,10 @@ public function update(Request $request, string $id)
 public function destroy(string $id)
 {
 //
+
+
+
+
 }
 
 
@@ -263,10 +424,6 @@ return Inertia::render('ProduceCreateAfterVerification', [
 'process_method'=>ProcessMethodResource::collection($process_method),
 'crop_grade'=>CropGradeResource::collection($grade),
 'farmer'=> new FarmersTableSummaryResource($farmer),
-
-
-
-
 
 
 ]);

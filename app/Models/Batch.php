@@ -10,33 +10,31 @@ class Batch extends Model
     protected $table = 'batches';
 
     protected $fillable = [
-        'cooperative_id',
-        'farm_id',
+        'owner_id',
         'batch_code',
-        'crop_name',
-        'crop_type',
-        'quantity',
-        'price',
-        'location',
-        'date_of_harvest',
-        'crop_grade',
-        'process_method',
+        'commodity_name',
+        'commodity_type',
+        'weight',
+        'grade',
+        'moisture',
+        'warehouse',
+        'is_on_chain',
         'status',
     ];
 
     protected $casts = [
-        'quantity' => 'decimal:2',
-        'price' => 'decimal:2',
-        'date_of_harvest' => 'date',
+        'weight' => 'decimal:2',
+        'moisture' => 'decimal:2',
+        'is_on_chain' => 'boolean',
     ];
 
-    public function cooperative(): BelongsTo
+    public function owner(): BelongsTo
     {
-        return $this->belongsTo(Cooperative::class, 'cooperative_id');
+        return $this->belongsTo(User::class, 'owner_id');
     }
 
-    public function farm(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Farm::class, 'farm_id');
+        return $this->owner();
     }
 }

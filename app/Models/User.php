@@ -85,4 +85,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(CommodityPayment::class, 'buyer_id');
     }
+
+    public function batches(): HasMany
+    {
+        return $this->hasMany(Batch::class, 'owner_id');
+    }
 }

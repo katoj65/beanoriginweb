@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,10 +15,6 @@ class CommodityResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $latestPayment = $this->whenLoaded('payments', function () {
-            return $this->payments->sortByDesc('created_at')->first();
-        });
-
         return [
             'id' => $this->id,
             'cooperative_id' => $this->cooperative_id,
@@ -26,31 +23,21 @@ class CommodityResource extends JsonResource
             'commodity_type' => $this->commodity_type,
             'grade' => $this->grade,
             'weight' => $this->weight,
-            'harvest_date' => optional($this->harvest_date)->format('Y-m-d'),
-            'created_at' => optional($this->created_at)->toDateTimeString(),
-            'updated_at' => optional($this->updated_at)->toDateTimeString(),
-
-            // Backward-compatible aliases for existing Produce-style UI keys.
-            'crop_name' => $this->commodity_name,
-            'crop_type' => $this->commodity_type,
-            'quantity' => $this->weight,
-            'price' => $latestPayment?->unit_price,
-            'location' => $this->whenLoaded('farm', fn () => $this->farm?->location),
-            'date_of_harvest' => optional($this->harvest_date)->format('Y-m-d'),
-            'crop_grade' => $this->grade,
-            'process_method' => null,
-            'status' => $latestPayment?->status ?? 'pending',
-            'latest_payment' => $latestPayment ? new CommodityPaymentResource($latestPayment) : null,
-            'payments' => CommodityPaymentResource::collection($this->whenLoaded('payments')),
-
-            'farm' => $this->whenLoaded('farm', function () {
-                return [
-                    'id' => $this->farm?->id,
-                    'farm_name' => $this->farm?->farm_name,
-                    'location' => $this->farm?->location,
-                    'primary_crop' => $this->farm?->primary_crop,
-                ];
+            'harvest_date' => $this->harvest_date
+                ? Carbon::parse($this->harvest_date)->format('F j, Y')
+                : null,
+            'status' => $this->status,
+            'created_at' => $this->created_at
+                ? Carbon::parse($this->created_at)->format('D, F j, Y g:i A')
+                : null,
+            'latest_payment' => $this->whenLoaded('payments', function () {
+                $latest = $this->payments->first();
+                return $latest ? new CommodityPaymentResource($latest) : null;
             }),
+            'payments' => $this->whenLoaded(
+                'payments',
+                fn () => CommodityPaymentResource::collection($this->payments)
+            ),
         ];
     }
 }
