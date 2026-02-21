@@ -8,7 +8,9 @@ use App\Models\Batch;
 use App\Models\CropGrade;
 use App\Models\Crops;
 use App\Models\UserProfile;
+use App\Services\Blockchain\BatchChainService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class BatchController extends Controller
@@ -44,7 +46,7 @@ class BatchController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, BatchChainService $batchChainService)
     {
         $validated = $request->validate([
             'batch_code' => ['required', 'string', 'max:255', 'unique:batches,batch_code'],
@@ -56,18 +58,26 @@ class BatchController extends Controller
             'warehouse' => ['required', 'string', 'max:255'],
         ]);
 
-        $batch = Batch::create([
-            'owner_id' => $request->user()->id,
-            'batch_code' => $validated['batch_code'],
-            'commodity_name' => $validated['commodity_name'],
-            'commodity_type' => $validated['commodity_type'],
-            'weight' => $validated['weight'],
-            'grade' => $validated['grade'],
-            'moisture' => $validated['moisture'] ?? null,
-            'warehouse' => $validated['warehouse'],
-            'is_on_chain' => false,
-            'status' => 'created',
-        ]);
+        $batch = DB::transaction(function () use ($request, $validated) {
+            $batch = Batch::create([
+                'owner_id' => $request->user()->id,
+                'batch_code' => $validated['batch_code'],
+                'commodity_name' => $validated['commodity_name'],
+                'commodity_type' => $validated['commodity_type'],
+                'weight' => $validated['weight'],
+                'grade' => $validated['grade'],
+                'moisture' => $validated['moisture'] ?? null,
+                'warehouse' => $validated['warehouse'],
+                'is_on_chain' => false,
+                'status' => 'created',
+            ]);
+
+            $batchChainService->addBlock($batch);
+            $batch->update(['is_on_chain' => true]);
+
+            return $batch;
+        });
+        
 
         return redirect()
             ->route('cooperative.batches.show', ['id' => $batch->id])
