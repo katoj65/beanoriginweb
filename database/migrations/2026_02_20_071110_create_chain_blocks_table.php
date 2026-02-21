@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('chain_blocks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('chain_batches_id')->constrained('chain_batches')->cascadeOnDelete();
+            $table->foreignId('batch_id')->constrained('batches')->cascadeOnDelete();
             $table->unsignedBigInteger('block_index')->unique();
             $table->string('event_type');
             $table->json('event_data');
