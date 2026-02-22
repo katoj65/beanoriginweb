@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
-import { Search, Plus, Refresh } from '@element-plus/icons-vue';
+import { Search, Plus, WarningFilled } from '@element-plus/icons-vue';
 
 const page = usePage();
 
@@ -105,6 +105,20 @@ search.value = '';
 const goToCreate = () => {
 router.get(route('cooperative.batches.create'));
 };
+
+const centerDialogVisible = ref(false);
+
+const handleActionConfirm = () => {
+resetFilters();
+centerDialogVisible.value = false;
+};
+
+
+
+
+
+
+
 </script>
 
 <template>
@@ -128,26 +142,14 @@ class="market-search"
 placeholder="Search by batch number, status, commodity..."
 />
 <div class="market-app-buttons">
-
-<el-button
-size="large"
-plain
-type="default"
-@click="selectedStatus = 'all'"
->
-All
-</el-button>
-<el-button
-size="large"
-type="default"
-plain
-@click="selectedStatus = 'listed'"
->
-Listed
-</el-button>
+<el-button-group>
 <el-button size="large" type="default" plain :icon="Plus" @click="goToCreate">
 Add Batch
 </el-button>
+<el-button size="large" type="default" plain @click="centerDialogVisible = true">
+Action
+</el-button>
+</el-button-group>
 </div>
 </div>
 </div>
@@ -199,6 +201,73 @@ No blockchain batches found for the current filters.
 </div>
 </div>
 </div>
+
+
+
+
+
+
+
+
+<el-dialog
+v-model="centerDialogVisible"
+class="theme-action-dialog"
+width="560"
+align-center
+>
+<template #header>
+<div class="theme-dialog-header">
+<span class="theme-dialog-icon">
+<el-icon><WarningFilled /></el-icon>
+</span>
+<div>
+<h5 class="theme-dialog-title">Batch Action</h5>
+<p class="theme-dialog-subtext mb-0">Apply a quick action to the live market board.</p>
+</div>
+</div>
+</template>
+
+<div class="theme-dialog-body">
+
+<div class="form-group">
+<label class="form-label" for="default-01">Input text label</label>
+<div class="form-control-wrap">
+<input type="text" class="form-control" id="default-01" placeholder="Input placeholder">
+</div>
+</div>
+
+
+
+
+<div class="form-group">
+    <label class="form-label" for="default-01">Input text label</label>
+    <div class="form-control-wrap">
+
+    </div>
+</div>
+
+
+</div>
+<template #footer>
+<div class="theme-dialog-footer">
+<el-button size="large" @click="centerDialogVisible = false">Cancel</el-button>
+<el-button size="large" type="primary" @click="handleActionConfirm">
+Confirm
+</el-button>
+</div>
+</template>
+</el-dialog>
+
+
+
+
+
+
+
+
+
+
+
 </CooperativeLayout>
 </template>
 

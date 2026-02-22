@@ -48,4 +48,9 @@ class Batch extends Model
     {
         return $this->hasMany(BatchChainEvent::class, 'batch_id');
     }
+
+    public function actions(): HasMany
+    {
+        return $this->hasMany(BatchAction::class, 'batch_id');
+    }
 }

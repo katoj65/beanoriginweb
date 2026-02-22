@@ -375,3 +375,67 @@ h2 {
 .theme-no-highlight-select-popper .el-select-dropdown__item.is-selected::after {
   color: #606266 !important;
 }
+
+/* Theme utility: modern Element Plus action dialog */
+.theme-action-dialog.el-dialog {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 56px rgba(15, 23, 42, 0.2);
+}
+
+.theme-action-dialog .el-dialog__header {
+  margin-right: 0;
+  padding: 20px 22px 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.theme-action-dialog .el-dialog__body {
+  padding: 16px 22px 12px;
+}
+
+.theme-action-dialog .el-dialog__footer {
+  padding: 14px 22px 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.theme-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.theme-dialog-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #fff7ed;
+  color: #ea580c;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.theme-dialog-title {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #102a43;
+}
+
+.theme-dialog-subtext {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.theme-dialog-body {
+  color: #364a63;
+  line-height: 1.6;
+}
+
+.theme-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
