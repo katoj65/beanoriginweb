@@ -124,6 +124,9 @@ class BatchController extends Controller
         //
     }
 
+
+
+
     public function batchVerificationAction(Request $request)
     {
         $validate = $request->validate([
@@ -182,4 +185,23 @@ class BatchController extends Controller
             'batch' => new BatchResource($batch),
         ]);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 }
