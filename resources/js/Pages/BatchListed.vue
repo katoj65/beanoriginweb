@@ -276,7 +276,6 @@ v-model="form.batch_action"
 class="w-100 theme-no-highlight-select dialog-field-control"
 placeholder="Select action"
 clearable
-filterable
 popper-class="theme-no-highlight-select-popper"
 >
 <el-option

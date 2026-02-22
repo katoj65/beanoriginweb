@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             CropGradeSeeder::class,
             ChainBatchStatusSeeder::class,
             BatchActionListSeeder::class,
+            CommodityLifecycleSeeder::class,
         ]);
 
 
