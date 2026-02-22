@@ -1,8 +1,9 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { router, usePage } from '@inertiajs/vue3';
+import { router, usePage, useForm } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
-import { Search, Plus, WarningFilled } from '@element-plus/icons-vue';
+import SubmitButton from '@/Components/SubmitButton.vue';
+import { Search, Plus } from '@element-plus/icons-vue';
 
 const page = usePage();
 
@@ -107,22 +108,42 @@ router.get(route('cooperative.batches.create'));
 };
 
 const centerDialogVisible = ref(false);
+const form = useForm({
+batch_number: '',
+batch_action: '',
+});
 
 const handleActionConfirm = () => {
-resetFilters();
+form.post(route('cooperative.batches.verification.action'), {
+preserveScroll: true,
+onSuccess: () => {
 centerDialogVisible.value = false;
+form.reset();
+},
+});
 };
 
-
-
-
-
-
+const fallbackActions = [
+{ id: 'roasted', name: 'roasted' },
+{ id: 'bought', name: 'bought' },
+{ id: 'shipped', name: 'shipped' },
+{ id: 'delivered', name: 'delivered' },
+{ id: 'exported', name: 'exported' },
+];
+const actions = computed(() => {
+const list = page.props.batch_action_list ?? [];
+return list.length ? list : fallbackActions;
+});
 
 </script>
 
 <template>
 <CooperativeLayout>
+
+
+
+
+
 <div class="container">
 <div class="card card-bordered">
 <div class="card-inner border-bottom market-card-header">
@@ -216,10 +237,7 @@ width="560"
 align-center
 >
 <template #header>
-<div class="theme-dialog-header">
-<span class="theme-dialog-icon">
-<el-icon><WarningFilled /></el-icon>
-</span>
+<div class="theme-dialog-header border-0">
 <div>
 <h5 class="theme-dialog-title">Batch Action</h5>
 <p class="theme-dialog-subtext mb-0">Apply a quick action to the live market board.</p>
@@ -227,35 +245,59 @@ align-center
 </div>
 </template>
 
-<div class="theme-dialog-body">
+<div class="theme-dialog-body border-0">
+<form @submit.prevent="handleActionConfirm">
+<div class="form-group">
+<label class="form-label" for="batch-number-input">Batch Number</label>
+<div class="form-control-wrap theme-no-highlight">
+<el-input
+id="batch-number-input"
+v-model="form.batch_number"
+class="w-100 dialog-field-control"
+size="large"
+clearable
+placeholder="Enter batch number"
+/>
+</div>
+<div v-if="form.errors.batch_number" class="text-danger small mt-1">
+{{ form.errors.batch_number }}
+</div>
+</div>
+
+
+
 
 <div class="form-group">
-<label class="form-label" for="default-01">Input text label</label>
+<label class="form-label" for="batch-action-select">Action</label>
 <div class="form-control-wrap">
-<input type="text" class="form-control" id="default-01" placeholder="Input placeholder">
+<el-select
+id="batch-action-select"
+v-model="form.batch_action"
+class="w-100 theme-no-highlight-select dialog-field-control"
+placeholder="Select action"
+clearable
+filterable
+popper-class="theme-no-highlight-select-popper"
+>
+<el-option
+v-for="item in actions"
+:key="item.id"
+:label="item.name"
+:value="item.name"
+/>
+</el-select>
+</div>
+<div v-if="form.errors.batch_action" class="text-danger small mt-1">
+{{ form.errors.batch_action }}
 </div>
 </div>
 
-
-
-
-<div class="form-group">
-    <label class="form-label" for="default-01">Input text label</label>
-    <div class="form-control-wrap">
-
-    </div>
+<div class="theme-dialog-footer mt-3">
+<SubmitButton :title="'Submit'" :status="form.processing" />
 </div>
-
+</form>
 
 </div>
-<template #footer>
-<div class="theme-dialog-footer">
-<el-button size="large" @click="centerDialogVisible = false">Cancel</el-button>
-<el-button size="large" type="primary" @click="handleActionConfirm">
-Confirm
-</el-button>
-</div>
-</template>
 </el-dialog>
 
 
@@ -357,6 +399,13 @@ color: #909399 !important;
 display: flex;
 align-items: center;
 gap: 8px;
+}
+
+.dialog-field-control :deep(.el-input__wrapper),
+.dialog-field-control :deep(.el-select__wrapper) {
+min-height: 44px !important;
+height: 44px !important;
+align-items: center;
 }
 
 @media (max-width: 767px) {

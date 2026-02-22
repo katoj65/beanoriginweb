@@ -11,6 +11,7 @@ class BatchActionList extends Model
 
     protected $fillable = [
         'name',
+        'batch_number',
     ];
 
     public function batchActions(): HasMany
@@ -18,4 +19,3 @@ class BatchActionList extends Model
         return $this->hasMany(BatchAction::class, 'action', 'name');
     }
 }
-

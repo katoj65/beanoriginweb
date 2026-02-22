@@ -29,6 +29,7 @@ use App\Http\Resources\CommodityResource;
 use App\Models\Commodity;
 use App\Models\CommodityFarm;
 use App\Models\Batch;
+use App\Models\BatchActionList;
 use App\Models\ChainBatch;
 use App\Models\ChainBlock;
 use App\Services\Payments\PaymentService;
@@ -72,7 +73,7 @@ return Inertia::render('ProducePage', [
 
 public function batchListed(Request $request)
 {
-$user = $request->user();
+	$user = $request->user();
 
 $batches = Batch::query()
 ->where('owner_id', auth()->id())
@@ -96,10 +97,22 @@ return [
 'chain_height' => null,
 'ask_price' => null,
 ];
-});
+	});
+
+	$batchActionList = BatchActionList::query()
+	->where('name', '!=', 'created')
+	->orderBy('name')
+	->get(['id', 'name']);
+
+
+
+
+
 
 return Inertia::render('BatchListed', [
-'batches' => $batches,
+	'batches' => $batches,
+	'batch_action_list' => $batchActionList,
+
 ]);
 }
 

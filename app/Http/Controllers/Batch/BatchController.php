@@ -77,7 +77,6 @@ class BatchController extends Controller
 
             return $batch;
         });
-        
 
         return redirect()
             ->route('cooperative.batches.show', ['id' => $batch->id])
@@ -123,5 +122,64 @@ class BatchController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function batchVerificationAction(Request $request)
+    {
+        $validate = $request->validate([
+            'batch_number' => ['required', 'string', 'max:255'],
+            'batch_action' => ['required', 'string', 'max:255'],
+        ]);
+
+        $batch = Batch::query()
+            ->where('batch_code', $validate['batch_number'])
+            ->where('owner_id', auth()->id())
+            ->where('status', 'created')
+            ->first();
+
+        if (!$batch) {
+            return back()->withErrors([
+                'batch_number' => 'Batch not found.',
+            ])->withInput();
+        }
+
+        return redirect()->route('cooperative.batches.action.page', [
+            'batch_id' => $batch->id,
+            'batch_action' => $validate['batch_action'],
+        ]);
+    }
+
+
+
+
+
+
+
+
+    // Render summary page for selected batch and intended action.
+    public function BatchActionPage(Request $request)
+    {
+        $batchId = (int) $request->input('batch_id');
+        $selectedAction = (string) $request->input('batch_action', '');
+
+        $batch = Batch::query()
+            ->where('id', $batchId)
+            ->where('owner_id', auth()->id())
+            ->where('status','!=', 'bought')
+            ->first();
+
+        if (!$batch) {
+            return redirect()
+                ->route('cooperative.batches.listed')
+                ->withErrors(['batch_number' => 'Batch not found for action summary.']);
+        }
+
+        return Inertia::render('BatchActionPage', [
+            'selection' => [
+                'selected_action' => $selectedAction,
+                'batch_number' => $batch->batch_code,
+            ],
+            'batch' => new BatchResource($batch),
+        ]);
     }
 }
