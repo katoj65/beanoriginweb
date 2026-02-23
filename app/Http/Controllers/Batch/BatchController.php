@@ -5,14 +5,17 @@ namespace App\Http\Controllers\Batch;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BatchResource;
 use App\Models\Batch;
+use App\Models\BatchActionList;
 use App\Models\CropGrade;
 use App\Models\Crops;
 use App\Models\UserProfile;
 use App\Services\Blockchain\BatchChainService;
 use App\Services\Blockchain\BlockService;
+use App\Models\Block;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+
 
 class BatchController extends Controller
 {
@@ -21,7 +24,76 @@ class BatchController extends Controller
  */
 public function index()
 {
-//
+    $user = auth()->user();
+
+    $latestBlocks = DB::table('blocks')
+        ->select('batch_id', DB::raw('MAX(block_index) as latest_block_index'))
+        ->groupBy('batch_id');
+
+    $latestPrices = DB::table('block_prices')
+        ->select('block_id', DB::raw('MAX(id) as latest_price_id'))
+        ->groupBy('block_id');
+
+
+
+    $batches = DB::table('batches')
+        ->leftJoinSub($latestBlocks, 'latest_blocks', function ($join) {
+            $join->on('latest_blocks.batch_id', '=', 'batches.id');
+        })
+        ->leftJoin('blocks', function ($join) {
+            $join->on('blocks.batch_id', '=', 'batches.id')
+                ->on('blocks.block_index', '=', 'latest_blocks.latest_block_index');
+        })
+        ->leftJoinSub($latestPrices, 'latest_prices', function ($join) {
+            $join->on('latest_prices.block_id', '=', 'blocks.id');
+        })
+        ->leftJoin('block_prices', 'block_prices.id', '=', 'latest_prices.latest_price_id')
+        ->where('batches.owner_id', auth()->id())
+        ->where('batches.is_on_chain', 1)
+        ->orderByDesc('batches.created_at')
+        ->get([
+            'batches.id',
+            'batches.batch_code as batch_number',
+            'batches.status',
+            'batches.grade',
+            'batches.weight',
+            'batches.created_at',
+            'batches.commodity_name',
+            'blocks.current_hash as latest_block_hash',
+            'blocks.block_index as chain_height',
+            'block_prices.price as ask_price',
+            'block_prices.currency',
+        ])
+        ->map(function ($row) use ($user) {
+            return [
+                'id' => (int) $row->id,
+                'batch_number' => $row->batch_number,
+                'status' => $row->status,
+                'grade' => $row->grade,
+                'weight' => $row->weight,
+                'created_at' => $row->created_at,
+                'listed_at' => $row->created_at,
+                'commodity_id' => null,
+                'commodity_names' => $row->commodity_name ? [$row->commodity_name] : [],
+                'commodity_count' => $row->commodity_name ? 1 : 0,
+                'seller_name' => trim(($user?->fname ?? '') . ' ' . ($user?->lname ?? '')),
+                'latest_block_hash' => $row->latest_block_hash,
+                'chain_height' => $row->chain_height ? (int) $row->chain_height : null,
+                'ask_price' => $row->ask_price,
+                'currency' => $row->currency,
+            ];
+        })
+        ->values();
+
+    $batchActionList = BatchActionList::query()
+        ->where('name', '!=', 'created')
+        ->orderBy('name')
+        ->get(['id', 'name']);
+
+    return Inertia::render('BatchListed', [
+        'batches' => $batches,
+        'batch_action_list' => $batchActionList,
+    ]);
 }
 
 /**
@@ -47,21 +119,27 @@ return Inertia::render('BatchCreate', [
 
 
 
+
+
 /**
  * Store a newly created resource in storage.
  */
 public function store(Request $request, BatchChainService $batchChainService, BlockService $blockService)
 {
+
 $validated = $request->validate([
 'batch_code' => ['required', 'string', 'max:255', 'unique:batches,batch_code'],
 'commodity_name' => ['required', 'string', 'max:255', 'exists:crops,name'],
 'commodity_type' => ['required', 'string', 'max:255'],
 'weight' => ['required', 'numeric', 'min:0.01'],
+'price' => ['required', 'numeric', 'min:0.01'],
 'grade' => ['required', 'string', 'max:100', 'exists:crop_grades,name'],
 'moisture' => ['nullable', 'numeric', 'min:0', 'max:100'],
 'warehouse' => ['required', 'string', 'max:255'],
+
 ]);
 
+// Use a transaction to ensure atomicity of batch creation and blockchain recording.
 $batch = DB::transaction(function () use ($request, $validated, $batchChainService, $blockService) {
 $batch = Batch::create([
 'owner_id' => $request->user()->id,
@@ -78,11 +156,13 @@ $batch = Batch::create([
 
 // Set previous owner to the creator for the initial block.
 
-$batchChainService->addBlock($batch);
-$blockService->addBlock($batch);
-$batch->update(['is_on_chain' => true]);
+// $batchChainService->addBlock($batch);
+// $blockService->addBlockPrice($block->id, (float) ($validated['price'] ?? 0));
+// Initial price can be null or set to a default value.
+// $batch->update(['is_on_chain' => true]);
 return $batch;
 });
+
 
 return redirect()
 ->route('cooperative.batches.show', ['id' => $batch->id])
@@ -100,11 +180,18 @@ return redirect()
  */
 public function show(string $id)
 {
+
+
 $batch = Batch::query()
 ->with('owner:id,fname,lname,email')
 ->where('owner_id', auth()->id())
-->where('is_on_chain', 1)
 ->findOrFail($id);
+
+$blockchain = Block::where('batch_id', $batch->id)
+->where('current_owner', $batch->owner_id)
+->where('previous_owner', $batch->owner_id)
+->latest('block_index')
+->first();
 
 // Query profile using the user who owns this batch.
 $ownerProfile = UserProfile::query()
@@ -117,6 +204,11 @@ $batch->owner->setRelation('userProfile', $ownerProfile);
 
 return Inertia::render('BatchDetailsPage', [
 'batch' => new BatchResource($batch),
+'block'=>$blockchain,
+'block_price' =>'',
+
+
+
 ]);
 }
 
@@ -204,6 +296,36 @@ return Inertia::render('BatchActionPage', [
 
 
 
+
+
+public function batchUnlisted(Request $request)
+{
+    $user = $request->user();
+
+    $batches = Batch::query()
+        ->where('owner_id', $user->id)
+        ->where('is_on_chain', 0)
+        ->latest()
+        ->get()
+        ->map(function (Batch $batch) use ($user) {
+            return [
+                'id' => $batch->id,
+                'batch_number' => $batch->batch_code,
+                'status' => $batch->status,
+                'grade' => $batch->grade,
+                'weight' => $batch->weight,
+                'commodity_name' => $batch->commodity_name,
+                'warehouse' => $batch->warehouse,
+                'created_at' => $batch->created_at?->toDateTimeString(),
+                'seller_name' => trim(($user?->fname ?? '') . ' ' . ($user?->lname ?? '')),
+            ];
+        })
+        ->values();
+
+    return Inertia::render('BatchUnlistedPage', [
+        'batches' => $batches,
+    ]);
+}
 
 
 

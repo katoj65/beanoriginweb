@@ -294,6 +294,13 @@ Sign Out
 </li>
 
 <li class="nk-menu-item">
+<Link :href="route('cooperative.batches.unlisted')" class="nk-menu-link">
+<span class="nk-menu-icon"><em class="icon ni ni-archive"></em></span>
+<span class="nk-menu-text">Batch Unlisted</span>
+</Link>
+</li>
+
+<li class="nk-menu-item">
 <Link :href="route('cooperative.produce')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-bag"></em></span>
 <span class="nk-menu-text">Commodity Listings</span>

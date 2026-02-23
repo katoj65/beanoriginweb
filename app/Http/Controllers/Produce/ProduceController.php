@@ -96,6 +96,10 @@ return [
 'latest_block_hash' => null,
 'chain_height' => null,
 'ask_price' => null,
+
+
+
+
 ];
 	});
 
@@ -103,6 +107,11 @@ return [
 	->where('name', '!=', 'created')
 	->orderBy('name')
 	->get(['id', 'name']);
+
+
+//get the latest block for each batch and attach the hash and chain height to the batch data
+
+
 
 
 

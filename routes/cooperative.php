@@ -58,7 +58,9 @@ Route::post('/verification/farmer/produce',[ProduceController::class,'store_veri
 Route::get('/cooperative/produce/create/{any}',[ProduceController::class,'create_batch'])->name('cooperative.produce.create.batch');
 
 Route::get('/cooperative/batch/{id}',[ProduceController::class,'show'])->name('cooperative.batch.show');
-Route::get('/cooperative/batches/listed',[ProduceController::class,'batchListed'])->name('cooperative.batches.listed');
+// Route::get('/cooperative/batches/listed',[ProduceController::class,'batchListed'])->name('cooperative.batches.listed');
+ Route::get('/cooperative/batches/listed',[BatchController::class,'index'])->name('cooperative.batches.listed');
+Route::get('/cooperative/batches/unlisted',[BatchController::class,'batchUnlisted'])->name('cooperative.batches.unlisted');
 Route::get('/cooperative/batches/create',[BatchController::class,'create'])->name('cooperative.batches.create');
 Route::get('/cooperative/batches/action-page',[BatchController::class,'BatchActionPage'])->name('cooperative.batches.action.page');
 Route::get('/cooperative/batches/{id}',[BatchController::class,'show'])->whereNumber('id')->name('cooperative.batches.show');

@@ -18,7 +18,19 @@ const statusOptions = [
 { label: 'Sold', value: 'sold' },
 ];
 
-const rawBatches = computed(() => page.props.batches?.data ?? page.props.batches ?? []);
+const rawBatches = computed(() => {
+const source = page.props.batches?.data ?? page.props.batches ?? [];
+
+if (Array.isArray(source)) {
+return source;
+}
+
+if (source && typeof source === 'object') {
+return Object.values(source);
+}
+
+return [];
+});
 
 const parseCommodityNames = (item) => {
 if (Array.isArray(item?.commodities)) {
