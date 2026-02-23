@@ -1,7 +1,7 @@
 <script setup>
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import FarmersTable from '@/Tables/FarmersTable.vue';
-import { usePage } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { ref, onMounted, computed } from 'vue';
 
 
@@ -86,6 +86,14 @@ const tabs = computed(() => [
   { title: 'Buyers', subtitle: 'Active buyers', stats: '400', icon: 'ni-user-circle' },
 ]);
 
+const goToBatchDetails = (row) => {
+  const batchId = Number(row?.batch_id ?? row?.id);
+  if (!Number.isFinite(batchId) || batchId <= 0) {
+    return;
+  }
+
+  router.get(route('cooperative.batches.show', { id: batchId }));
+};
 
 
 
@@ -121,27 +129,27 @@ const tabs = computed(() => [
 <span class="sub-text">Live buyer bids</span>
 </div>
 <div class="card-body p-0">
-<el-table :data="produces" height="350" style="width: 100%">
-<el-table-column prop="id" width="100">
+<el-table :data="produces" height="350" style="width: 100%" @row-click="goToBatchDetails" class="clickable-batches-table">
+<el-table-column prop="batch_id" width="100">
 <template #header><em class="icon ni ni-hash mr-1"></em>Batch ID</template>
 </el-table-column>
-<el-table-column prop="crop_name" width="150">
-<template #header><em class="icon ni ni-growth mr-1"></em>Crop</template>
+<el-table-column prop="commodity_name" width="170">
+<template #header><em class="icon ni ni-growth mr-1"></em>Commodity</template>
 </el-table-column>
-<el-table-column prop="crop_type" width="120">
-<template #header><em class="icon ni ni-growth mr-1"></em>Type</template>
+<el-table-column prop="batch_code" width="150">
+<template #header><em class="icon ni ni-tag mr-1"></em>Batch Code</template>
 </el-table-column>
-<el-table-column prop="quantity" width="110">
-<template #header><em class="icon ni ni-package mr-1"></em>Qty (kg)</template>
+<el-table-column prop="weight" width="110">
+<template #header><em class="icon ni ni-package mr-1"></em>Weight</template>
 </el-table-column>
 <el-table-column prop="price" width="110">
 <template #header><em class="icon ni ni-coins mr-1"></em>Price</template>
 </el-table-column>
-<el-table-column prop="status" width="110">
-<template #header><em class="icon ni ni-flag mr-1"></em>Status</template>
+<el-table-column prop="event_type" width="120">
+<template #header><em class="icon ni ni-flag mr-1"></em>Event</template>
 </el-table-column>
-<el-table-column prop="date_of_harvest" min-width="140">
-<template #header><em class="icon ni ni-calendar mr-1"></em>Harvest Date</template>
+<el-table-column prop="created_at" min-width="170">
+<template #header><em class="icon ni ni-calendar mr-1"></em>Created</template>
 </el-table-column>
 </el-table>
 </div>
@@ -339,6 +347,10 @@ border-radius: inherit;
 :deep(.modern-panel .el-table__header-wrapper),
 :deep(.modern-panel .el-table__body-wrapper) {
 border-radius: 12px;
+}
+
+:deep(.clickable-batches-table .el-table__row) {
+cursor: pointer;
 }
 
 :deep(.modern-panel .el-table__header-wrapper) {
