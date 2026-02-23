@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('batch_prices', function (Blueprint $table) {
+        Schema::create('block_prices', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('block_id')->constrained('blocks')->onDelete('cascade');
+            $table->decimal('price', 10, 2);
+            $table->string('currency', 10)->nullable();
             $table->timestamps();
         });
     }
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('batch_prices');
+        Schema::dropIfExists('block_prices');
     }
 };

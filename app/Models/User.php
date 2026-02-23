@@ -87,6 +87,16 @@ class User extends Authenticatable
         return $this->hasMany(CommodityPayment::class, 'buyer_id');
     }
 
+    public function blockPurchases(): HasMany
+    {
+        return $this->hasMany(BlockPurchase::class, 'buyer_id');
+    }
+
+    public function blockSales(): HasMany
+    {
+        return $this->hasMany(BlockPurchase::class, 'seller_id');
+    }
+
     public function batches(): HasMany
     {
         return $this->hasMany(Batch::class, 'owner_id');

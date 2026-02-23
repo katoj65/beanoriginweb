@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Block extends Model
 {
@@ -39,5 +40,15 @@ class Block extends Model
     public function previousOwner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'previous_owner');
+    }
+
+    public function prices(): HasMany
+    {
+        return $this->hasMany(BlockPrice::class, 'block_id');
+    }
+
+    public function purchases(): HasMany
+    {
+        return $this->hasMany(BlockPurchase::class, 'block_id');
     }
 }
