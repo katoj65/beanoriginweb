@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { router, usePage, useForm } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import SubmitButton from '@/Components/SubmitButton.vue';
@@ -43,6 +43,10 @@ if (Array.isArray(item?.commodity_names)) {
 return item.commodity_names.filter(Boolean);
 }
 
+if (item?.commodity_name) {
+return [item.commodity_name].filter(Boolean);
+}
+
 if (typeof item?.commodity_names === 'string' && item.commodity_names.trim()) {
 return item.commodity_names.split(',').map((value) => value.trim()).filter(Boolean);
 }
@@ -55,14 +59,14 @@ return rawBatches.value.map((item) => {
 const commodityNames = parseCommodityNames(item);
 return {
 id: item.id,
-batchNumber: item.batch_number ?? `BATCH-${item.id ?? 'N/A'}`,
+batchNumber: item.batch_number ?? item.batch_code ?? `BATCH-${item.id ?? 'N/A'}`,
 status: item.status ?? 'listed',
 grade: item.grade ?? 'N/A',
 weight: Number(item.weight ?? 0),
 listedAt: item.listed_at ?? item.created_at ?? null,
 commodityNames,
 commodityCount: item.commodity_count ?? commodityNames.length,
-askPrice: item.ask_price ?? null,
+askPrice: item.ask_price ?? item.price ?? null,
 };
 });
 });
@@ -146,6 +150,17 @@ const actions = computed(() => {
 const list = page.props.batch_action_list ?? [];
 return list.length ? list : fallbackActions;
 });
+
+
+onMounted(()=>{
+console.log(page.props.batches.data);
+});
+
+
+
+
+
+
 
 </script>
 

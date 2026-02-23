@@ -29,11 +29,8 @@ public function index()
 $user = auth()->user();
 $baches = Batch::query()->where('owner_id', $user->id)->where('status', '!=', 'bought')->latest()->get();
 
-return BatchBlockResource::collection($baches);
-
-
 return Inertia::render('BatchListed', [
-'batches' => [],
+'batches' => BatchBlockResource::collection($baches),
 'batch_action_list' => [],
 ]);
 }
@@ -213,7 +210,6 @@ $block = $blockService->addBlock($batch, [
 'entered_price' => $validated['price'],
 ]);
 
-// $blockService->addBlockPrice($block->id, (float) ($block->price ?? $validated['price']));
 
 });
 

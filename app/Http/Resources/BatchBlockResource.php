@@ -15,21 +15,27 @@ class BatchBlockResource extends JsonResource
  */
 public function toArray(Request $request): array
 {
+
+$block=new BlockResource(Block::query()
+->where('batch_id', $this->id)
+->where('current_owner', $this->owner_id)
+->where('event_type', 'listed')
+->latest()->first());
+
+
+
 return [
 'id' => $this->id,
 'commodity_name' => $this->commodity_name,
 'commodity_type' => $this->commodity_type,
-'weight' => $this->weight,
+'weight' => $block->weight ?? $this->weight,
 'grade' => $this->grade,
+'price' => $block->price ?? $this->price,
 'moisture' => $this->moisture,
 'warehouse' => $this->warehouse,
 'status' => $this->status,
-'created_at' => $this->created_at?->toDateTimeString(),
-'block'=>new BlockResource(Block::query()
-->where('batch_id', $this->id)
-->where('current_owner', $this->owner_id)
-->where('event_type', 'listed')
-->latest()->first())
+'created_at' => $block->created_at?->toDateTimeString(),
+
 
 ];
 }
