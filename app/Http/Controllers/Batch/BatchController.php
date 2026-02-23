@@ -139,6 +139,14 @@ $validated = $request->validate([
 
 ]);
 
+
+
+
+
+
+
+
+
 // Use a transaction to ensure atomicity of batch creation and blockchain recording.
 $batch = DB::transaction(function () use ($request, $validated, $batchChainService, $blockService) {
 $batch = Batch::create([
@@ -152,7 +160,7 @@ $batch = Batch::create([
 'warehouse' => $validated['warehouse'],
 'is_on_chain' => false,
 'status' => 'created',
-'price'=> $validated['price']
+'price' => $validated['price'] ?? null,
 
 ]);
 
@@ -318,6 +326,7 @@ public function batchUnlisted(Request $request)
                 'weight' => $batch->weight,
                 'commodity_name' => $batch->commodity_name,
                 'warehouse' => $batch->warehouse,
+                'price' => $batch->price,
                 'created_at' => $batch->created_at?->toDateTimeString(),
                 'seller_name' => trim(($user?->fname ?? '') . ' ' . ($user?->lname ?? '')),
             ];
