@@ -15,12 +15,9 @@ import '../temp2/assets/css/dashlite.min.css';
 import '../temp2/assets/css/theme.css';
 
 // Global app theme overrides (keep after vendor css)
-import '../css/app.css';
-
-
-
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
+import '../css/app.css';
 
 //chart
 import VueChartkick from 'vue-chartkick';

@@ -14,6 +14,7 @@ use App\Services\Blockchain\BlockService;
 use App\Models\Block;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\BatchBlockResource;
 use Inertia\Inertia;
 
 
@@ -24,81 +25,22 @@ class BatchController extends Controller
  */
 public function index()
 {
+
 $user = auth()->user();
+$baches = Batch::query()->where('owner_id', $user->id)->where('status', '!=', 'bought')->latest()->get();
 
-$latestBlocks = DB::table('blocks')
-->select('batch_id', DB::raw('MAX(block_index) as latest_block_index'))
-->groupBy('batch_id');
+return BatchBlockResource::collection($baches);
 
-$latestPrices = DB::table('block_prices')
-->select('block_id', DB::raw('MAX(id) as latest_price_id'))
-->groupBy('block_id');
-
-
-
-$batches = DB::table('batches')
-->leftJoinSub($latestBlocks, 'latest_blocks', function ($join) {
-$join->on('latest_blocks.batch_id', '=', 'batches.id');
-})
-->leftJoin('blocks', function ($join) {
-$join->on('blocks.batch_id', '=', 'batches.id')
-->on('blocks.block_index', '=', 'latest_blocks.latest_block_index');
-})
-->leftJoinSub($latestPrices, 'latest_prices', function ($join) {
-$join->on('latest_prices.block_id', '=', 'blocks.id');
-})
-->leftJoin('block_prices', 'block_prices.id', '=', 'latest_prices.latest_price_id')
-->where('batches.owner_id', auth()->id())
-->where(function ($query) {
-$query->where('batches.is_on_chain', 'true')
-->orWhere('batches.is_on_chain', 1)
-->orWhere('batches.is_on_chain', '1');
-})
-->orderByDesc('batches.created_at')
-->get([
-'batches.id',
-'batches.batch_code as batch_number',
-'batches.status',
-'batches.grade',
-'batches.weight',
-'batches.created_at',
-'batches.commodity_name',
-'blocks.current_hash as latest_block_hash',
-'blocks.block_index as chain_height',
-'block_prices.price as ask_price',
-'block_prices.currency',
-])
-->map(function ($row) use ($user) {
-return [
-'id' => (int) $row->id,
-'batch_number' => $row->batch_number,
-'status' => $row->status,
-'grade' => $row->grade,
-'weight' => $row->weight,
-'created_at' => $row->created_at,
-'listed_at' => $row->created_at,
-'commodity_id' => null,
-'commodity_names' => $row->commodity_name ? [$row->commodity_name] : [],
-'commodity_count' => $row->commodity_name ? 1 : 0,
-'seller_name' => trim(($user?->fname ?? '') . ' ' . ($user?->lname ?? '')),
-'latest_block_hash' => $row->latest_block_hash,
-'chain_height' => $row->chain_height ? (int) $row->chain_height : null,
-'ask_price' => $row->ask_price,
-'currency' => $row->currency,
-];
-})
-->values();
-
-$batchActionList = BatchActionList::query()
-->where('name', '!=', 'created')
-->orderBy('name')
-->get(['id', 'name']);
 
 return Inertia::render('BatchListed', [
-'batches' => $batches,
-'batch_action_list' => $batchActionList,
+'batches' => [],
+'batch_action_list' => [],
 ]);
 }
+
+
+
+
 
 /**
  * Display the create form.
@@ -142,12 +84,6 @@ $validated = $request->validate([
 'warehouse' => ['required', 'string', 'max:255'],
 
 ]);
-
-
-
-
-
-
 
 
 
@@ -264,9 +200,6 @@ return back()->withErrors([
 ])->withInput();
 }
 
-
-
-
 DB::transaction(function () use ($batch, $validated, $blockService) {
 $batch->update([
 'price' => $validated['price'],
@@ -275,7 +208,7 @@ $batch->update([
 ]);
 
 $block = $blockService->addBlock($batch, [
-'event_type' => 'batch_listed',
+'event_type' => 'listed',
 'action' => 'listed_on_chain',
 'entered_price' => $validated['price'],
 ]);
@@ -288,9 +221,6 @@ return redirect()
 ->route('cooperative.batches.show', ['id' => $batch->id])
 ->with('success', 'Batch listed on chain successfully.');
 
-
-
-
 }
 
 
@@ -299,12 +229,7 @@ return redirect()
 
 
 
-
-
-
-
-
-
+// Custom method to handle batch verification action form submission.
 public function batchVerificationAction(Request $request)
 {
 $validate = $request->validate([

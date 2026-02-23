@@ -28,7 +28,7 @@ class BlockService
         $enteredPrice = $this->resolveEnteredPrice($batch, $eventData);
         $previousPrice = is_numeric($latestBlock?->price) ? (float) $latestBlock->price : null;
         $resolvedPrice = $this->resolveBlockPrice($enteredPrice, $previousPrice);
-        $eventType = (string) ($eventData['event_type'] ?? 'batch_created');
+        $eventType = (string) ($eventData['event_type'] ?? 'created');
 
         // Stage 3: Build a deterministic hash payload for this block.
         $currentHash = hash('sha256', implode('|', [
