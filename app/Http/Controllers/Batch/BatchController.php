@@ -152,6 +152,8 @@ $batch = Batch::create([
 'warehouse' => $validated['warehouse'],
 'is_on_chain' => false,
 'status' => 'created',
+'price'=> $validated['price']
+
 ]);
 
 // Set previous owner to the creator for the initial block.
