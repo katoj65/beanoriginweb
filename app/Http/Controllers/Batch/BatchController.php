@@ -15,6 +15,7 @@ use App\Models\Block;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\BatchBlockResource;
+use App\Http\Resources\BlockBatchLatestResource;
 use Inertia\Inertia;
 
 
@@ -27,13 +28,32 @@ public function index()
 {
 
 $user = auth()->user();
-$baches = Batch::query()->where('owner_id', $user->id)
-->where('status', '!=', 'bought')
-->where('status','listed')
-->latest()->get();
+$baches = Block::query()
+->select('batches.id',
+'batches.commodity_name',
+'batches.batch_code',
+'blocks.created_at',
+'blocks.price',
+'blocks.weight',
+'blocks.event_type',
+'blocks.event_data')
+->join('batches', 'blocks.batch_id', '=', 'batches.id')
+->where('blocks.current_owner', $user->id)
+->where('blocks.event_type', 'listed')
+->whereIn('blocks.block_index', function ($q) use ($user) {
+$q->from('blocks')
+->selectRaw('MAX(block_index)')
+->where('current_owner', $user->id)
+->where('event_type', 'listed')
+->groupBy('batch_id');
+})
+->get();
+
+
+
 
 return Inertia::render('BatchListed', [
-'batches' => BatchBlockResource::collection($baches),
+'batches' => BlockBatchLatestResource::collection($baches),
 'batch_action_list' => [],
 ]);
 }
@@ -78,7 +98,7 @@ $validated = $request->validate([
 'commodity_name' => ['required', 'string', 'max:255', 'exists:crops,name'],
 'commodity_type' => ['required', 'string', 'max:255'],
 'weight' => ['required', 'numeric', 'min:0.01'],
-'price' => ['nullable', 'numeric', 'min:0.01'],
+'price' => ['required', 'numeric', 'min:0.01'],
 'grade' => ['required', 'string', 'max:100', 'exists:crop_grades,name'],
 'moisture' => ['nullable', 'numeric', 'min:0', 'max:100'],
 'warehouse' => ['required', 'string', 'max:255'],
@@ -98,9 +118,9 @@ $batch = Batch::create([
 'grade' => $validated['grade'],
 'moisture' => $validated['moisture'] ?? null,
 'warehouse' => $validated['warehouse'],
-'is_on_chain' => 'false',
+'is_on_chain' => false,
 'status' => 'created',
-'price' => $validated['price'] ?? null,
+'price' => $validated['price'],
 
 ]);
 

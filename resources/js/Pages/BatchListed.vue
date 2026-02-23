@@ -57,16 +57,27 @@ return [];
 const normalizedBatches = computed(() => {
 return rawBatches.value.map((item) => {
 const commodityNames = parseCommodityNames(item);
+let eventData = {};
+if (item?.event_data && typeof item.event_data === 'object') {
+eventData = item.event_data;
+} else if (typeof item?.event_data === 'string' && item.event_data.trim()) {
+try {
+eventData = JSON.parse(item.event_data);
+} catch (e) {
+eventData = {};
+}
+}
 return {
-id: item.id,
+id: item.id ?? item.batch_id,
 batchNumber: item.batch_number ?? item.batch_code ?? `BATCH-${item.id ?? 'N/A'}`,
 status: item.status ?? 'listed',
-grade: item.grade ?? 'N/A',
+grade: eventData.grade ?? item.grade ?? 'N/A',
 weight: Number(item.weight ?? 0),
 listedAt: item.listed_at ?? item.created_at ?? null,
 commodityNames,
 commodityCount: item.commodity_count ?? commodityNames.length,
 askPrice: item.ask_price ?? item.price ?? null,
+event_data: eventData,
 };
 });
 });
@@ -80,6 +91,7 @@ batch.batchNumber,
 batch.status,
 batch.grade,
 batch.commodityNames.join(' '),
+
 ].join(' ').toLowerCase();
 const matchesSearch = !q || haystack.includes(q);
 return matchesStatus && matchesSearch;
@@ -111,7 +123,9 @@ return amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFract
 };
 
 const viewBatch = (batch) => {
-router.get(route('cooperative.batches.show', { id: batch.id }));
+const batchId = batch.id ?? batch.batch_id;
+if (!batchId) return;
+router.get(route('cooperative.batches.show', { id: batchId }));
 };
 
 const resetFilters = () => {
@@ -226,7 +240,7 @@ Action
 <div class="fw-medium">{{ batch.commodityNames[0] ?? 'N/A' }}</div>
 <div class="sub-text">{{ batch.commodityCount }} linked commodity(s)</div>
 </td>
-<td>{{ batch.grade }}</td>
+<td>{{ batch.event_data?.grade ?? batch.grade ?? 'N/A' }}</td>
 <td>{{ formatWeight(batch.weight) }}</td>
 <td>{{ formatPrice(batch.askPrice) }}</td>
 <td>

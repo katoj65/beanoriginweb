@@ -92,8 +92,8 @@ v-for="item in crops"
 </div>
 
 <div class="col-12 col-md-6 field-block">
-<label class="form-label">Price</label>
-<el-input v-model="form.price" size="large" type="number" min="0.01" step="0.01" placeholder="Enter batch price" />
+<label class="form-label">Price </label>
+<el-input v-model="form.price" size="large" type="number" min="0.01" step="0.01" placeholder="Enter batch price"/>
 <InputError :message="form.errors.price" class="mt-2" />
 </div>
 
