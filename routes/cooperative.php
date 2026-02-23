@@ -65,6 +65,7 @@ Route::get('/cooperative/batches/create',[BatchController::class,'create'])->nam
 Route::get('/cooperative/batches/action-page',[BatchController::class,'BatchActionPage'])->name('cooperative.batches.action.page');
 Route::get('/cooperative/batches/{id}',[BatchController::class,'show'])->whereNumber('id')->name('cooperative.batches.show');
 Route::post('/cooperative/batches',[BatchController::class,'store'])->name('cooperative.batches.store');
+Route::post('/cooperative/batches/{id}/list-on-chain',[BatchController::class,'listOnChain'])->whereNumber('id')->name('cooperative.batches.list.on.chain');
 Route::post('/cooperative/batches/verification-action',[BatchController::class,'batchVerificationAction'])->name('cooperative.batches.verification.action');
 
 

@@ -28,6 +28,7 @@ const normalizedBatches = computed(() => {
         commodityName: item.commodity_name ?? 'N/A',
         grade: item.grade ?? 'N/A',
         weight: Number(item.weight ?? 0),
+        price: item.price ?? null,
         warehouse: item.warehouse ?? 'N/A',
         status: item.status ?? 'created',
         createdAt: item.created_at ?? null,
@@ -44,6 +45,7 @@ const filteredBatches = computed(() => {
             batch.batchNumber,
             batch.commodityName,
             batch.grade,
+            batch.price,
             batch.warehouse,
             batch.status,
         ].join(' ').toLowerCase();
@@ -53,6 +55,13 @@ const filteredBatches = computed(() => {
 });
 
 const formatWeight = (value) => `${Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })} kg`;
+
+const formatPrice = (value) => {
+    if (value === null || value === undefined || value === '') return 'N/A';
+    const amount = Number(value);
+    if (Number.isNaN(amount)) return value;
+    return amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
 
 const formatDate = (value) => {
     if (!value) return 'N/A';
@@ -102,14 +111,15 @@ const goToCreate = () => {
                     <table class="table table-sm table-middle mb-0 batch-table">
                         <thead>
                             <tr>
-                                <th><em class="icon ni ni-hash"></em> Batch No.</th>
-                                <th><em class="icon ni ni-bag"></em> Commodity</th>
-                                <th><em class="icon ni ni-award"></em> Grade</th>
-                                <th><em class="icon ni ni-package"></em> Weight</th>
-                                <th><em class="icon ni ni-home"></em> Warehouse</th>
-                                <th><em class="icon ni ni-activity"></em> Status</th>
-                                <th><em class="icon ni ni-calendar"></em> Created Date</th>
-                                <th class="text-end"><em class="icon ni ni-setting"></em> Action</th>
+                                <th>Batch No.</th>
+                                <th>Commodity</th>
+                                <th>Grade</th>
+                                <th>Weight</th>
+                                <th>Price</th>
+                                <th>Warehouse</th>
+                                <th>Status</th>
+                                <th>Created Date</th>
+                                <th class="text-end">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -121,6 +131,7 @@ const goToCreate = () => {
                                 <td>{{ batch.commodityName }}</td>
                                 <td>{{ batch.grade }}</td>
                                 <td>{{ formatWeight(batch.weight) }}</td>
+                                <td>{{ formatPrice(batch.price) }}</td>
                                 <td>{{ batch.warehouse }}</td>
                                 <td><span class="badge bg-warning-subtle text-warning">{{ batch.status }}</span></td>
                                 <td>{{ formatDate(batch.createdAt) }}</td>
@@ -132,7 +143,7 @@ const goToCreate = () => {
                             </tr>
 
                             <tr v-if="!filteredBatches.length">
-                                <td colspan="8" class="text-center py-4 text-muted">
+                                <td colspan="9" class="text-center py-4 text-muted">
                                     No unlisted batches found.
                                 </td>
                             </tr>

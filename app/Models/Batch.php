@@ -20,6 +20,7 @@ class Batch extends Model
         'moisture',
         'warehouse',
         'is_on_chain',
+        'price',
         'status',
     ];
 
