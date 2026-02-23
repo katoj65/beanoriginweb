@@ -124,12 +124,6 @@ $batch = Batch::create([
 
 ]);
 
-// Set previous owner to the creator for the initial block.
-
-// $batchChainService->addBlock($batch);
-// $blockService->addBlockPrice($block->id, (float) ($validated['price'] ?? 0));
-// Initial price can be null or set to a default value.
-// $batch->update(['is_on_chain' => true]);
 return $batch;
 });
 
