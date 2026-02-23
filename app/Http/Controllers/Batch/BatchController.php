@@ -264,25 +264,33 @@ return back()->withErrors([
 ])->withInput();
 }
 
+
+
+
 DB::transaction(function () use ($batch, $validated, $blockService) {
 $batch->update([
 'price' => $validated['price'],
-'is_on_chain' => 'true',
+'is_on_chain' => true,
 'status' => 'listed',
 ]);
 
 $block = $blockService->addBlock($batch, [
+'event_type' => 'batch_listed',
 'action' => 'listed_on_chain',
-'listed_price' => $validated['price'],
+'entered_price' => $validated['price'],
 ]);
 
-$block->update(['event_type' => 'batch_listed']);
-$blockService->addBlockPrice($block->id, (float) $validated['price']);
+// $blockService->addBlockPrice($block->id, (float) ($block->price ?? $validated['price']));
+
 });
 
 return redirect()
 ->route('cooperative.batches.show', ['id' => $batch->id])
 ->with('success', 'Batch listed on chain successfully.');
+
+
+
+
 }
 
 

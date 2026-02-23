@@ -20,11 +20,13 @@ class Block extends Model
         'previous_owner',
         'event_data',
         'weight',
+        'price',
     ];
 
     protected $casts = [
         'event_data' => 'array',
         'weight' => 'decimal:2',
+        'price' => 'decimal:2',
     ];
 
     public function batch(): BelongsTo
