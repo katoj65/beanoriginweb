@@ -14,7 +14,7 @@ class Block extends Model
         'block_index',
         'event_type',
         'current_hash',
-        'previous_has',
+        'previous_hash',
         'current_owner',
         'previous_owner',
         'event_data',

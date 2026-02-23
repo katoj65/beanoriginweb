@@ -16,7 +16,7 @@ $table->id();
 $table->foreignId('batch_id')->constrained('batches')->cascadeOnDelete();
 $table->unsignedBigInteger('block_index')->unique();
 $table->string('current_hash');
-$table->string('previous_has');
+$table->string('previous_hash');
 $table->decimal('weight', 12, 2)->nullable();
 $table->json('event_data')->nullable();
 $table->string('event_type');

@@ -97,23 +97,24 @@ router.get(route('cooperative.batches.create'));
 
 
 <div class="detail-section detail-item-full">
-<h6 class="detail-section-title"><em class="icon ni ni-user mr-1"></em>Buyer Details</h6>
+<h6 class="detail-section-title"><em class="icon ni ni-user mr-1"></em>
+Batch Owner Details</h6>
 </div>
 
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-user mr-1"></em>Buyer Name</span>
+<span class="sub-text"><em class="icon ni ni-user mr-1"></em>Owner Name</span>
 <strong>{{ batch.owner?.name || 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-call mr-1"></em>Buyer Phone</span>
+<span class="sub-text"><em class="icon ni ni-call mr-1"></em>Owner Phone</span>
 <strong>{{ batch.owner?.phone || 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Buyer Address</span>
+<span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Owner Address</span>
 <strong>{{ batch.owner?.address || 'N/A' }}</strong>
 </div>
 <div class="detail-item detail-item-full">
-<span class="sub-text"><em class="icon ni ni-mail mr-1"></em>Buyer Email</span>
+<span class="sub-text"><em class="icon ni ni-mail mr-1"></em>Owner Email</span>
 <strong>{{ batch.owner?.email || 'N/A' }}</strong>
 </div>
 </div>
