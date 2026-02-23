@@ -14,6 +14,9 @@ class BlockResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $createdAt = $this->created_at?->toDateTimeString() ?? $this->getRawOriginal('created_at');
+        $updatedAt = $this->updated_at?->toDateTimeString() ?? $this->getRawOriginal('updated_at');
+
         return [
             'id' => $this->id,
             'batch_id' => $this->batch_id,
@@ -26,8 +29,8 @@ class BlockResource extends JsonResource
             'previous_owner' => $this->previous_owner,
             'weight' => $this->weight,
             'event_data' => $this->event_data,
-            'created_at' => optional($this->created_at)->toDateTimeString(),
-            'updated_at' => optional($this->updated_at)->toDateTimeString(),
+            'created_at' => $createdAt,
+            'updated_at' => $updatedAt,
 
             'batch' => $this->whenLoaded('batch', function () {
                 return [

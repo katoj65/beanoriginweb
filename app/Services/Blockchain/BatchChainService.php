@@ -39,7 +39,7 @@ class BatchChainService
         return ChainBlock::create([
             'batch_id' => $batch->id,
             'block_index' => $blockIndex,
-            'event_type' => 'batch_created',
+            'event_type' => 'created',
             'event_data' => array_merge([
                 'owner_id' => $batch->owner_id,
                 'batch_code' => $batch->batch_code,

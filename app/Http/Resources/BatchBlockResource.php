@@ -16,12 +16,12 @@ class BatchBlockResource extends JsonResource
 public function toArray(Request $request): array
 {
 
-$block=new BlockResource(Block::query()
+$block=Block::query()
 ->where('batch_id', $this->id)
 ->where('current_owner', $this->owner_id)
 ->where('event_type', 'listed')
-->latest()->first());
-
+->latest()->first();
+$createdAt = $block?->created_at ?? $this->created_at;
 
 
 return [
@@ -34,7 +34,8 @@ return [
 'moisture' => $this->moisture,
 'warehouse' => $this->warehouse,
 'status' => $this->status,
-'created_at' => $block->created_at?->toDateTimeString(),
+'created_at' => $createdAt ? $createdAt->toDateTimeString() : null,
+
 
 
 ];

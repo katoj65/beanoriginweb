@@ -27,7 +27,10 @@ public function index()
 {
 
 $user = auth()->user();
-$baches = Batch::query()->where('owner_id', $user->id)->where('status', '!=', 'bought')->latest()->get();
+$baches = Batch::query()->where('owner_id', $user->id)
+->where('status', '!=', 'bought')
+->where('status','listed')
+->latest()->get();
 
 return Inertia::render('BatchListed', [
 'batches' => BatchBlockResource::collection($baches),

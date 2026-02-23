@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Block extends Model
 {
     protected $table = 'blocks';
+    public $timestamps = true;
 
     protected $fillable = [
         'batch_id',
@@ -27,6 +28,8 @@ class Block extends Model
         'event_data' => 'array',
         'weight' => 'decimal:2',
         'price' => 'decimal:2',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     public function batch(): BelongsTo
