@@ -355,7 +355,7 @@ const formatDate = (value) => {
 }
 
 .nk-order-ovwg-data .title em {
-  color: #2563eb;
+  color: #10b981;
   font-size: 0.9rem;
 }
 

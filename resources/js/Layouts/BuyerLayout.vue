@@ -3,6 +3,12 @@ import { Link, router, usePage } from '@inertiajs/vue3';
 import { Search, Bell, User } from '@element-plus/icons-vue';
 import { computed } from 'vue';
 
+const capitalizeFirst = (value) => {
+  const text = String(value ?? '').trim();
+  if (!text) return '';
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
+
 const logout = () => {
   router.post(route('logout'));
 };
@@ -12,8 +18,8 @@ const app_user = computed(() => {
   const data = page.props.auth?.user ?? {};
   return {
     id: data.id,
-    fname: data.fname ?? 'Buyer',
-    lname: data.lname ?? '',
+    fname: capitalizeFirst(data.fname ?? 'Buyer'),
+    lname: capitalizeFirst(data.lname ?? ''),
     email: data.email ?? '',
   };
 });

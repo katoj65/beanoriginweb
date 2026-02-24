@@ -22,6 +22,7 @@ class Block extends Model
         'event_data',
         'weight',
         'price',
+        'status'
     ];
 
     protected $casts = [

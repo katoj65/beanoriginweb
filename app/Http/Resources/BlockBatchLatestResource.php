@@ -30,6 +30,7 @@ return [
     'price' => $this->price,
     'weight' => $this->weight,
     'event_type' => $this->event_type,
+    'status' => $this->status ?? 'active',
     'event_data' => $eventData,
     'grade' => $eventData['grade'] ?? $this->grade,
 ];
