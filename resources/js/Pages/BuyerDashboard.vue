@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import BuyerLayout from '@/Layouts/BuyerLayout.vue';
 
 const page = usePage();
 
@@ -122,162 +122,162 @@ const formatDate = (value) => {
 </script>
 
 <template>
-  <app-layout>
-    <div class="container py-2">
-      <div class="row">
-        <div class="col-12 col-md-3" v-for="(t, key) in tabs" :key="key">
-          <div class="nk-order-ovwg-data card border modern-panel stat-card">
-            <div class="amount">{{ t.title }}</div>
-            <div class="info"><strong>{{ t.stats }}</strong></div>
-            <div class="title"><em :class="`icon ni ${t.icon}`"></em>{{ t.subtitle }}</div>
-          </div>
-        </div>
-      </div>
+<buyer-layout>
+<div class="container py-1">
+<div class="row">
+<div class="col-12 col-md-3" v-for="(t, key) in tabs" :key="key">
+<div class="nk-order-ovwg-data card border modern-panel stat-card">
+<div class="amount">{{ t.title }}</div>
+<div class="info"><strong>{{ t.stats }}</strong></div>
+<div class="title"><em :class="`icon ni ${t.icon}`"></em>{{ t.subtitle }}</div>
+</div>
+</div>
+</div>
 
-      <div class="row mt-4">
-        <div class="col-12 col-md-8">
-          <div class="card card-bordered card-preview modern-panel">
-            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
-              <h6 class="mb-0">Marketplace Listings</h6>
-              <span class="sub-text">Fresh lots available for bidding</span>
-            </div>
-            <div class="card-body p-0">
-              <el-table :data="marketListings" height="340" style="width: 100%">
-                <el-table-column prop="commodity_name" width="160" label="Commodity" />
-                <el-table-column prop="batch_code" width="120" label="Batch" />
-                <el-table-column prop="seller_name" width="170" label="Supplier" />
-                <el-table-column prop="weight" width="110" label="Weight">
-                  <template #default="scope">{{ formatWeight(scope.row.weight) }}</template>
-                </el-table-column>
-                <el-table-column prop="ask_price" width="140" label="Ask Price">
-                  <template #default="scope">{{ formatPrice(scope.row.ask_price) }}</template>
-                </el-table-column>
-                <el-table-column prop="location" width="120" label="Location" />
-                <el-table-column prop="created_at" min-width="130" label="Listed">
-                  <template #default="scope">{{ formatDate(scope.row.created_at) }}</template>
-                </el-table-column>
-              </el-table>
-            </div>
-          </div>
-        </div>
+<div class="row mt-4">
+<div class="col-12 col-md-8">
+<div class="card card-bordered card-preview modern-panel">
+<div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+<h6 class="mb-0">Marketplace Listings</h6>
+<span class="sub-text">Fresh lots available for bidding</span>
+</div>
+<div class="card-body p-0">
+<el-table :data="marketListings" height="340" style="width: 100%">
+<el-table-column prop="commodity_name" width="160" label="Commodity" />
+<el-table-column prop="batch_code" width="120" label="Batch" />
+<el-table-column prop="seller_name" width="170" label="Supplier" />
+<el-table-column prop="weight" width="110" label="Weight">
+<template #default="scope">{{ formatWeight(scope.row.weight) }}</template>
+</el-table-column>
+<el-table-column prop="ask_price" width="140" label="Ask Price">
+<template #default="scope">{{ formatPrice(scope.row.ask_price) }}</template>
+</el-table-column>
+<el-table-column prop="location" width="120" label="Location" />
+<el-table-column prop="created_at" min-width="130" label="Listed">
+<template #default="scope">{{ formatDate(scope.row.created_at) }}</template>
+</el-table-column>
+</el-table>
+</div>
+</div>
+</div>
 
-        <div class="col-12 col-md-4">
-          <div class="card card-bordered pricing modern-panel h-100">
-            <div class="pricing-head">
-              <div class="pricing-title">
-                <h4 class="card-title title">Procurement Snapshot</h4>
-                <p class="sub-text">Current order and supplier performance summary.</p>
-              </div>
-            </div>
+<div class="col-12 col-md-4">
+<div class="card card-bordered pricing modern-panel h-100">
+<div class="pricing-head">
+<div class="pricing-title">
+<h4 class="card-title title">Procurement Snapshot</h4>
+<p class="sub-text">Current order and supplier performance summary.</p>
+</div>
+</div>
 
-            <div class="pricing-body mb-0 pb-0">
-              <ul class="pricing-features">
-                <li v-for="(item, key) in procurementStatus" :key="key">
-                  <em :class="`icon ni ${item.icon}`" style="margin-right: 8px; color: #000000;"></em>
-                  <span class="w-50">{{ item.item }}</span>
-                  <span class="ms-auto">{{ item.value }}</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+<div class="pricing-body mb-0 pb-0">
+<ul class="pricing-features">
+<li v-for="(item, key) in procurementStatus" :key="key">
+<em :class="`icon ni ${item.icon}`" style="margin-right: 8px; color: #000000;"></em>
+<span class="w-50">{{ item.item }}</span>
+<span class="ms-auto">{{ item.value }}</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
 
-      <div class="row mt-4">
-        <div class="col-12 col-md-8">
-          <div class="card card-bordered h-100 modern-panel">
-            <div class="card-inner">
-              <div class="card-title-group align-start mb-3">
-                <div class="card-title">
-                  <h6 class="title">Buyer Spend Trend</h6>
-                  <p>Monthly procurement volume overview for 2026.</p>
-                </div>
-              </div>
-              <line-chart :data="trend" />
-            </div>
-          </div>
-        </div>
+<div class="row mt-4">
+<div class="col-12 col-md-8">
+<div class="card card-bordered h-100 modern-panel">
+<div class="card-inner">
+<div class="card-title-group align-start mb-3">
+<div class="card-title">
+<h6 class="title">Buyer Spend Trend</h6>
+<p>Monthly procurement volume overview for 2026.</p>
+</div>
+</div>
+<line-chart :data="trend" />
+</div>
+</div>
+</div>
 
-        <div class="col-12 col-md-4">
-          <div class="card card-bordered h-100 modern-panel">
-            <div class="card-inner pb-0">
-              <div class="card-title-group pt-1">
-                <div class="card-title">
-                  <h6 class="title">Order Fulfillment</h6>
-                </div>
-              </div>
-            </div>
-            <div class="card-inner pt-0">
-              <div class="invest-ov gy-1">
-                <div class="subtitle">Delivery Performance</div>
-                <div class="invest-ov-details">
-                  <div class="invest-ov-info">
-                    <div><span class="amount text-success">78%</span></div>
-                    <div class="title">On Time</div>
-                  </div>
-                  <div class="invest-ov-info">
-                    <div><span class="amount text-warning">15%</span></div>
-                    <div class="title">Delayed</div>
-                  </div>
-                  <div class="invest-ov-info">
-                    <div><span class="amount text-danger">7%</span></div>
-                    <div class="title">Canceled</div>
-                  </div>
-                </div>
-              </div>
-              <div class="invest-ov">
-                <div class="subtitle">Target Completion</div>
-                <div class="progress progress-lg mt-3">
-                  <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 78%;">78%</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+<div class="col-12 col-md-4">
+<div class="card card-bordered h-100 modern-panel">
+<div class="card-inner pb-0">
+<div class="card-title-group pt-1">
+<div class="card-title">
+<h6 class="title">Order Fulfillment</h6>
+</div>
+</div>
+</div>
+<div class="card-inner pt-0">
+<div class="invest-ov gy-1">
+<div class="subtitle">Delivery Performance</div>
+<div class="invest-ov-details">
+<div class="invest-ov-info">
+<div><span class="amount text-success">78%</span></div>
+<div class="title">On Time</div>
+</div>
+<div class="invest-ov-info">
+<div><span class="amount text-warning">15%</span></div>
+<div class="title">Delayed</div>
+</div>
+<div class="invest-ov-info">
+<div><span class="amount text-danger">7%</span></div>
+<div class="title">Canceled</div>
+</div>
+</div>
+</div>
+<div class="invest-ov">
+<div class="subtitle">Target Completion</div>
+<div class="progress progress-lg mt-3">
+<div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 78%;">78%</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 
-      <div class="row mt-4">
-        <div class="col-12 col-md-7">
-          <div class="card border h-100 modern-panel">
-            <div class="card-header bg-white p-0">
-              <div class="card-title border-bottom p-2">
-                <h6>Supplier Activity</h6>
-              </div>
-            </div>
-            <div class="card-body p-0">
-              <el-table :data="suppliers" height="250" style="width: 100%">
-                <el-table-column prop="name" label="Supplier" min-width="170" />
-                <el-table-column prop="orders" label="Orders" width="90" />
-                <el-table-column prop="delivered" label="Delivered" width="100" />
-                <el-table-column prop="rating" label="Rating" width="90" />
-                <el-table-column prop="region" label="Region" width="100" />
-              </el-table>
-            </div>
-          </div>
-        </div>
+<div class="row mt-4">
+<div class="col-12 col-md-7">
+<div class="card border h-100 modern-panel">
+<div class="card-header bg-white p-0">
+<div class="card-title border-bottom p-2">
+<h6>Supplier Activity</h6>
+</div>
+</div>
+<div class="card-body p-0">
+<el-table :data="suppliers" height="250" style="width: 100%">
+<el-table-column prop="name" label="Supplier" min-width="170" />
+<el-table-column prop="orders" label="Orders" width="90" />
+<el-table-column prop="delivered" label="Delivered" width="100" />
+<el-table-column prop="rating" label="Rating" width="90" />
+<el-table-column prop="region" label="Region" width="100" />
+</el-table>
+</div>
+</div>
+</div>
 
-        <div class="col-12 col-md-5">
-          <div class="card border h-100 modern-panel">
-            <div class="card-header bg-white p-0 mb-0">
-              <div class="card-title border-bottom p-2 mb-0">
-                <h6>Demand by Commodity</h6>
-              </div>
-            </div>
-            <div class="card-body p-0">
-              <div class="pl-4 pr-4 py-2 border-bottom" v-for="(item, key) in commodityDemand" :key="key">
-                <div class="row">
-                  <div class="col-12 col-md-5">{{ item.name }}</div>
-                  <div class="col-12 col-md-7">
-                    <el-progress :percentage="item.value" color="#1d4ed8" :stroke-width="8" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </app-layout>
+<div class="col-12 col-md-5">
+<div class="card border h-100 modern-panel">
+<div class="card-header bg-white p-0 mb-0">
+<div class="card-title border-bottom p-2 mb-0">
+<h6>Demand by Commodity</h6>
+</div>
+</div>
+<div class="card-body p-0">
+<div class="pl-4 pr-4 py-2 border-bottom" v-for="(item, key) in commodityDemand" :key="key">
+<div class="row">
+<div class="col-12 col-md-5">{{ item.name }}</div>
+<div class="col-12 col-md-7">
+<el-progress :percentage="item.value" color="#1d4ed8" :stroke-width="8" />
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</buyer-layout>
 </template>
 
 <style scoped>
