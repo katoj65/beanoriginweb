@@ -8,9 +8,12 @@ use Inertia\Inertia;
 use App\Models\Cooperative;
 use App\Models\CooperativeFarmer;
 use App\Models\Produce;
+use App\Models\Batch;
 use App\Http\Resources\CooperativeFarmer as CooperativeFarmerResource;
 use App\Http\Resources\FarmersTableSummaryResource;
 use App\Http\Resources\ProduceResource;
+use App\Repository\BatchRepository;
+use App\Http\Resources\BlockBatchLatestResource;
 
 
 class CooperativeController extends Controller
@@ -22,29 +25,31 @@ class CooperativeController extends Controller
         $farmers = CooperativeFarmer::where('cooperative_id', $cooperative->id)->get();
         $produces = Produce::where('cooperative_id', $cooperative->id)->get();
         $totalQuantity = Produce::where('cooperative_id', $cooperative->id)->sum('quantity');
-        $listedQuantityTotal = Produce::where('cooperative_id', $cooperative->id)->where('status', 'listed')->sum('quantity');
-        $soldCount = Produce::where('cooperative_id', $cooperative->id)->where('status', 'sold')->count();
+        $soldCount = $user ? Batch::where('owner_id', $user->id)->where('status', 'sold')->count() : 0;
+        $listedBatchWeightTotal = $user ? Batch::where('owner_id', $user->id)->where('status', 'listed')->sum('weight') : 0;
+        $blockBatch = BatchRepository::getBatchWithLatestBlock();
 
 
 
 
 
-// return $farmers;
-
-        return Inertia::render('CooperativeShow', [
-            'title' => 'Cooperative',
-            'response' => [
-                'cooperative' => $cooperative,
-                'farmers' => FarmersTableSummaryResource::collection($farmers),
-                'count_farmers'=>count($farmers),
-                'produces' => ProduceResource::collection($produces),
-                'total_quantity' => $totalQuantity,
-                'listed_quantity_total' => $listedQuantityTotal,
-                'sold_count' => $soldCount,
 
 
-            ],
-        ]);
+
+return Inertia::render('CooperativeShow', [
+'title' => 'Cooperative',
+'response' => [
+'cooperative' => $cooperative,
+'farmers' => FarmersTableSummaryResource::collection($farmers),
+'count_farmers'=>count($farmers),
+'total_quantity' => $totalQuantity,
+'listed_quantity_total' =>  $listedBatchWeightTotal,
+'sold_count' => $soldCount,
+'produces' => BlockBatchLatestResource::collection($blockBatch),
+
+
+],
+]);
     }
 
 

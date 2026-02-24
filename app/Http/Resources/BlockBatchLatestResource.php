@@ -26,7 +26,7 @@ return [
     'batch_id' => $this->batch_id ?? $this->id,
     'commodity_name' => $this->commodity_name,
     'batch_code' => $this->batch_code,
-    'created_at' => $this->created_at?->toDateTimeString() ?? $this->created_at,
+    'created_at' => $this->created_at?->toDateString(),
     'price' => $this->price,
     'weight' => $this->weight,
     'event_type' => $this->event_type,

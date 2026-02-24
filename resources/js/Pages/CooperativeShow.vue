@@ -130,9 +130,6 @@ const goToBatchDetails = (row) => {
 </div>
 <div class="card-body p-0">
 <el-table :data="produces" height="350" style="width: 100%" @row-click="goToBatchDetails" class="clickable-batches-table">
-<el-table-column prop="batch_id" width="100">
-<template #header><em class="icon ni ni-hash mr-1"></em>Batch ID</template>
-</el-table-column>
 <el-table-column prop="commodity_name" width="170">
 <template #header><em class="icon ni ni-growth mr-1"></em>Commodity</template>
 </el-table-column>
@@ -144,9 +141,6 @@ const goToBatchDetails = (row) => {
 </el-table-column>
 <el-table-column prop="price" width="110">
 <template #header><em class="icon ni ni-coins mr-1"></em>Price</template>
-</el-table-column>
-<el-table-column prop="event_type" width="120">
-<template #header><em class="icon ni ni-flag mr-1"></em>Event</template>
 </el-table-column>
 <el-table-column prop="created_at" min-width="170">
 <template #header><em class="icon ni ni-calendar mr-1"></em>Created</template>
