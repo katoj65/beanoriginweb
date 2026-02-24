@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\BlockBatchLatestResource;
 use App\Models\Block;
 use App\Models\BlockPurchase;
+use App\Models\Cooperative;
+use App\Models\HelpCenter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -198,6 +200,203 @@ class BuyerController extends Controller
         return redirect()
             ->route('buyer.market.buy', ['id' => $id])
             ->with('success', 'Bid submitted successfully.');
+    }
+
+    public function suppliers()
+    {
+        $cooperatives = Cooperative::query()
+            ->select([
+                'id',
+                'legal_name',
+                'name',
+                'reg_num',
+                'reg_date',
+                'district',
+                'email',
+                'tel',
+            ])
+            ->orderBy('legal_name')
+            ->get();
+
+        return Inertia::render('SuppliersPage', [
+            'title' => 'suppliers',
+            'response' => [
+                'suppliers' => $cooperatives,
+                'total' => $cooperatives->count(),
+            ],
+        ]);
+    }
+
+    public function orders(Request $request)
+    {
+        $bids = BlockPurchase::query()
+            ->with([
+                'block.batch:id,batch_code,commodity_name,commodity_type,grade,warehouse',
+                'seller:id,fname,lname',
+            ])
+            ->where('buyer_id', (int) $request->user()->id)
+            ->latest()
+            ->get()
+            ->map(function (BlockPurchase $bid) {
+                $block = $bid->block;
+                $batch = $block?->batch;
+                $eventData = is_array($block?->event_data) ? $block->event_data : [];
+                $sellerName = trim(implode(' ', array_filter([$bid->seller?->fname, $bid->seller?->lname])));
+
+                return [
+                    'id' => $bid->id,
+                    'batch_id' => $block?->batch_id,
+                    'batch_code' => $batch?->batch_code ?? 'N/A',
+                    'commodity_name' => $batch?->commodity_name ?? 'N/A',
+                    'commodity_type' => $eventData['commodity_type'] ?? ($batch?->commodity_type ?? 'N/A'),
+                    'grade' => $eventData['grade'] ?? ($batch?->grade ?? 'N/A'),
+                    'warehouse' => $eventData['warehouse'] ?? ($batch?->warehouse ?? 'N/A'),
+                    'weight' => $block?->weight,
+                    'ask_price' => $block?->price,
+                    'bid_price' => $bid->purchase_price,
+                    'currency' => $bid->currency ?? 'UGX',
+                    'payment_method' => $bid->payment_method ?? 'N/A',
+                    'status' => $bid->status ?? 'pending',
+                    'seller_name' => $sellerName !== '' ? $sellerName : 'N/A',
+                    'created_at' => $bid->created_at?->toDateTimeString(),
+                ];
+            })
+            ->values();
+
+        return Inertia::render('OrdersPage', [
+            'title' => 'orders',
+            'response' => [
+                'orders' => $bids,
+                'total' => $bids->count(),
+            ],
+        ]);
+    }
+
+    public function profile(Request $request)
+    {
+        $authUser = $request->user();
+        $buyerId = (int) $authUser->id;
+
+        $profile = $authUser->userProfile()
+            ->select(['user_id', 'gender', 'dob', 'tel', 'address'])
+            ->first();
+
+        $totalBids = BlockPurchase::query()->where('buyer_id', $buyerId)->count();
+        $activeBids = BlockPurchase::query()
+            ->where('buyer_id', $buyerId)
+            ->whereIn('status', ['pending', 'open'])
+            ->count();
+        $wonBids = BlockPurchase::query()
+            ->where('buyer_id', $buyerId)
+            ->whereIn('status', ['approved', 'accepted', 'completed'])
+            ->count();
+        $suppliersWorkedWith = BlockPurchase::query()
+            ->where('buyer_id', $buyerId)
+            ->distinct('seller_id')
+            ->count('seller_id');
+
+        return Inertia::render('BuyerProfile', [
+            'title' => 'buyer profile',
+            'response' => [
+                'user' => [
+                    'id' => $authUser->id,
+                    'fname' => $authUser->fname,
+                    'lname' => $authUser->lname,
+                    'email' => $authUser->email,
+                    'profile_photo_url' => $authUser->profile_photo_url,
+                    'created_at' => $authUser->created_at?->toDateString(),
+                ],
+                'profile' => $profile,
+                'stats' => [
+                    'total_bids' => $totalBids,
+                    'active_bids' => $activeBids,
+                    'won_bids' => $wonBids,
+                    'suppliers' => $suppliersWorkedWith,
+                ],
+            ],
+        ]);
+    }
+
+    public function notifications()
+    {
+        return Inertia::render('BuyerNotificationPage', [
+            'title' => 'buyer notifications',
+        ]);
+    }
+
+    public function accountSettings(Request $request)
+    {
+        $authUser = $request->user();
+        $profile = $authUser->userProfile()
+            ->select(['user_id', 'gender', 'dob', 'tel', 'address'])
+            ->first();
+
+        return Inertia::render('BuyerAccountSettings', [
+            'title' => 'buyer account settings',
+            'response' => [
+                'user' => [
+                    'fname' => $authUser->fname,
+                    'lname' => $authUser->lname,
+                    'email' => $authUser->email,
+                ],
+                'profile' => $profile,
+            ],
+        ]);
+    }
+
+    public function help(Request $request)
+    {
+        $profile = $request->user()
+            ->userProfile()
+            ->select(['user_id', 'tel'])
+            ->first();
+
+        return Inertia::render('BuyerHelpPage', [
+            'title' => 'buyer help center',
+            'response' => [
+                'contact_phone' => $profile?->tel,
+            ],
+        ]);
+    }
+
+    public function helpStore(Request $request)
+    {
+        $validated = $request->validate([
+            'category' => ['required', 'in:technical,payments,farmers,compliance,partnership,other'],
+            'priority' => ['required', 'in:low,normal,high,critical'],
+            'subject' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:5000'],
+            'preferred_channel' => ['required', 'in:email,phone,inapp'],
+            'contact_name' => ['required', 'string', 'max:255'],
+            'contact_email' => ['required', 'email', 'max:255'],
+            'contact_phone' => ['required', 'string', 'regex:/^[0-9+()\\-\\s]{7,20}$/'],
+            'status' => ['nullable', 'in:open,in_progress,resolved,closed'],
+            'cooperative_id' => ['nullable', 'exists:cooperative,id'],
+        ]);
+
+        $cooperativeId = $validated['cooperative_id'] ?? Cooperative::query()->value('id');
+
+        if (!$cooperativeId) {
+            return back()->withErrors([
+                'category' => 'Unable to submit request now. Please contact support directly.',
+            ]);
+        }
+
+        HelpCenter::create([
+            'category' => $validated['category'],
+            'priority' => $validated['priority'],
+            'subject' => $validated['subject'],
+            'description' => $validated['description'],
+            'preferred_channel' => $validated['preferred_channel'],
+            'contact_name' => $validated['contact_name'] ?? null,
+            'contact_email' => $validated['contact_email'],
+            'contact_phone' => $validated['contact_phone'],
+            'status' => $validated['status'] ?? 'open',
+            'user_id' => $request->user()->id,
+            'cooperative_id' => $cooperativeId,
+        ]);
+
+        return back()->with('success', 'Help request submitted successfully.');
     }
 
     private function marketListingsBaseQuery(): Builder

@@ -97,6 +97,31 @@ h2 {
   border-color: var(--app-coffee-900) !important;
 }
 
+/* Match Element Plus primary buttons to app submit button palette */
+.el-button--primary {
+  --el-button-bg-color: var(--app-coffee-700) !important;
+  --el-button-border-color: var(--app-coffee-700) !important;
+  --el-button-hover-bg-color: var(--app-coffee-800) !important;
+  --el-button-hover-border-color: var(--app-coffee-800) !important;
+  --el-button-active-bg-color: var(--app-coffee-900) !important;
+  --el-button-active-border-color: var(--app-coffee-900) !important;
+  --el-button-disabled-bg-color: #a1887a !important;
+  --el-button-disabled-border-color: #a1887a !important;
+  background: linear-gradient(135deg, var(--app-coffee-700), #8b5a2b) !important;
+  border-color: var(--app-coffee-700) !important;
+}
+
+.el-button--primary:hover,
+.el-button--primary:focus-visible {
+  background: linear-gradient(135deg, var(--app-coffee-800), var(--app-coffee-700)) !important;
+  border-color: var(--app-coffee-800) !important;
+}
+
+.el-button--primary:active {
+  background: linear-gradient(135deg, var(--app-coffee-900), var(--app-coffee-800)) !important;
+  border-color: var(--app-coffee-900) !important;
+}
+
 .card {
   border-radius: var(--app-radius-lg);
 }

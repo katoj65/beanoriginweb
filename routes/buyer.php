@@ -12,13 +12,14 @@ Route::middleware(['auth', 'role:buyer'])
         Route::get('/market/{id}', [BuyerController::class, 'marketShow'])->whereNumber('id')->name('market.show');
         Route::get('/market/{id}/buy', [BuyerController::class, 'buyBlockPage'])->whereNumber('id')->name('market.buy');
         Route::post('/market/{id}/bid', [BuyerController::class, 'storeBid'])->whereNumber('id')->name('market.bid.store');
-        Route::get('/orders', [BuyerController::class, 'dashboard'])->name('orders');
+        Route::get('/orders', [BuyerController::class, 'orders'])->name('orders');
         Route::get('/watchlist', [BuyerController::class, 'dashboard'])->name('watchlist');
-        Route::get('/suppliers', [BuyerController::class, 'dashboard'])->name('suppliers');
+        Route::get('/suppliers', [BuyerController::class, 'suppliers'])->name('suppliers');
 
-        Route::get('/profile', [BuyerController::class, 'dashboard'])->name('profile');
-        Route::get('/account-settings', [BuyerController::class, 'dashboard'])->name('account.settings');
-        Route::get('/help', [BuyerController::class, 'dashboard'])->name('help');
+        Route::get('/profile', [BuyerController::class, 'profile'])->name('profile');
+        Route::get('/account-settings', [BuyerController::class, 'accountSettings'])->name('account.settings');
+        Route::get('/help', [BuyerController::class, 'help'])->name('help');
+        Route::post('/help', [BuyerController::class, 'helpStore'])->name('help.store');
 
-        Route::get('/notifications', [BuyerController::class, 'dashboard'])->name('notifications');
+        Route::get('/notifications', [BuyerController::class, 'notifications'])->name('notifications');
     });
