@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Home;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UserProfile;
+use Illuminate\Validation\Rule;
+use App\Models\UserRoles;
 
 class UserProfileController extends Controller
 {
@@ -71,21 +73,18 @@ class UserProfileController extends Controller
 public function update_user_account_status(Request $request)
 {
 $validated = $request->validate([
-'item' => ['required', 'in:Farmer,Cooperative,Investor,Financier,Exporter'],
-]);
-$roleMap = [
-'Farmer' => 'farmer',
-'Cooperative' => 'cooperative',
-'Investor' => 'investor',
-'Financier' => 'financier',
-'Exporter' => 'exporter',
-];
-
-$request->user()->update([
-'role' => $roleMap[$validated['item']],
+'item' => ['required', 'string', Rule::exists('user_roles', 'role')],
 ]);
 
-return redirect()->route('cooperative_create')->with('success', 'Account role updated successfully.');
+// Assuming you want to update the user's role based on the selected item
+$role=UserRoles::where('role',$validated['item'])->first();
+$user=$request->user();
+$user->update([
+'role' => $role->role,
+]);
+
+return redirect()->route('dashboard')->with('success', 'Account role updated successfully.');
+
 }
 
 

@@ -242,28 +242,9 @@ Gender
 
 
 
-
-
-
-
-
 </div>
 </div>
 <select-business-component v-else :user="user" :profile="profile" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 </div>
 </div>

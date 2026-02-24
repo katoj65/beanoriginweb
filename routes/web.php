@@ -98,6 +98,8 @@ return Inertia::render('DashboardCooperative');
 // return Inertia::render('LoginPage');
 // });
 
+$subRoutes = ['cooperative', 'buyer'];
+foreach ($subRoutes as $subRoute) {
+include_once($subRoute.'.php');
+}
 
-
-include_once('cooperative.php');
