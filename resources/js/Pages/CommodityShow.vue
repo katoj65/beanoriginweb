@@ -151,7 +151,6 @@ const goToOriginFarms = () => {
 
 .detail-item {
   background: #f8fafc;
-  border: 1px solid #e9edf5;
   border-radius: 10px;
   padding: 12px;
   display: flex;

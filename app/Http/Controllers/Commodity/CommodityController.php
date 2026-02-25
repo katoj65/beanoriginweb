@@ -92,17 +92,6 @@ $commodity = Commodity::with('farms:id,cooperative_farmer_id,farm_name,location,
 ->where('cooperative_id', $cooperativeId)
 ->firstOrFail();
 
-// $farms=DB::table('commodity_farms')
-// ->join('farms', 'commodity_farms.farm_id', '=', 'farms.id')
-// ->where('commodity_farms.commodity_id', $id)
-// ->select('farms.id',
-// 'farms.farm_name',
-// 'location',
-// 'area_acres',
-// 'soil_type',
-// 'water_source_type')
-// ->get();
-
 return Inertia::render('CommodityShow', [
 'commodity' => new CommodityResource($commodity),
 'origin_farms' => $commodity->farms
