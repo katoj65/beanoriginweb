@@ -44,7 +44,7 @@ return 'badge bg-light text-dark';
 };
 
 const goToBatch = (id) => {
-router.get(route('cooperative.batch.show', { id }));
+router.get(route('commodity.show', { id }));
 };
 
 const goToCreate = () => {

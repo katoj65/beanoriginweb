@@ -73,12 +73,56 @@ return redirect()
 ->with('success', 'Produce saved successfully.');
 }
 
+
+
+
+
+
+
+
 /**
  * Display the specified resource.
  */
-public function show(string $id)
+public function show(Request $request, string $id)
 {
-//
+
+$cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
+$commodity = Commodity::with('farms:id,cooperative_farmer_id,farm_name,location,area_acres,primary_crop,soil_type,water_source_type')
+->where('id', $id)
+->where('cooperative_id', $cooperativeId)
+->firstOrFail();
+
+// $farms=DB::table('commodity_farms')
+// ->join('farms', 'commodity_farms.farm_id', '=', 'farms.id')
+// ->where('commodity_farms.commodity_id', $id)
+// ->select('farms.id',
+// 'farms.farm_name',
+// 'location',
+// 'area_acres',
+// 'soil_type',
+// 'water_source_type')
+// ->get();
+
+return Inertia::render('CommodityShow', [
+'commodity' => new CommodityResource($commodity),
+'origin_farms' => $commodity->farms
+->map(fn ($farm) => [
+'id' => $farm->id,
+'cooperative_farmer_id' => $farm->cooperative_farmer_id,
+'farm_name' => $farm->farm_name,
+'location' => $farm->location,
+'latitude' => $farm->latitude,
+'longitude' => $farm->longitude,
+'area_acres' => $farm->area_acres,
+'primary_crop' => $farm->primary_crop,
+'soil_type' => $farm->soil_type,
+'water_source_type' => $farm->water_source_type,
+'farmer_last_name' => $farm->farmer_last_name,
+'farmer_telephone' => $farm->farmer_telephone,
+
+])
+->values(),
+]);
 }
 
 
@@ -94,6 +138,7 @@ $cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id'
 $commodity = Commodity::with('farms')
 ->where('id', $id)
 ->where('cooperative_id', $cooperativeId)
+->where('status', 'created') // Only allow adding farms if commodity is still pending
 ->firstOrFail();
 
 $farms = Farm::query()
@@ -109,9 +154,7 @@ return Inertia::render('CommodityAddFarms', [
 'commodity' => new CommodityResource($commodity),
 'farms' => $farms,
 'origin_farm_ids' => $commodity->farms->pluck('id')->values(),
-
 ]);
-
 
 }
 
@@ -166,6 +209,13 @@ return Inertia::render('CommodityCreate', [
 ]);
 }
 
+
+
+
+
+
+
+
 /**
  * Link the newly posted commodity to farms where it originated.
  */
@@ -175,15 +225,62 @@ $farmIds = Farm::query()
 ->where('cooperative_farmer_id', $farmer->id)
 ->pluck('id')
 ->all();
-
 if (empty($farmIds)) {
 throw ValidationException::withMessages([
 'phone_number' => 'The matched farmer has no registered farm.',
 ]);
 }
-
 $commodity->farms()->syncWithoutDetaching($farmIds);
 }
+
+
+
+
+
+// submit farm ids for a commodity
+public function storeOriginFarms(Request $request, string $id)
+{
+$validated = $request->validate([
+'farm_ids' => ['required', 'array', 'min:1'],
+'farm_ids.*' => ['integer', 'distinct'],
+]);
+
+$cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
+$commodity = Commodity::query()
+->where('id', $id)
+->where('cooperative_id', $cooperativeId)
+->firstOrFail();
+
+$farmIds = Farm::query()
+->whereIn('id', $validated['farm_ids'])
+->whereHas('farmer', function ($query) use ($cooperativeId) {
+$query->where('cooperative_id', $cooperativeId);
+})
+->pluck('id')
+->values();
+
+if ($farmIds->isEmpty()) {
+throw ValidationException::withMessages([
+'farm_ids' => 'Select at least one valid farm for your cooperative.',
+]);
+}
+
+$commodity->farms()->syncWithoutDetaching($farmIds->all());
+$model=$commodity;
+$model->status='pending';
+$model->save();
+
+return redirect()
+->route('commodity.show', ['id' => $commodity->id])
+->with('success', 'Origin farms saved successfully.');
+
+
+
+}
+
+
+
+
 
 
 

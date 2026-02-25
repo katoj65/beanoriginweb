@@ -31,7 +31,7 @@ return form.farm_ids
 
 const submit = () => {
 if (!commodity.value?.id) return;
-form.post(route('commodity.origin-farms.store', { commodity: commodity.value.id }), {
+form.post(route('commodity.origin-farms.store', { id: commodity.value.id }), {
 preserveScroll: true,
 });
 };
