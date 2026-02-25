@@ -59,12 +59,10 @@ return 'N/A';
 
 <template>
 <buyer-layout>
-<div class="container py-0">
-
-
-<div class="row mt-0">
+<div class="container">
+<div class="row">
 <div class="col-12">
-<div class="card card-bordered card-preview modern-panel">
+<div class="card card-bordered card-preview modern-panel m-0">
 <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
 <div>
 <h6 class="mb-0">Market Information</h6>
