@@ -31,6 +31,14 @@ const goToOriginFarms = () => {
   if (!commodity.value?.id) return;
   router.get(route('commodity.origin-farms.create', { id: commodity.value.id }));
 };
+
+const goToOriginFarmDetails = (farmId) => {
+  if (!commodity.value?.id || !farmId) return;
+  router.get(route('commodity.origin-farms.show', {
+    commodity: commodity.value.id,
+    farm: farmId,
+  }));
+};
 </script>
 
 <template>
@@ -105,7 +113,11 @@ const goToOriginFarms = () => {
               </thead>
               <tbody>
                 <tr v-for="farm in originFarms" :key="farm.id">
-                  <td>{{ farm.farm_name }}</td>
+                  <td>
+                    <button type="button" class="farm-link-button text-capitalize" @click="goToOriginFarmDetails(farm.id)">
+                      {{ farm.farm_name }}
+                    </button>
+                  </td>
                   <td>{{ farm.location ?? 'N/A' }}</td>
                   <td>{{ farm.area_acres ?? 'N/A' }}</td>
                   <td>{{ farm.primary_crop ?? 'N/A' }}</td>
@@ -202,6 +214,18 @@ const goToOriginFarms = () => {
   padding: 12px;
   color: #64748b;
   background: #f8fafc;
+}
+
+.farm-link-button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: #0f766e;
+  font-weight: 600;
+}
+
+.farm-link-button:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 767px) {

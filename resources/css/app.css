@@ -703,3 +703,8 @@ textarea.form-control {
   justify-content: flex-end;
   gap: 10px;
 }
+
+/* Theme utility: capitalize text */
+.text-capitalize {
+  text-transform: capitalize !important;
+}

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Commodity;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CooperativeFarmer as CooperativeFarmerResource;
 use App\Http\Resources\CropGradeResource;
 use App\Http\Resources\CropResource;
 use App\Http\Resources\CropTypeResource;
+use App\Http\Resources\FarmResource;
 use App\Http\Resources\ProcessMethodResource;
 use App\Models\Commodity;
 use App\Models\Cooperative;
@@ -263,8 +265,6 @@ return redirect()
 ->route('commodity.show', ['id' => $commodity->id])
 ->with('success', 'Origin farms saved successfully.');
 
-
-
 }
 
 
@@ -273,8 +273,45 @@ return redirect()
 
 
 
+//Commodity farm details
+public function showOriginFarmDetails(Request $request, string $commodity, string $farm)
+{
+$cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
+
+$commodityModel = Commodity::query()
+->where('id', $commodity)
+->where('cooperative_id', $cooperativeId)
+->firstOrFail();
+
+$farmModel = $commodityModel->farms()
+->with('farmer')
+->where('farms.id', $farm)
+->firstOrFail();
+
+return Inertia::render('CommodityFarm', [
+'title' => 'Origin Farm Details',
+'commodity' => new CommodityResource($commodityModel),
+'farm' => new FarmResource($farmModel),
+'owner' => $farmModel->farmer ? new CooperativeFarmerResource($farmModel->farmer) : null,
+]);
 
 
+}
+
+
+
+
+//batch create form
+public function createBatch(Request $request)
+{
+$cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
+
+
+return Inertia::render('BatchCreate', [
+'title' => 'Create Commodity Batch',
+
+]);
+}
 
 
 

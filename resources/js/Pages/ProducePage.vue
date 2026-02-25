@@ -50,6 +50,10 @@ router.get(route('commodity.show', { id }));
 const goToCreate = () => {
 router.get(route('commodity.create'));
 };
+
+const goToBatchCreate = () => {
+router.get(route('commodity.batches.create'));
+};
 </script>
 
 <template>
@@ -62,21 +66,13 @@ router.get(route('commodity.create'));
 <div class="col-12 col-md">
 <h6 class="title mb-1"><em class="icon ni ni-bag mr-1"></em>Commodities</h6>
 <p class="sub-text mb-0">Current coffee lots available to buyers.</p>
-
-
 </div>
 <div class="col-12 col-md-auto">
 <div class="produce-toolbar">
-<el-input
-v-model="searchQuery"
-:prefix-icon="Search"
-clearable
-placeholder="Search commodity, type, grade, status..."
-class="produce-search-input"
-@input="handleSearchInput"
-@clear="handleSearchInput('')"
-></el-input>
-<el-button :icon="Plus" @click="goToCreate" class="produce-add-btn" />
+<el-button-group>
+<el-button :icon="Plus" @click="goToCreate" class="produce-add-btn">Commodity</el-button>
+<el-button :icon="Plus" @click="goToBatchCreate" class="produce-add-btn">Batch</el-button>
+</el-button-group>
 </div>
 </div>
 </div>
@@ -112,9 +108,9 @@ class="produce-search-input"
 <table class="table table-sm table-middle mb-0 batch-table">
 <thead>
 <tr>
-<th>ID</th>
-<th>Crop Name</th>
-<th><em class="icon ni ni-tree-view mr-1"></em>Crop Type</th>
+<th><em class="icon ni ni-hash mr-1"></em>ID</th>
+<th><em class="icon ni ni-growth mr-1"></em>Crop Name</th>
+<th><em class="icon ni ni-property mr-1"></em>Crop Type</th>
 <th><em class="icon ni ni-package mr-1"></em>Quantity</th>
 <th><em class="icon ni ni-calendar mr-1"></em>Date Of Harvest</th>
 <th style="width:70px;"><em class="icon ni ni-award mr-1"></em>Crop Grade</th>
@@ -131,7 +127,7 @@ class="clickable-row"
 <td>{{ produce.id }}</td>
 <td>{{ produce.commodity_name }}</td>
 <td>{{ produce.commodity_type }}</td>
-<td>{{ produce.weight }}</td>
+<td>{{ produce.weight }} Kgs</td>
 <td>{{ produce.harvest_date }}</td>
 <td>{{ produce.grade }}</td>
 <td>
