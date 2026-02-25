@@ -8,6 +8,7 @@ use App\Http\Controllers\Cooperative\FarmerController;
 use App\Http\Controllers\Cooperative\FarmController;
 use App\Http\Controllers\Produce\ProduceController;
 use App\Http\Controllers\Batch\BatchController;
+use App\Http\Controllers\Commodity\CommodityController;
 use Inertia\Inertia;
 
 
@@ -49,7 +50,7 @@ Route::get('/cooperate/farms/{id}',[FarmController::class,'show'])->name('cooper
 
 Route::get('/cooperative/produce',[ProduceController::class,'index'])->name('cooperative.produce');
 
-Route::get('/cooperative/produce/create',[ProduceController::class,'create'])->name('cooperative.produce.create');
+                Route::get('/cooperative/produce/create',[CommodityController::class,'create'])->name('cooperative.produce.create');
 
 Route::post('/cooperative/produce',[ProduceController::class,'store'])->name('cooperative.produce.store');
 
@@ -58,7 +59,7 @@ Route::post('/verification/farmer/produce',[ProduceController::class,'store_veri
 Route::get('/cooperative/produce/create/{any}',[ProduceController::class,'create_batch'])->name('cooperative.produce.create.batch');
 
 Route::get('/cooperative/batch/{id}',[ProduceController::class,'show'])->name('cooperative.batch.show');
-// Route::get('/cooperative/batches/listed',[ProduceController::class,'batchListed'])->name('cooperative.batches.listed');
+       Route::get('/cooperative/batches/listed',[ProduceController::class,'batchListed'])->name('cooperative.batches.listed');
  Route::get('/cooperative/batches/listed',[BatchController::class,'index'])->name('cooperative.batches.listed');
 Route::get('/cooperative/batches/unlisted',[BatchController::class,'batchUnlisted'])->name('cooperative.batches.unlisted');
 Route::get('/cooperative/batches/create',[BatchController::class,'create'])->name('cooperative.batches.create');

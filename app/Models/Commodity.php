@@ -13,16 +13,17 @@ class Commodity extends Model
 
     protected $fillable = [
         'cooperative_id',
-        'farm_id',
         'commodity_name',
         'commodity_type',
         'grade',
         'weight',
+        'price',
         'harvest_date',
     ];
 
     protected $casts = [
         'weight' => 'decimal:2',
+        'price' => 'decimal:2',
         'harvest_date' => 'date',
     ];
 
@@ -34,11 +35,6 @@ class Commodity extends Model
     public function cooperative(): BelongsTo
     {
         return $this->belongsTo(Cooperative::class, 'cooperative_id');
-    }
-
-    public function farm(): BelongsTo
-    {
-        return $this->belongsTo(Farm::class, 'farm_id');
     }
 
     public function farms(): BelongsToMany

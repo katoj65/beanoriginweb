@@ -2,11 +2,14 @@
 import { computed } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
+import CommodityAddOriginFarms from '@/Components/CommodityAddOriginFarms.vue';
 import { Edit, Back } from '@element-plus/icons-vue'
 
 const page = usePage();
 const batch = computed(() => page.props.produce.data);
 const farmer = computed(() => page.props.farmer?.data ?? page.props.farmer ?? {});
+const availableFarms = computed(() => page.props.available_farms ?? []);
+const originFarmIds = computed(() => page.props.origin_farm_ids ?? []);
 
 const latestPayment = computed(() => {
 const raw = batch.value?.latest_payment;
@@ -148,6 +151,15 @@ return raw?.data ?? raw ?? latestPayment.value;
 <strong><span :class="statusClass">{{ batch.status }}</span></strong>
 </div>
 </div>
+</div>
+
+<div class="card-inner border-top">
+<h6 class="title mb-3"><em class="icon ni ni-map-pin mr-1"></em>Add Origin Farms</h6>
+<CommodityAddOriginFarms
+:commodity-id="batch.id"
+:farms="availableFarms"
+:selected-farm-ids="originFarmIds"
+/>
 </div>
 
 

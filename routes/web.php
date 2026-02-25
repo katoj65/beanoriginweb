@@ -49,7 +49,6 @@ Route::post('/update/user-account-status',[UserProfileController::class,'update_
 
 
 
-
 Route::middleware(['auth'])->group(function () {
 // Route::get('/test',[HomeController::class,'userDashboard']);
 Route::get('/test',function(){
@@ -94,12 +93,33 @@ Route::get('/home',function(){
 return Inertia::render('DashboardCooperative');
 });
 
+
+
+
 // Route::get('/login',function(){
 // return Inertia::render('LoginPage');
 // });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+Route::middleware(['auth'])->prefix('commodity')->name('commodity.')->group(function () {
+include_once('commodity.php');
+});
 
 $subRoutes = ['cooperative', 'buyer'];
 foreach ($subRoutes as $subRoute) {
 include_once($subRoute.'.php');
 }
-

@@ -73,8 +73,8 @@ return Inertia::render('ProducePage', [
 
 public function batchListed(Request $request)
 {
-	$user = $request->user();
 
+$user = $request->user();
 $batches = Batch::query()
 ->where('owner_id', auth()->id())
 ->where('is_on_chain', 1)
@@ -110,12 +110,6 @@ return [
 
 
 //get the latest block for each batch and attach the hash and chain height to the batch data
-
-
-
-
-
-
 
 
 return Inertia::render('BatchListed', [
@@ -157,7 +151,8 @@ $validated = $request->validate([
 'date_of_harvest' => ['required', 'date'],
 'crop_grade' => ['required', 'string', 'max:255'],
 'verification_id' => ['required', 'string'],
-'farm'=>['required']
+'farm' => ['required', 'array', 'min:1'],
+'farm.*' => ['integer', 'exists:farms,id'],
 ]);
 
 //check if the verification code is valid
@@ -171,24 +166,38 @@ return redirect()->route('cooperative.produce.create')->with('success', ['status
 $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
 $verification = FarmerBatchVerification::where('verification_id', $validated['verification_id'])->first();
 
+if (!$verification) {
+throw ValidationException::withMessages([
+'verification_id' => 'Invalid verification code. Please verify farmer details again.',
+]);
+}
+
 //associate the produce with the farm
 
-$farm_id=$validated['farm'];
-$farm=$farm_id[0];
+$farmIds = Farm::query()
+->whereIn('id', $validated['farm'])
+->where('cooperative_farmer_id', $verification->cooperative_farmers_id)
+->pluck('id')
+->values();
+
+if ($farmIds->isEmpty()) {
+throw ValidationException::withMessages([
+'farm' => 'Select at least one valid farm for the verified farmer.',
+]);
+}
+
 $produce = Commodity::create([
 'cooperative_id' => $cooperativeId,
-'farm_id' => $validated['farm'],
 'commodity_name' => $validated['crop_name'],
 'commodity_type' => $validated['crop_type'],
 'grade' => $validated['crop_grade'],
 'weight' => $validated['quantity'],
 'harvest_date' => $validated['date_of_harvest'],
-'farm_id'=>$farm
 ]);
 
 //associate the produce with the farm
 
-foreach($farm_id as $farm){
+foreach($farmIds as $farm){
 CommodityFarm::create([
 'commodity_id'=>$produce->id,
 'farm_id'=>$farm
@@ -228,7 +237,7 @@ public function show(Request $request)
 $id = $request->segment(3);
 $produce = Commodity::query()
 ->with([
-'farm',
+'farms.farmer',
 'payments' => fn ($query) => $query
 ->with('buyer:id,fname,lname,email')
 ->latest(),
@@ -237,15 +246,12 @@ $produce = Commodity::query()
 
 $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
 
-// Resolve farmer through farms table by using the produce farm_id.
-$farm = Farm::query()
-->where('id', $produce->farm_id)
-->whereHas('farmer', function ($query) use ($cooperativeId) {
-$query->where('cooperative_id', $cooperativeId);
-})
-->with('farmer')
-->first();
-$farmer = $farm?->farmer;
+// Resolve farmer via commodity_farms, now that commodities no longer carry farm_id.
+$farmer = $produce->farms
+->pluck('farmer')
+->first(function ($candidate) use ($cooperativeId) {
+return $candidate && (int) $candidate->cooperative_id === (int) $cooperativeId;
+});
 
 // Get the latest payment for the produce
 $payment = CommodityPayment::query()
@@ -254,12 +260,18 @@ $payment = CommodityPayment::query()
 ->latest()
 ->first();
 
-
-
 return Inertia::render('BatchShowPage', [
 'produce' => new CommodityResource($produce),
 'farmer' => $farmer ? new FarmerFullDetailsResource($farmer) : null,
 'payment' => $payment ? new CommodityPaymentResource($payment) : null,
+'available_farms' => Farm::query()
+->select('id', 'farm_name')
+->whereHas('farmer', function ($query) use ($cooperativeId) {
+$query->where('cooperative_id', $cooperativeId);
+})
+->orderBy('farm_name')
+->get(),
+'origin_farm_ids' => $produce->farms->pluck('id')->values(),
 
 ]);
 
@@ -302,26 +314,11 @@ public function destroy(string $id)
 
 public function create(Request $request)
 {
-$cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
-$farms = Farm::query()
-->whereHas('farmer', function ($query) use ($cooperativeId) {
-$query->where('cooperative_id', $cooperativeId);
-})
-->orderBy('farm_name')
-->get(['id', 'farm_name']);
-$crops=Crops::get();
-$crop_type=CropType::get();
-$process_method=ProcessMethod::get();
-$grade=CropGrade::get();
 
-return Inertia::render('ProduceCreate', [
-'title' => 'Add Produce',
-'farms' => $farms,
-'crops'=>CropResource::collection($crops),
-'crop_type'=>CropTypeResource::collection($crop_type),
-'process_method'=>ProcessMethodResource::collection($process_method),
-'crop_grade'=>CropGradeResource::collection($grade)
-
+$uid=$request->user()->id;
+$cooperative = Cooperative::where('user_id', $uid)->first();
+return $cooperative;
+return Inertia::render('ProduceCreateAfterVerification', [
 
 ]);
 }
@@ -342,7 +339,6 @@ return redirect()->route('cooperative.produce.create')->with('success',['status'
 
 
 $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
-
 $crops=Crops::get();
 $crop_type=CropType::get();
 $process_method=ProcessMethod::get();
@@ -350,7 +346,6 @@ $grade=CropGrade::get();
 $farmer_id=$verification->cooperative_farmers_id;
 $farmer=CooperativeFarmer::where('id',$farmer_id)->first();
 $farms =Farm::select('id','farm_name')->where('cooperative_farmer_id',$farmer->id)->get();
-
 
 return Inertia::render('ProduceCreateAfterVerification', [
 'title' => 'Add Produce',

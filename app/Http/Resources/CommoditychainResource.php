@@ -18,7 +18,6 @@ class CommoditychainResource extends JsonResource
             'id' => $this->id,
             'produces_id' => $this->produces_id,
             'cooperative_id' => $this->cooperative_id,
-            'farm_id' => $this->farm_id,
             'commodity_name' => $this->commodity_name,
             'commodity_type' => $this->commodity_type,
             'grade' => $this->grade,
@@ -41,14 +40,6 @@ class CommoditychainResource extends JsonResource
                     'id' => $this->cooperative?->id,
                     'name' => $this->cooperative?->name,
                     'legal_name' => $this->cooperative?->legal_name,
-                ];
-            }),
-            'farm' => $this->whenLoaded('farm', function () {
-                return [
-                    'id' => $this->farm?->id,
-                    'farm_name' => $this->farm?->farm_name,
-                    'location' => $this->farm?->location,
-                    'primary_crop' => $this->farm?->primary_crop,
                 ];
             }),
         ];

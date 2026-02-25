@@ -48,7 +48,7 @@ router.get(route('cooperative.batch.show', { id }));
 };
 
 const goToCreate = () => {
-router.get(route('cooperative.produce.create'));
+router.get(route('commodity.create'));
 };
 </script>
 

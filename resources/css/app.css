@@ -21,9 +21,10 @@
   --app-section-gap: 17px;
   --app-page-space: 17px;
   --app-container-padding-x: 0px;
-  --app-card-inner-padding: 17px;
-  --app-card-inner-padding-md: 17px;
-  --app-card-inner-padding-sm: 12px;
+  --app-card-inner-padding: 20px;
+  --app-card-inner-padding-md: 20px;
+  --app-card-inner-padding-sm: 14px;
+  --app-field-height: 44px;
   --alert-success-bg: #ecfdf3;
   --alert-success-border: #86efac;
   --alert-success-text: #166534;
@@ -285,13 +286,11 @@ h2 {
 }
 
 .card .card-inner.card-inner-sm {
-  padding-top: var(--app-card-inner-padding-sm);
-  padding-bottom: var(--app-card-inner-padding-sm);
+  padding: var(--app-card-inner-padding-sm);
 }
 
 .card .card-inner.card-inner-md {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding: var(--app-card-inner-padding-md);
 }
 
 @media (min-width: 576px) {
@@ -423,14 +422,27 @@ h2 {
 }
 
 .form-control-like .el-input__wrapper {
-  height: calc(1.5em + 0.75rem + 2px) !important;
-  min-height: calc(1.5em + 0.75rem + 2px) !important;
+  height: var(--app-field-height) !important;
+  min-height: var(--app-field-height) !important;
   border-radius: 4px !important;
   padding: 0 0.75rem !important;
 }
 
 .form-control-like .el-input__inner {
   line-height: 1.5;
+}
+
+/* Global field sizing: keep consistent control height across native and Element Plus fields */
+input.form-control:not([type='checkbox']):not([type='radio']):not([type='file']),
+select.form-control,
+.form-select {
+  height: var(--app-field-height);
+  min-height: var(--app-field-height);
+}
+
+textarea.form-control {
+  min-height: calc(var(--app-field-height) * 2.2);
+  height: auto;
 }
 
 .bold {
@@ -460,6 +472,8 @@ h2 {
 .el-select__wrapper,
 .el-date-editor.el-input__wrapper,
 .el-range-editor.el-input__wrapper {
+  min-height: var(--app-field-height) !important;
+  height: var(--app-field-height) !important;
   box-shadow: 0 0 0 1px var(--bo-el-field-border) inset !important;
   border-color: var(--bo-el-field-border) !important;
 }

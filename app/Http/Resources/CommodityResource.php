@@ -18,11 +18,11 @@ class CommodityResource extends JsonResource
         return [
             'id' => $this->id,
             'cooperative_id' => $this->cooperative_id,
-            'farm_id' => $this->farm_id,
             'commodity_name' => $this->commodity_name,
             'commodity_type' => $this->commodity_type,
             'grade' => $this->grade,
             'weight' => $this->weight,
+            'price' => $this->price,
             'harvest_date' => $this->harvest_date
                 ? Carbon::parse($this->harvest_date)->format('F j, Y')
                 : null,
