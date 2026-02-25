@@ -185,8 +185,8 @@ console.log(page.props.batches.data);
 
 
 
-<div class="container">
-<div class="card card-bordered">
+<div class="container m-0 p-0">
+<div class="card card-bordered m-0">
 <div class="card-inner border-bottom market-card-header">
 <div class="market-title">
 <h6 class="title mb-1">Blockchain Trading Board</h6>
