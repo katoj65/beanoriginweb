@@ -16,6 +16,13 @@
   --app-shadow: 0 6px 22px rgba(15, 23, 42, 0.05);
   --app-radius-lg: 12px;
   --app-radius-md: 10px;
+  --app-grid-gutter-x: 17px;
+  --app-grid-gutter-y: 17px;
+  --app-section-gap: 17px;
+  --app-page-space: 17px;
+  --app-card-inner-padding: 17px;
+  --app-card-inner-padding-md: 17px;
+  --app-card-inner-padding-sm: 12px;
   --alert-success-bg: #ecfdf3;
   --alert-success-border: #86efac;
   --alert-success-text: #166534;
@@ -140,6 +147,149 @@ h2 {
 
 .card-inner {
   background: none !important;
+}
+
+/* Global layout spacing defaults for rows/columns/cards */
+.nk-content.app-page-shell {
+  padding: var(--app-page-space) !important;
+}
+
+.nk-content.app-page-shell > .container-fluid,
+.nk-content.app-page-shell > .container {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.nk-content.app-page-shell .nk-content-inner,
+.nk-content.app-page-shell .nk-content-body {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.row:not([class*=" g-"]):not([class*=" gx-"]):not([class*=" gy-"]) {
+  --bs-gutter-x: var(--app-grid-gutter-x);
+  --bs-gutter-y: var(--app-grid-gutter-y);
+}
+
+.row.g-gs {
+  --bs-gutter-x: var(--app-grid-gutter-x);
+  --bs-gutter-y: var(--app-grid-gutter-y);
+}
+
+/* Normalize DashLite GS spacing utilities to the app rhythm */
+.nk-content.app-page-shell .g-gs,
+.nk-content.app-page-shell .gx-gs {
+  --bs-gutter-x: var(--app-grid-gutter-x) !important;
+}
+
+.nk-content.app-page-shell .g-gs,
+.nk-content.app-page-shell .gy-gs {
+  --bs-gutter-y: var(--app-grid-gutter-y) !important;
+}
+
+.nk-content.app-page-shell .m-gs {
+  margin: var(--app-grid-gutter-y) !important;
+}
+
+.nk-content.app-page-shell .mx-gs {
+  margin-left: var(--app-grid-gutter-x) !important;
+  margin-right: var(--app-grid-gutter-x) !important;
+}
+
+.nk-content.app-page-shell .my-gs {
+  margin-top: var(--app-grid-gutter-y) !important;
+  margin-bottom: var(--app-grid-gutter-y) !important;
+}
+
+.nk-content.app-page-shell .mt-gs {
+  margin-top: var(--app-grid-gutter-y) !important;
+}
+
+.nk-content.app-page-shell .mb-gs {
+  margin-bottom: var(--app-grid-gutter-y) !important;
+}
+
+.nk-content.app-page-shell .p-gs {
+  padding: var(--app-grid-gutter-y) !important;
+}
+
+.nk-content.app-page-shell .px-gs {
+  padding-left: var(--app-grid-gutter-x) !important;
+  padding-right: var(--app-grid-gutter-x) !important;
+}
+
+.nk-content.app-page-shell .py-gs {
+  padding-top: var(--app-grid-gutter-y) !important;
+  padding-bottom: var(--app-grid-gutter-y) !important;
+}
+
+.nk-content.app-page-shell .pt-gs {
+  padding-top: var(--app-grid-gutter-y) !important;
+}
+
+.nk-content.app-page-shell .pb-gs {
+  padding-bottom: var(--app-grid-gutter-y) !important;
+}
+
+.nk-content.app-page-shell .gap-gs {
+  gap: var(--app-grid-gutter-y) !important;
+}
+
+.nk-content.app-page-shell .row-gap-gs {
+  row-gap: var(--app-grid-gutter-y) !important;
+}
+
+.nk-content.app-page-shell .column-gap-gs {
+  column-gap: var(--app-grid-gutter-x) !important;
+}
+
+.nk-content.app-page-shell .nk-block + .nk-block,
+.nk-content.app-page-shell .nk-block + .nk-block-head,
+.nk-content.app-page-shell .nk-block + .nk-block-lg,
+.nk-content.app-page-shell .nk-block + .nk-block-head-lg,
+.nk-content.app-page-shell .nav-tabs + .nk-block,
+.nk-content.app-page-shell .nav-tabs + .nk-block-sm,
+.nk-content.app-page-shell .nav-tabs + .nk-block-xs {
+  padding-top: var(--app-grid-gutter-y) !important;
+}
+
+/* Keep section spacing from rows consistent across pages */
+.nk-content.app-page-shell .nk-block > .row + .row {
+  margin-top: 0;
+}
+
+/* Default section rhythm for future pages/dashboards */
+.nk-content.app-page-shell .nk-content-body > .row + .row,
+.nk-content.app-page-shell .nk-content-body > .nk-block > .row + .row {
+  margin-top: 0 !important;
+}
+
+.nk-content.app-page-shell .nk-content-body > .nk-block + .nk-block {
+  padding-top: var(--app-section-gap) !important;
+}
+
+.card .card-inner:not(.card-inner-sm):not(.card-inner-md):not(.card-inner-lg):not(.card-inner-xl) {
+  padding: var(--app-card-inner-padding);
+}
+
+.card .card-inner.card-inner-sm {
+  padding-top: var(--app-card-inner-padding-sm);
+  padding-bottom: var(--app-card-inner-padding-sm);
+}
+
+.card .card-inner.card-inner-md {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+@media (min-width: 576px) {
+  .card .card-inner:not(.card-inner-sm):not(.card-inner-md):not(.card-inner-lg):not(.card-inner-xl) {
+    padding: var(--app-card-inner-padding-md);
+  }
 }
 
 .modern-panel {

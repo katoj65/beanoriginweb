@@ -103,12 +103,12 @@ const goToBatchDetails = (row) => {
 
 <template>
 <cooperative-layout>
-<div class="">
+<div class="nk-block">
 
 
 
 
-<div class="row">
+<div class="row g-gs">
 <div class="col-12 col-md-3" v-for="(t,key) in tabs" :key="key">
 <div class="nk-order-ovwg-data card border">
 <div class="amount">{{ t.title }}</div>
@@ -121,7 +121,7 @@ const goToBatchDetails = (row) => {
 </div>
 </div>
 
-<div class="row mt-4">
+<div class="row g-gs">
 <div class="col-12 col-md-8">
 <div class="card card-bordered card-preview modern-panel">
 <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
@@ -185,7 +185,7 @@ const goToBatchDetails = (row) => {
 </div>
 </div>
 
-<div class="row mt-4">
+<div class="row g-gs">
 <div class="col-12 col-md-8">
 <div class="card card-bordered h-100 modern-panel">
 <div class="card-inner">
@@ -256,7 +256,7 @@ const goToBatchDetails = (row) => {
 </div>
 </div>
 
-<div class="row mt-4">
+<div class="row g-gs">
 <div class="col-12 col-md-7">
 <div class="card border h-100 modern-panel">
 <div class="card-header bg-white p-0">

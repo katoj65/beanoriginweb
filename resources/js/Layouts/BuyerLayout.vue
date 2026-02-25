@@ -320,10 +320,10 @@ Sign Out
 </div>
 </div>
 
-<div class="nk-content pt-3">
-<div class="container-fluid pt-0">
-<div class="nk-content-inner pt-0">
-<div class="nk-content-body pt-0">
+<div class="nk-content app-page-shell">
+<div class="container-fluid">
+<div class="nk-content-inner">
+<div class="nk-content-body">
 
 <slot></slot>
 </div>

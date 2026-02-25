@@ -79,7 +79,8 @@ const coffee_types=[
 
 
 
-<div class="row">
+<div class="nk-block">
+<div class="row g-gs">
 <div class="col-12 col-md-3" v-for="(t,key) in tabs" :key="key">
 <div class="nk-order-ovwg-data card border">
 <div class="amount">
@@ -100,7 +101,7 @@ const coffee_types=[
 
 
 
-<div class="row mt-4">
+<div class="row g-gs">
 <div class="col-12 col-md-8">
 
 <div class="card card-bordered card-preview">
@@ -171,7 +172,7 @@ const coffee_types=[
 
 
 
-<div class="row mt-4">
+<div class="row g-gs">
 <div class="col-12 col-md-8">
 
 <div class="card card-bordered h-100">
@@ -257,7 +258,7 @@ const coffee_types=[
 
 
 
-<div class="row mt-4">
+<div class="row g-gs">
 <div class="col-12 col-md-7">
 <div class="card border h-100">
 <div class="card-header bg-white p-0">
@@ -307,6 +308,7 @@ const coffee_types=[
 
 
 
+</div>
 </app-layout>
 </template>
 

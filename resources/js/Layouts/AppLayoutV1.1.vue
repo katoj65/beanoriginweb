@@ -20,8 +20,9 @@ import SidebarComponent from "@/Components/SidebarComponent.vue";
 
 <!-- main header @e -->
 <!-- content @s -->
-<div class="nk-content nk-content-fluid">
-<div class="container-xl wide-lg">
+<div class="nk-content app-page-shell">
+<div class="container-fluid">
+<div class="nk-content-inner">
 <div class="nk-content-body">
 
 
@@ -29,6 +30,7 @@ import SidebarComponent from "@/Components/SidebarComponent.vue";
 <slot></slot>
 
 
+</div>
 </div>
 </div>
 </div>

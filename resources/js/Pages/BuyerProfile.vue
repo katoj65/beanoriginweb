@@ -71,7 +71,7 @@ const recentActivity = computed(() => [
 <template>
   <buyer-layout>
     <div class="nk-block">
-      <div class="row g-gs profile-grid">
+      <div class="row g-gs">
         <div class="col-12 col-lg-4">
           <div class="card card-bordered h-100">
             <div class="card-inner profile-card">
@@ -110,7 +110,7 @@ const recentActivity = computed(() => [
         </div>
 
         <div class="col-12 col-lg-8">
-          <div class="row g-gs profile-subgrid">
+          <div class="row g-gs">
             <div class="col-12">
               <div class="card card-bordered">
                 <div class="card-inner snapshot-card">
@@ -177,24 +177,6 @@ const recentActivity = computed(() => [
 </template>
 
 <style scoped>
-.profile-grid {
-  --bs-gutter-x: calc(0.75rem + 5px);
-  --bs-gutter-y: calc(0.75rem + 5px);
-}
-
-.profile-subgrid {
-  --bs-gutter-x: calc(0.6rem + 5px);
-  --bs-gutter-y: calc(0.6rem + 5px);
-}
-
-.nk-block {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.nk-block .card-inner {
-  padding: 17px;
-}
 
 .profile-card {
   display: grid;
