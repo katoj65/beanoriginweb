@@ -20,6 +20,7 @@
   --app-grid-gutter-y: 17px;
   --app-section-gap: 17px;
   --app-page-space: 17px;
+  --app-container-padding-x: 0px;
   --app-card-inner-padding: 17px;
   --app-card-inner-padding-md: 17px;
   --app-card-inner-padding-sm: 12px;
@@ -41,6 +42,13 @@
 
 body {
   background: #f4f6f9;
+}
+
+/* Theme default: remove horizontal padding from .container everywhere */
+.container {
+  --bs-gutter-x: calc(var(--app-container-padding-x) * 2) !important;
+  padding-left: var(--app-container-padding-x) !important;
+  padding-right: var(--app-container-padding-x) !important;
 }
 
 /* Global title typography */

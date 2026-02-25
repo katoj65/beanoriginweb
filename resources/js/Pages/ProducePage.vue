@@ -83,29 +83,25 @@ class="produce-search-input"
 <div class="row g-3 mt-2">
 <div class="col-12 col-md-6 col-lg-3">
 <div class="stat-tile">
-<em class="icon ni ni-layers stat-icon"></em>
-<span class="sub-text">Total Commodity</span>
+<span class="sub-text mb-1">Total Commodity</span>
 <h5 class="mb-0">{{ totalBatches }}</h5>
 </div>
 </div>
 <div class="col-12 col-md-6 col-lg-3">
 <div class="stat-tile">
-<em class="icon ni ni-bag stat-icon"></em>
-<span class="sub-text">Listed For Sale</span>
+<span class="sub-text mb-1">Listed For Sale</span>
 <h5 class="mb-0">{{ listedCount }}</h5>
 </div>
 </div>
 <div class="col-12 col-md-6 col-lg-3">
 <div class="stat-tile">
-<em class="icon ni ni-check-circle stat-icon"></em>
-<span class="sub-text">Sold</span>
+<span class="sub-text mb-1">Sold</span>
 <h5 class="mb-0">{{ soldCount }}</h5>
 </div>
 </div>
 <div class="col-12 col-md-6 col-lg-3">
 <div class="stat-tile">
-<em class="icon ni ni-growth stat-icon"></em>
-<span class="sub-text">Total Volume</span>
+<span class="sub-text mb-1">Total Volume</span>
 <h5 class="mb-0">{{ totalVolume }} kgs</h5>
 </div>
 </div>
