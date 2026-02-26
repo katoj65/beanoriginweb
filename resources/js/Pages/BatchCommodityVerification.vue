@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import AddCommodityToBatch from '@/Components/AddCommodityToBatch.vue';
-import { Back, Plus } from '@element-plus/icons-vue';
+import { Back, Plus, MoreFilled, Edit, Delete } from '@element-plus/icons-vue';
 
 const page = usePage();
 const batch = computed(() => page.props.batch?.data ?? page.props.batch ?? {});
@@ -35,19 +35,16 @@ const goBack = () => {
 router.get(route('cooperative.produce'));
 };
 
-const goToAddCommodity = () => {
-if (batch.value?.id) {
-router.get(route('commodity.create', { batch_id: batch.value.id }));
-return;
-}
-router.get(route('commodity.create'));
-};
 
 
 
 
 
-
+//
+const commodityBatchState=computed(()=>{
+const data=page.props.attached_commodities.length;
+return data>0? true : false;
+});
 
 
 
@@ -60,6 +57,8 @@ router.get(route('commodity.create'));
 
 <template>
 <CooperativeLayout>
+
+
 <div class="container">
 <div class="card card-bordered verification-shell">
 <div class="card-inner border-bottom verification-head">
@@ -70,7 +69,22 @@ router.get(route('commodity.create'));
 
 <el-button-group>
 <el-button :icon="Back" @click="goBack">Back</el-button>
-<el-button  :icon="Plus" @click="goToAddCommodity">Add Commodity</el-button>
+<el-button  :icon="Plus" v-if="commodityBatchState ==true">Tokenize</el-button>
+<el-dropdown trigger="click" class="more-dropdown-trigger">
+<el-button :icon="MoreFilled" class="more-dropdown-button" />
+<template #dropdown>
+<el-dropdown-menu>
+<el-dropdown-item :icon="Plus">Activity</el-dropdown-item>
+<el-dropdown-item :icon="Edit">Edit</el-dropdown-item>
+<el-dropdown-item :icon="Delete">Delete</el-dropdown-item>
+</el-dropdown-menu>
+</template>
+</el-dropdown>
+
+
+
+
+
 </el-button-group>
 </div>
 
@@ -180,5 +194,12 @@ grid-template-columns: 1fr;
 .detail-item-full {
 grid-column: span 1;
 }
+}
+
+.verification-head :deep(.more-dropdown-button) {
+margin-left: -1px;
+border-top-left-radius: 0;
+border-bottom-left-radius: 0;
+box-shadow: inset 1px 0 0 #dcdfe6;
 }
 </style>

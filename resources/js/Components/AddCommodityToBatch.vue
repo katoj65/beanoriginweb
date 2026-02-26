@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import InputError from '@/Components/InputError.vue';
+import { ElNotification } from 'element-plus';
 import { Plus, Search } from '@element-plus/icons-vue';
 
 const props = defineProps({
@@ -39,7 +40,29 @@ const submit = () => {
   form.post(route('commodity.batch.commodities.attach', { id: props.batchId }), {
     preserveScroll: true,
     onSuccess: () => {
+      ElNotification({
+        title: 'Successful',
+        message: `Commodity #${form.commodity_id} was attached to batch #${props.batchId}.`,
+        type: 'success',
+        duration: 3200,
+        position: 'top-right',
+        offset: 84,
+        showClose: true,
+        customClass: 'theme-notification-success',
+      });
       closeModal();
+    },
+    onError: () => {
+      ElNotification({
+        title: 'Attachment Failed',
+        message: form.errors.commodity_id || 'Unable to attach commodity to this batch.',
+        type: 'error',
+        duration: 4200,
+        position: 'top-right',
+        offset: 84,
+        showClose: true,
+        customClass: 'theme-notification-error',
+      });
     },
   });
 };
@@ -119,7 +142,7 @@ const submit = () => {
         </div>
 
         <div class="dialog-actions mt-4">
-         
+
           <el-button type="primary" native-type="submit" :loading="form.processing">
             Attach Commodity
           </el-button>
