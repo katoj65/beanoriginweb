@@ -9,6 +9,22 @@ const page = usePage();
 const grades = computed(() => page.props.grades ?? []);
 const crops = computed(() => page.props.crops ?? []);
 
+const capitalizeLabel = (value) => {
+const text = String(value ?? '').trim();
+if (!text) return '';
+
+return text
+.replace(/_/g, ' ')
+.split(/\s+/)
+.map((word) => {
+if (!word) return '';
+if (word === word.toUpperCase() && word.length > 1) return word;
+const lower = word.toLowerCase();
+return lower.charAt(0).toUpperCase() + lower.slice(1);
+})
+.join(' ');
+};
+
 const form = useForm({
 batch_code: '',
 commodity_name: '',
@@ -21,7 +37,7 @@ warehouse: '',
 });
 
 const submit = () => {
-form.post(route('cooperative.batches.store'), {
+form.post(route('commodity.batch.store'), {
 preserveScroll: true,
 });
 };
@@ -62,17 +78,18 @@ router.get(route('cooperative.batches.listed'));
 <label class="form-label" for="01">Commodity Name</label>
 <el-select
 v-model="form.commodity_name"
-class="w-100 theme-no-highlight-select"
+class="w-100 theme-no-highlight-select text-capitalize"
 size="large"
 clearable
 filterable
-popper-class="theme-no-highlight-select-popper"
+popper-class="theme-no-highlight-select-popper text-capitalize"
 placeholder="Select commodity"
 >
 <el-option
 v-for="item in crops"
 :key="item.id"
-:label="item.name"
+class="text-capitalize"
+:label="capitalizeLabel(item.name)"
 :value="item.name"
 />
 </el-select>
@@ -101,16 +118,16 @@ v-for="item in crops"
 <label class="form-label">Grade</label>
 <el-select
 v-model="form.grade"
-class="w-100 theme-no-highlight-select"
+class="w-100 theme-no-highlight-select text-capitalize"
 size="large"
-filterable
-popper-class="theme-no-highlight-select-popper"
+popper-class="theme-no-highlight-select-popper text-capitalize"
 placeholder="Select grade"
 >
 <el-option
 v-for="item in grades"
 :key="item.id"
-:label="item.name"
+class="text-capitalize"
+:label="capitalizeLabel(item.name)"
 :value="item.name"
 />
 </el-select>

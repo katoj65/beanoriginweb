@@ -10,6 +10,7 @@ use App\Http\Resources\CropTypeResource;
 use App\Http\Resources\FarmResource;
 use App\Http\Resources\ProcessMethodResource;
 use App\Models\Commodity;
+use App\Models\Batch;
 use App\Models\Cooperative;
 use App\Models\CooperativeFarmer;
 use App\Models\CropGrade;
@@ -19,8 +20,11 @@ use App\Models\Farm;
 use App\Models\ProcessMethod;
 use App\Services\Payments\PaymentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use App\Http\Resources\CommodityResource;
+use App\Http\Resources\BatchResource;
+use App\Models\CommodityBatch;
 use Inertia\Inertia;
 
 class CommodityController extends Controller
@@ -32,6 +36,11 @@ public function index()
 {
 //
 }
+
+
+
+
+
 
 /**
  * Store a newly created resource in storage.
@@ -77,6 +86,48 @@ return redirect()
 
 
 
+
+
+
+
+//store Batch details
+public function storeBatch(Request $request)
+{
+$validated = $request->validate([
+'batch_code' => ['required', 'string', 'max:255', 'unique:batches,batch_code'],
+'commodity_name' => ['required', 'string', 'max:255', 'exists:crops,name'],
+'commodity_type' => ['required', 'string', 'max:255'],
+'weight' => ['required', 'numeric', 'min:0.01'],
+'price' => ['required', 'numeric', 'min:0.01'],
+'grade' => ['required', 'string', 'max:100', 'exists:crop_grades,name'],
+'moisture' => ['nullable', 'numeric', 'min:0', 'max:100'],
+'warehouse' => ['required', 'string', 'max:255'],
+
+]);
+
+$batch = DB::transaction(function () use ($validated, $request) {
+$batch = Batch::create([
+'owner_id' => $request->user()->id,
+'batch_code' => $validated['batch_code'],
+'commodity_name' => $validated['commodity_name'],
+'commodity_type' => $validated['commodity_type'],
+'weight' => $validated['weight'],
+'grade' => $validated['grade'],
+'moisture' => $validated['moisture'] ?? null,
+'warehouse' => $validated['warehouse'],
+'is_on_chain' => false,
+'status' => 'created',
+'price' => $validated['price'],
+]);
+
+return $batch;
+});
+
+return redirect()
+->route('commodity.batch.verify', ['id' => $batch->id])
+->with('success', 'Batch created successfully.');
+
+}
 
 
 
@@ -305,8 +356,6 @@ return Inertia::render('CommodityFarm', [
 public function createBatch(Request $request)
 {
 $cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
-
-
 return Inertia::render('BatchCreate', [
 'title' => 'Create Commodity Batch',
 
@@ -314,6 +363,88 @@ return Inertia::render('BatchCreate', [
 }
 
 
+
+
+
+
+
+//Batch commodity verification
+public function verifyBatchCommodities(Request $request, string $id)
+{
+$batch = Batch::query()
+->where('id', $id)
+->where('owner_id', $request->user()->id)
+->firstOrFail();
+
+$commodityIds = CommodityBatch::query()
+->where('batch_id', $batch->id)
+->pluck('commodity_id')
+->filter()
+->values();
+
+$attachedCommodities = Commodity::query()
+->whereIn('id', $commodityIds)
+->get(['id', 'commodity_name', 'commodity_type', 'grade', 'weight', 'status'])
+->values();
+
+return Inertia::render('BatchCommodityVerification', [
+'title' => 'Batch Commodity Verification',
+'batch' => new BatchResource($batch),
+'attached_commodities' => $attachedCommodities,
+]);
+}
+
+
+
+
+
+
+
+
+
+public function attachCommodityToBatch(Request $request, string $id)
+{
+$validated = $request->validate([
+'commodity_id' => ['required', 'integer', 'exists:commodities,id'],
+]);
+
+$batch = Batch::query()
+->where('id', $id)
+->where('owner_id', $request->user()->id)
+->firstOrFail();
+
+$cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
+$commodity = Commodity::query()
+->where('id', $validated['commodity_id'])
+->where('cooperative_id', $cooperativeId)
+->first();
+
+if (!$commodity) {
+throw ValidationException::withMessages([
+'commodity_id' => 'Commodity not found for your cooperative.',
+]);
+}
+
+$alreadyAttached = CommodityBatch::query()
+->where('batch_id', $batch->id)
+->where('commodity_id', $commodity->id)
+->exists();
+
+if ($alreadyAttached) {
+throw ValidationException::withMessages([
+'commodity_id' => 'Commodity is already attached to this batch.',
+]);
+}
+
+CommodityBatch::query()->create([
+'batch_id' => $batch->id,
+'commodity_id' => $commodity->id,
+]);
+
+return redirect()
+->route('commodity.batch.verify', ['id' => $batch->id])
+->with('success', 'Commodity attached to batch successfully.');
+}
 
 
 

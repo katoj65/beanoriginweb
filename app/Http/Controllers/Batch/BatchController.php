@@ -49,9 +49,6 @@ $q->from('blocks')
 })
 ->get();
 
-
-
-
 return Inertia::render('BatchListed', [
 'batches' => BlockBatchLatestResource::collection($baches),
 'batch_action_list' => [],
@@ -104,7 +101,6 @@ $validated = $request->validate([
 'warehouse' => ['required', 'string', 'max:255'],
 
 ]);
-
 
 
 // Use a transaction to ensure atomicity of batch creation and blockchain recording.

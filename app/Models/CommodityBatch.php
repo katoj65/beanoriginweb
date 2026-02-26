@@ -13,8 +13,7 @@ class CommodityBatch extends Pivot
 
     protected $fillable = [
         'commodity_id',
-        'chain_batch_id',
-        'status',
+        'batch_id',
     ];
 
 
@@ -23,8 +22,8 @@ class CommodityBatch extends Pivot
         return $this->belongsTo(Commodity::class, 'commodity_id');
     }
 
-    public function chainBatch(): BelongsTo
+    public function batch(): BelongsTo
     {
-        return $this->belongsTo(ChainBatch::class, 'chain_batch_id');
+        return $this->belongsTo(Batch::class, 'batch_id');
     }
 }
