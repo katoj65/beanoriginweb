@@ -30,6 +30,8 @@ class DatabaseSeeder extends Seeder
             ChainBatchStatusSeeder::class,
             BatchActionListSeeder::class,
             CommodityLifecycleSeeder::class,
+            SystemSeeder::class,
+            SystemActivitySeeder::class,
         ]);
 
 

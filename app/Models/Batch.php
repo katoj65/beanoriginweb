@@ -54,4 +54,9 @@ class Batch extends Model
     {
         return $this->hasMany(BatchAction::class, 'batch_id');
     }
+
+    public function activities(): HasMany
+    {
+        return $this->hasMany(BatchActivity::class, 'batch_id');
+    }
 }
