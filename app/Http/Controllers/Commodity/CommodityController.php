@@ -369,6 +369,14 @@ return Inertia::render('BatchCreate', [
 
 
 
+
+
+
+
+
+
+
+
 //Batch commodity verification
 public function verifyBatchCommodities(Request $request, string $id)
 {
@@ -388,10 +396,21 @@ $attachedCommodities = Commodity::query()
 ->get(['id', 'commodity_name', 'commodity_type', 'grade', 'weight', 'status'])
 ->values();
 
+$batchActivities = $batch->activities()
+->latest('id')
+->get(['id', 'activity', 'created_at'])
+->map(fn ($activity) => [
+'id' => $activity->id,
+'activity' => $activity->activity,
+'created_at' => $activity->created_at?->toDateTimeString(),
+])
+->values();
+
 return Inertia::render('BatchCommodityVerification', [
 'title' => 'Batch Commodity Verification',
 'batch' => new BatchResource($batch),
 'attached_commodities' => $attachedCommodities,
+'batch_activities' => $batchActivities,
 'batch_status_list' => BatchStatusList::query()->where('name','!=','created')->orderBy('id')->pluck('name')->values(),
 ]);
 }

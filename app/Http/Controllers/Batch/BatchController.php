@@ -15,6 +15,7 @@ use App\Services\Blockchain\BlockService;
 use App\Models\Block;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use App\Http\Resources\BatchBlockResource;
 use App\Http\Resources\BlockBatchLatestResource;
 use Inertia\Inertia;
@@ -183,6 +184,17 @@ $batch = Batch::query()
 ->where('id', $id)
 ->where('owner_id', auth()->id())
 ->firstOrFail();
+
+$alreadyCompleted = BatchActivity::query()
+->where('batch_id', $batch->id)
+->where('activity', $validated['activity'])
+->exists();
+
+if ($alreadyCompleted) {
+throw ValidationException::withMessages([
+'activity' => 'This activity is already completed for this batch.',
+]);
+}
 
 BatchActivity::create([
 'batch_id' => $batch->id,

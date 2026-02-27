@@ -8,6 +8,7 @@ import { Back, Plus, MoreFilled, Edit, Delete } from '@element-plus/icons-vue';
 const page = usePage();
 const batch = computed(() => page.props.batch?.data ?? page.props.batch ?? {});
 const attachedCommodities = computed(() => page.props.attached_commodities ?? []);
+const batchActivities = computed(() => page.props.batch_activities ?? []);
 const activityOptions = computed(() => page.props.batch_status_list ?? []);
 
 const statusClass = computed(() => {
@@ -164,6 +165,31 @@ return data>0? true : false;
 </div>
 </div>
 
+<div class="card-inner border-bottom">
+<div class="activity-log-head">
+<h6 class="title mb-0"><em class="icon ni ni-activity mr-1"></em>Batch Activities</h6>
+<span class="activity-log-count">{{ batchActivities.length }} activities</span>
+</div>
+
+<div v-if="batchActivities.length" class="activity-log-list">
+<el-timeline class="activity-timeline">
+<el-timeline-item
+v-for="item in batchActivities"
+:key="item.id"
+type="primary"
+:timestamp="formatDateTime(item.created_at)"
+placement="top"
+>
+<div class="activity-timeline-content text-capitalize">{{ item.activity }}</div>
+</el-timeline-item>
+</el-timeline>
+</div>
+
+<div v-else class="empty-activity-log">
+No activities recorded for this batch yet.
+</div>
+</div>
+
 
 <add-commodity-to-batch :batch-id="batch.id" :commodities="attachedCommodities" />
 
@@ -286,6 +312,86 @@ background: #f8fafc;
 padding: 14px;
 }
 
+.activity-log-list {
+margin-top: 12px;
+}
+
+.activity-log-head {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 10px;
+flex-wrap: wrap;
+}
+
+.activity-log-count {
+display: inline-flex;
+align-items: center;
+padding: 3px 10px;
+border-radius: 999px;
+border: 1px solid #dbe7ff;
+background: #f3f7ff;
+color: #1e40af;
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 0.02em;
+text-transform: uppercase;
+}
+
+.activity-log-list :deep(.el-timeline) {
+padding-left: 0;
+margin: 0;
+}
+
+.activity-log-list :deep(.el-timeline-item) {
+padding-bottom: 12px;
+}
+
+.activity-log-list :deep(.el-timeline-item:last-child) {
+padding-bottom: 0;
+}
+
+.activity-log-list :deep(.el-timeline-item__tail) {
+left: 4px;
+border-left: 2px solid #dbe5f1;
+}
+
+.activity-log-list :deep(.el-timeline-item__node--normal) {
+left: 0;
+width: 10px;
+height: 10px;
+border: 0;
+background: var(--app-coffee-700);
+box-shadow: 0 0 0 3px rgba(111, 78, 55, 0.16);
+}
+
+.activity-log-list :deep(.el-timeline-item__wrapper) {
+top: -2px;
+padding-left: 18px;
+}
+
+.activity-log-list :deep(.el-timeline-item__timestamp) {
+font-size: 11.5px;
+line-height: 1.25;
+color: #64748b;
+margin-bottom: 2px;
+}
+
+.activity-timeline-content {
+font-size: 13px;
+font-weight: 600;
+color: #0f172a;
+line-height: 1.35;
+}
+
+.empty-activity-log {
+border: 1px dashed #d9e2f0;
+border-radius: 10px;
+background: #f8fafc;
+padding: 12px;
+color: #64748b;
+}
+
 @media (max-width: 767px) {
 .details-grid {
 grid-template-columns: 1fr;
@@ -380,6 +486,18 @@ padding: 20px 26px 24px;
 @media (max-width: 767px) {
 .activity-context {
 grid-template-columns: 1fr;
+}
+
+.activity-log-list :deep(.el-timeline-item) {
+padding-bottom: 10px;
+}
+
+.activity-log-list :deep(.el-timeline-item__wrapper) {
+padding-left: 14px;
+}
+
+.activity-log-list :deep(.el-timeline-item__timestamp) {
+white-space: normal;
 }
 
 .activity-dialog-actions {
