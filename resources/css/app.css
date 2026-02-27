@@ -24,6 +24,8 @@
   --app-card-inner-padding: 20px;
   --app-card-inner-padding-md: 20px;
   --app-card-inner-padding-sm: 14px;
+  --app-dialog-radius: 16px;
+  --el-dialog-border-radius: var(--app-dialog-radius);
   --app-field-height: 44px;
   --alert-success-bg: #ecfdf3;
   --alert-success-border: #86efac;
@@ -35,6 +37,13 @@
   --alert-warning-text: #9a3412;
   --alert-warning-icon-bg: #f97316;
   --alert-warning-shadow: 0 14px 34px rgba(154, 52, 18, 0.16), 0 3px 10px rgba(15, 23, 42, 0.08);
+}
+
+/* Theme default: apply consistent radius to all Element Plus dialogs */
+.el-dialog {
+  --el-dialog-border-radius: var(--app-dialog-radius) !important;
+  border-radius: var(--el-dialog-border-radius) !important;
+  overflow: hidden;
 }
 
 [x-cloak] {
@@ -642,7 +651,7 @@ textarea.form-control {
 
 /* Theme utility: modern Element Plus action dialog */
 .theme-action-dialog.el-dialog {
-  border-radius: 16px;
+  border-radius: var(--el-dialog-border-radius) !important;
   overflow: hidden;
   box-shadow: 0 24px 56px rgba(15, 23, 42, 0.2);
 }

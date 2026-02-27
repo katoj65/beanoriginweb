@@ -1,6 +1,6 @@
 <script setup>
-import { computed } from 'vue';
-import { router, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import { router, useForm, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import AddCommodityToBatch from '@/Components/AddCommodityToBatch.vue';
 import { Back, Plus, MoreFilled, Edit, Delete } from '@element-plus/icons-vue';
@@ -8,6 +8,7 @@ import { Back, Plus, MoreFilled, Edit, Delete } from '@element-plus/icons-vue';
 const page = usePage();
 const batch = computed(() => page.props.batch?.data ?? page.props.batch ?? {});
 const attachedCommodities = computed(() => page.props.attached_commodities ?? []);
+const activityOptions = computed(() => page.props.batch_status_list ?? []);
 
 const statusClass = computed(() => {
 const status = String(batch.value?.status ?? '').toLowerCase();
@@ -33,6 +34,36 @@ return date.toLocaleString();
 
 const goBack = () => {
 router.get(route('cooperative.produce'));
+};
+
+const addActivityModalVisible = ref(false);
+const activityForm = useForm({
+activity: '',
+});
+
+const closeActivityModal = () => {
+addActivityModalVisible.value = false;
+activityForm.clearErrors();
+};
+
+const handleMoreCommand = (command) => {
+if (command === 'activity') {
+activityForm.clearErrors();
+addActivityModalVisible.value = true;
+}
+};
+
+const submitActivity = () => {
+const batchId = batch.value?.id ?? page.props.batch?.id ?? null;
+if (!batchId) return;
+
+activityForm.post(route('commodity.batch.activities.store', { id: batchId }), {
+preserveScroll: true,
+onSuccess: () => {
+closeActivityModal();
+activityForm.reset('activity');
+},
+});
 };
 
 
@@ -70,21 +101,16 @@ return data>0? true : false;
 <el-button-group>
 <el-button :icon="Back" @click="goBack">Back</el-button>
 <el-button  :icon="Plus" v-if="commodityBatchState ==true">Tokenize</el-button>
-<el-dropdown trigger="click" class="more-dropdown-trigger">
+<el-dropdown trigger="click" class="more-dropdown-trigger" @command="handleMoreCommand">
 <el-button :icon="MoreFilled" class="more-dropdown-button" />
 <template #dropdown>
 <el-dropdown-menu>
-<el-dropdown-item :icon="Plus">Activity</el-dropdown-item>
-<el-dropdown-item :icon="Edit">Edit</el-dropdown-item>
-<el-dropdown-item :icon="Delete">Delete</el-dropdown-item>
+<el-dropdown-item :icon="Plus" command="activity">Activity</el-dropdown-item>
+<el-dropdown-item :icon="Edit" command="edit">Edit</el-dropdown-item>
+<el-dropdown-item :icon="Delete" command="delete">Delete</el-dropdown-item>
 </el-dropdown-menu>
 </template>
 </el-dropdown>
-
-
-
-
-
 </el-button-group>
 </div>
 
@@ -140,6 +166,80 @@ return data>0? true : false;
 
 
 <add-commodity-to-batch :batch-id="batch.id" :commodities="attachedCommodities" />
+
+<el-dialog
+v-model="addActivityModalVisible"
+class="activity-dialog"
+width="560"
+align-center
+destroy-on-close
+:close-on-click-modal="false"
+>
+<template #header>
+<div class="activity-dialog-header">
+<div class="activity-dialog-icon">
+<i class="bi bi-list-check"></i>
+</div>
+<div>
+<h5 class="mb-1">Add Batch Activity</h5>
+<p class="sub-text mb-0">Record a new activity and keep this batch timeline up to date.</p>
+</div>
+</div>
+</template>
+
+<form @submit.prevent="submitActivity">
+<div class="activity-dialog-body">
+<div class="activity-context">
+<div class="context-item">
+<span class="sub-text">Batch Code</span>
+<strong>{{ batch.batch_code ?? 'N/A' }}</strong>
+</div>
+<div class="context-item">
+<span class="sub-text">Commodity</span>
+<strong>{{ batch.commodity_name ?? 'N/A' }}</strong>
+</div>
+</div>
+
+<div class="form-group mb-0 activity-form-block">
+<label class="form-label mb-1">Activity</label>
+<el-select
+v-model="activityForm.activity"
+class="w-100"
+size="large"
+clearable
+placeholder="Select activity"
+>
+<el-option
+v-for="status in activityOptions"
+:key="status"
+:label="status"
+:value="status"
+/>
+</el-select>
+<div class="sub-text mt-1">Activities are sourced from batch status list.</div>
+<div v-if="activityForm.errors.activity" class="text-danger small mt-1">
+{{ activityForm.errors.activity }}
+</div>
+</div>
+</div>
+
+<div class="activity-dialog-actions">
+<el-button type="primary" native-type="submit" :loading="activityForm.processing">
+Save Activity
+</el-button>
+</div>
+</form>
+</el-dialog>
+
+
+
+
+
+
+
+
+
+
 
 
 </div>
@@ -201,5 +301,102 @@ margin-left: -1px;
 border-top-left-radius: 0;
 border-bottom-left-radius: 0;
 box-shadow: inset 1px 0 0 #dcdfe6;
+}
+
+.activity-dialog-header h5 {
+font-size: 1.1rem;
+font-weight: 700;
+margin: 0;
+color: #0f172a;
+}
+
+.activity-dialog-header {
+display: flex;
+align-items: flex-start;
+gap: 12px;
+}
+
+.activity-dialog-icon {
+width: 38px;
+height: 38px;
+border-radius: 12px;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%);
+color: #c2410c;
+font-size: 18px;
+flex-shrink: 0;
+}
+
+.activity-dialog-body {
+display: flex;
+flex-direction: column;
+gap: 18px;
+}
+
+.activity-context {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 12px;
+}
+
+.context-item {
+background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+border: 1px solid #dbe5f1;
+border-radius: 12px;
+padding: 14px;
+display: flex;
+flex-direction: column;
+gap: 4px;
+}
+
+.activity-form-block {
+background: #ffffff;
+border: 1px solid #e2e8f0;
+border-radius: 12px;
+padding: 14px;
+}
+
+.activity-dialog-actions {
+display: flex;
+justify-content: flex-end;
+gap: 10px;
+margin-top: 8px;
+padding-top: 16px;
+border-top: 1px solid #e2e8f0;
+}
+
+.activity-dialog :deep(.el-dialog__header) {
+padding: 24px 26px 14px;
+border-bottom: 1px solid #e2e8f0;
+background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+}
+
+.activity-dialog :deep(.el-dialog__body) {
+padding: 20px 26px 24px;
+}
+
+@media (max-width: 767px) {
+.activity-context {
+grid-template-columns: 1fr;
+}
+
+.activity-dialog-actions {
+flex-direction: column-reverse;
+padding-top: 14px;
+}
+
+.activity-dialog-actions :deep(.el-button) {
+width: 100%;
+}
+
+.activity-dialog :deep(.el-dialog__header) {
+padding: 18px 18px 12px;
+}
+
+.activity-dialog :deep(.el-dialog__body) {
+padding: 14px 18px 18px;
+}
 }
 </style>

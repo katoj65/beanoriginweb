@@ -295,7 +295,7 @@ color: #334155;
 
 :deep(.el-dialog.list-on-chain-dialog),
 :deep(.list-on-chain-dialog .el-dialog) {
-border-radius: 35px !important;
+border-radius: var(--el-dialog-border-radius) !important;
 overflow: hidden;
 }
 

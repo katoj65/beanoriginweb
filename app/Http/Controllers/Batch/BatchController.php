@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Batch;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BatchResource;
 use App\Models\Batch;
+use App\Models\BatchActivity;
 use App\Models\BatchActionList;
 use App\Models\CropGrade;
 use App\Models\Crops;
@@ -172,6 +173,27 @@ return Inertia::render('BatchDetailsPage', [
 ]);
 }
 
+public function storeBatchActivity(Request $request, string $id)
+{
+$validated = $request->validate([
+'activity' => ['required', 'string', 'exists:batch_status_list,name'],
+]);
+
+$batch = Batch::query()
+->where('id', $id)
+->where('owner_id', auth()->id())
+->firstOrFail();
+
+BatchActivity::create([
+'batch_id' => $batch->id,
+'activity' => $validated['activity'],
+]);
+
+return redirect()
+->route('commodity.batch.verify', ['id' => $batch->id])
+->with('success', 'Batch activity added successfully.');
+}
+
 /**
  * Update the specified resource in storage.
  */
@@ -292,9 +314,11 @@ return redirect()
 return Inertia::render('BatchActionPage', [
 'selection' => [
 'selected_action' => $selectedAction,
+'batch_id' => $batch->id,
 'batch_number' => $batch->batch_code,
 ],
 'batch' => new BatchResource($batch),
+'back_to_verification_url' => route('commodity.batch.verify', ['id' => $batch->id]),
 ]);
 }
 

@@ -26,3 +26,6 @@ Route::get('/batch/verification/{id}', [CommodityController::class, 'verifyBatch
 Route::post('/batch/{id}/commodities', [CommodityController::class, 'attachCommodityToBatch'])
     ->whereNumber('id')
     ->name('batch.commodities.attach');
+Route::post('/batch/{id}/activities', [BatchController::class, 'storeBatchActivity'])
+    ->whereNumber('id')
+    ->name('batch.activities.store');

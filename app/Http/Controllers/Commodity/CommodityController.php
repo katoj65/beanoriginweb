@@ -11,6 +11,7 @@ use App\Http\Resources\FarmResource;
 use App\Http\Resources\ProcessMethodResource;
 use App\Models\Commodity;
 use App\Models\Batch;
+use App\Models\BatchStatusList;
 use App\Models\Cooperative;
 use App\Models\CooperativeFarmer;
 use App\Models\CropGrade;
@@ -391,6 +392,7 @@ return Inertia::render('BatchCommodityVerification', [
 'title' => 'Batch Commodity Verification',
 'batch' => new BatchResource($batch),
 'attached_commodities' => $attachedCommodities,
+'batch_status_list' => BatchStatusList::query()->where('name','!=','created')->orderBy('id')->pluck('name')->values(),
 ]);
 }
 

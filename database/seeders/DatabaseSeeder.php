@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             ProcessMethodSeeder::class,
             CropGradeSeeder::class,
             ChainBatchStatusSeeder::class,
+            BatchStatusListSeeder::class,
             BatchActionListSeeder::class,
             CommodityLifecycleSeeder::class,
             SystemSeeder::class,

@@ -1,33 +1,41 @@
 <script setup>
-const props=defineProps({
-title:String,
-status:Boolean
+import { computed } from 'vue';
+
+const props = defineProps({
+title: String,
+isLoading: {
+type: Boolean,
+default: undefined,
+},
+status: {
+type: Boolean,
+default: false,
+},
 });
 
-
+const loading = computed(() => {
+return typeof props.isLoading === 'boolean' ? props.isLoading : props.status;
+});
 </script>
 
 <template>
 <div class="form-group">
 <div class="form-control-wrap">
-<button class="btn btn-lg btn-primary btn-block submit-btn" v-if="status==false" type="submit">
+<el-button
+
+type="primary"
+native-type="submit"
+:loading="loading"
+:disabled="loading"
+>
 {{ title }}
-</button>
-<button class="btn btn-lg btn-primary btn-block submit-btn d-flex align-items-center justify-content-center" v-else disabled>
-<div class="spinner-border spinner-border-sm submit-spinner" role="status" aria-hidden="true"></div>
-<span class="visually-hidden">Loading...</span>
-</button>
+</el-button>
 </div>
 </div>
 </template>
 <style scoped>
 .submit-btn {
+width: 100%;
 min-height: 48px;
-}
-
-.submit-spinner {
-width: 1rem;
-height: 1rem;
-border-width: 0.14em;
 }
 </style>
