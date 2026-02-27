@@ -1,8 +1,9 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import AddCommodityToBatch from '@/Components/AddCommodityToBatch.vue';
+import { ElNotification } from 'element-plus';
 import { Back, Plus, MoreFilled, Edit, Delete } from '@element-plus/icons-vue';
 
 const page = usePage();
@@ -10,6 +11,21 @@ const batch = computed(() => page.props.batch?.data ?? page.props.batch ?? {});
 const attachedCommodities = computed(() => page.props.attached_commodities ?? []);
 const batchActivities = computed(() => page.props.batch_activities ?? []);
 const activityOptions = computed(() => page.props.batch_status_list ?? []);
+const timelineActivities = computed(() => {
+const activities = Array.isArray(batchActivities.value) ? [...batchActivities.value] : [];
+const createdAt = batch.value?.created_at ?? null;
+
+if (createdAt) {
+activities.push({
+id: 'batch-created',
+activity: 'batch created',
+created_at: createdAt,
+});
+}
+
+return activities;
+});
+const flashSuccess = computed(() => page.props.flash?.success ?? null);
 
 const statusClass = computed(() => {
 const status = String(batch.value?.status ?? '').toLowerCase();
@@ -36,6 +52,25 @@ return date.toLocaleString();
 const goBack = () => {
 router.get(route('cooperative.produce'));
 };
+
+watch(
+() => flashSuccess.value,
+(message) => {
+if (message === 'Batch activity added successfully.') {
+ElNotification({
+title: 'Successful',
+message,
+type: 'success',
+duration: 3200,
+position: 'top-right',
+offset: 84,
+showClose: true,
+customClass: 'theme-notification-success',
+});
+}
+},
+{ immediate: true }
+);
 
 const addActivityModalVisible = ref(false);
 const activityForm = useForm({
@@ -168,13 +203,13 @@ return data>0? true : false;
 <div class="card-inner border-bottom">
 <div class="activity-log-head">
 <h6 class="title mb-0"><em class="icon ni ni-activity mr-1"></em>Batch Activities</h6>
-<span class="activity-log-count">{{ batchActivities.length }} activities</span>
+<span class="activity-log-count">{{ timelineActivities.length }} activities</span>
 </div>
 
-<div v-if="batchActivities.length" class="activity-log-list">
+<div v-if="timelineActivities.length" class="activity-log-list">
 <el-timeline class="activity-timeline">
 <el-timeline-item
-v-for="item in batchActivities"
+v-for="item in timelineActivities"
 :key="item.id"
 type="primary"
 :timestamp="formatDateTime(item.created_at)"
