@@ -28,10 +28,6 @@ use App\Http\Resources\FarmResource;
 use App\Http\Resources\CommodityResource;
 use App\Models\Commodity;
 use App\Models\CommodityFarm;
-use App\Models\Batch;
-use App\Models\BatchActionList;
-use App\Models\ChainBatch;
-use App\Models\ChainBlock;
 use App\Services\Payments\PaymentService;
 use App\Models\CommodityPayment;
 use App\Http\Resources\CommodityPaymentResource;
@@ -64,75 +60,6 @@ return Inertia::render('ProducePage', [
 ]);
 
 }
-
-
-
-
-
-
-
-public function batchListed(Request $request)
-{
-
-$user = $request->user();
-$batches = Batch::query()
-->where('owner_id', auth()->id())
-->where('is_on_chain', 1)
-->latest()
-->get()
-->map(function (Batch $batch) use ($user) {
-return [
-'id' => $batch->id,
-'batch_number' => $batch->batch_code,
-'status' => $batch->status,
-'grade' => $batch->grade,
-'weight' => $batch->weight,
-'created_at' => $batch->created_at?->toDateTimeString(),
-'listed_at' => $batch->created_at?->toDateString(),
-'commodity_id' => null,
-'commodity_names' => $batch->commodity_name ? [$batch->commodity_name] : [],
-'commodity_count' => $batch->commodity_name ? 1 : 0,
-'seller_name' => trim(($user?->fname ?? '') . ' ' . ($user?->lname ?? '')),
-'latest_block_hash' => null,
-'chain_height' => null,
-'ask_price' => null,
-
-
-
-
-];
-	});
-
-	$batchActionList = BatchActionList::query()
-	->where('name', '!=', 'created')
-	->orderBy('name')
-	->get(['id', 'name']);
-
-
-//get the latest block for each batch and attach the hash and chain height to the batch data
-
-
-return Inertia::render('BatchListed', [
-	'batches' => $batches,
-	'batch_action_list' => $batchActionList,
-
-]);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /**

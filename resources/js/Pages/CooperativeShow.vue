@@ -1,6 +1,5 @@
 <script setup>
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
-import FarmersTable from '@/Tables/FarmersTable.vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { ref, onMounted, computed } from 'vue';
 
@@ -81,7 +80,7 @@ const farmers=computed(()=>props.response.farmers.data);
 
 const tabs = computed(() => [
   { title: 'Farmers', subtitle: 'Farmers registered', stats: count_farmers, icon: 'ni-users' },
-  { title: 'Coffee Available', subtitle: 'Kgs listed for sale', stats: listedQuantityTotal, icon: 'ni-package' },
+  { title: 'Coffee Available (Kgs)', subtitle: 'Listed for sale', stats: listedQuantityTotal, icon: 'ni-package' },
   { title: 'Coffee Sold', subtitle: 'Batches sold', stats: soldCount, icon: 'ni-tranx' },
   { title: 'Buyers', subtitle: 'Active buyers', stats: '400', icon: 'ni-user-circle' },
 ]);
@@ -125,8 +124,8 @@ const goToBatchDetails = (row) => {
 <div class="col-12 col-md-8">
 <div class="card card-bordered card-preview modern-panel">
 <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
-<h6 class="mb-0">Coffee Price Offerings</h6>
-<span class="sub-text">Live buyer bids</span>
+<h6 class="mb-0">Your Coffee Price Offerings</h6>
+<span class="sub-text">Live bids</span>
 </div>
 <div class="card-body p-0">
 <el-table :data="produces" height="350" style="width: 100%" @row-click="goToBatchDetails" class="clickable-batches-table">

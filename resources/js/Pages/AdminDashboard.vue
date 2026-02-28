@@ -1,49 +1,10 @@
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 
-const marketListings = ref([
-  {
-    batch_id: 101,
-    commodity_name: 'Arabica Coffee',
-    batch_code: 'AR-2401',
-    seller_name: 'Kigezi Cooperative',
-    weight: 1250,
-    ask_price: 14200,
-    location: 'Kabale',
-    created_at: '2026-02-18',
-  },
-  {
-    batch_id: 102,
-    commodity_name: 'Robusta Coffee',
-    batch_code: 'RB-2409',
-    seller_name: 'Bugisu Growers',
-    weight: 1780,
-    ask_price: 11800,
-    location: 'Mbale',
-    created_at: '2026-02-20',
-  },
-  {
-    batch_id: 103,
-    commodity_name: 'Premium Arabica',
-    batch_code: 'PA-2411',
-    seller_name: 'Rwenzori Farms',
-    weight: 940,
-    ask_price: 16700,
-    location: 'Kasese',
-    created_at: '2026-02-21',
-  },
-  {
-    batch_id: 104,
-    commodity_name: 'Robusta Screen 18',
-    batch_code: 'RS-2414',
-    seller_name: 'Luweero Producers',
-    weight: 2200,
-    ask_price: 10950,
-    location: 'Luweero',
-    created_at: '2026-02-22',
-  },
-]);
+const page = usePage();
+const marketListings = computed(() => page.props.coffee_price_offerings ?? []);
 
 const suppliers = ref([
   { name: 'Kigezi Cooperative', orders: 8, delivered: 6, rating: '4.8/5', region: 'Western' },
@@ -116,14 +77,14 @@ const formatDate = (value) => {
 <div class="col-12 col-md-8">
 <div class="card card-bordered card-preview modern-panel">
 <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
-<h6 class="mb-0">Marketplace Listings</h6>
-<span class="sub-text">Fresh lots available for bidding</span>
+<h6 class="mb-0">Coffee Price Offerings</h6>
+<span class="sub-text">Tokenized batches currently available.</span>
 </div>
 <div class="card-body p-0">
 <el-table :data="marketListings" height="340" style="width: 100%">
 <el-table-column prop="commodity_name" width="160" label="Commodity" />
 <el-table-column prop="batch_code" width="120" label="Batch" />
-<el-table-column prop="seller_name" width="170" label="Supplier" />
+<el-table-column prop="seller_name" width="170" label="Owner" />
 <el-table-column prop="weight" width="110" label="Weight">
 <template #default="scope">{{ formatWeight(scope.row.weight) }}</template>
 </el-table-column>

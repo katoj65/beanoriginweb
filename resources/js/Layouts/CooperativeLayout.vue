@@ -203,14 +203,9 @@ Cooperative
 </li><!-- .nk-menu-item -->
 <li class="nk-menu-item">
 <Link :href="route('token.index')" class="nk-menu-link">
-<span class="nk-menu-text">Token</span>
+<span class="nk-menu-text">Marketplace</span>
 </Link>
 </li><!-- .nk-menu-item -->
-<li class="nk-menu-item">
-<Link :href="route('cooperative.batches.listed')" class="nk-menu-link">
-<span class="nk-menu-text">Batch Listed</span>
-</Link>
-</li>
 </ul>
 
 
@@ -295,13 +290,6 @@ Sign Out
 </Link>
 </li>
 
-
-<li class="nk-menu-item">
-<Link :href="route('cooperative.batches.listed')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-package"></em></span>
-<span class="nk-menu-text">Batch Listed</span>
-</Link>
-</li>
 
 <li class="nk-menu-item">
 <Link :href="route('cooperative.batches.unlisted')" class="nk-menu-link">

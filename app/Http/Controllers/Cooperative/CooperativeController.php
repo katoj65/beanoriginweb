@@ -12,12 +12,11 @@ use App\Models\Batch;
 use App\Http\Resources\CooperativeFarmer as CooperativeFarmerResource;
 use App\Http\Resources\FarmersTableSummaryResource;
 use App\Http\Resources\ProduceResource;
-use App\Repository\BatchRepository;
-use App\Http\Resources\BlockBatchLatestResource;
 
 
 class CooperativeController extends Controller
 {
+
 public static function dashboard()
 {
 
@@ -32,11 +31,13 @@ return Inertia::render('CooperativeCreate', [
 
 $cooperative = $user ? Cooperative::where('user_id', $user->id)->first() : null;
 $farmers = CooperativeFarmer::where('cooperative_id', $cooperative->id)->get();
-$produces = Produce::where('cooperative_id', $cooperative->id)->get();
+$produces = Batch::query()
+->where('owner_id', $user->id)
+->whereIn('status', ['tokenized', 'tokenized'])
+->get();
 $totalQuantity = Produce::where('cooperative_id', $cooperative->id)->sum('quantity');
 $soldCount = $user ? Batch::where('owner_id', $user->id)->where('status', 'sold')->count() : 0;
-$listedBatchWeightTotal = $user ? Batch::where('owner_id', $user->id)->where('status', 'listed')->sum('weight') : 0;
-$blockBatch = BatchRepository::getBatchWithLatestBlock();
+$listedBatchWeightTotal = $user ? Batch::where('owner_id', $user->id)->where('status', 'tokenized')->sum('weight') : 0;
 
 return Inertia::render('CooperativeShow', [
 'title' => 'Cooperative',
@@ -47,7 +48,18 @@ return Inertia::render('CooperativeShow', [
 'total_quantity' => $totalQuantity,
 'listed_quantity_total' =>  $listedBatchWeightTotal,
 'sold_count' => $soldCount,
-'produces' => BlockBatchLatestResource::collection($blockBatch),
+'produces' => $produces
+->map(fn (Batch $batch) => [
+'id' => $batch->id,
+'batch_id' => $batch->id,
+'commodity_name' => $batch->commodity_name,
+'batch_code' => $batch->batch_code,
+'weight' => $batch->weight,
+'price' => $batch->price,
+'status' => $batch->status,
+'created_at' => $batch->created_at?->toDateTimeString(),
+])
+->values(),
 
 ],
 ]);

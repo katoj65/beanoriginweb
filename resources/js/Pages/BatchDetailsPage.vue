@@ -36,7 +36,7 @@ return amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFract
 };
 
 const goBack = () => {
-router.get(route('cooperative.batches.listed'));
+router.get(route('cooperative.produce'));
 };
 
 const addBatchModalVisible = ref(false);
@@ -82,7 +82,6 @@ addBatchModalVisible.value = false;
 </div>
 <el-button-group>
 <el-button plain @click="goBack">Back</el-button>
-<el-button type="default" @click="goCreate">Add to Chain</el-button>
 </el-button-group>
 </div>
 

@@ -34,6 +34,17 @@ return status;
 const goBack = () => {
 router.get(route('cooperative.produce'));
 };
+
+// Open authenticated user's tokenized batches.
+const goToMyTokens = () => {
+router.get(route('token.user-token'));
+};
+
+// Open selected batch details page from tokenized batches table.
+const openBatchDetails = (batchId) => {
+if (!batchId) return;
+router.get(route('cooperative.batches.show', { id: batchId }));
+};
 </script>
 
 <template>
@@ -45,10 +56,14 @@ router.get(route('cooperative.produce'));
 <h6 class="title mb-1"><em class="icon ni ni-coins mr-1"></em>Tokenized Batches</h6>
 <p class="sub-text mb-0">Batches with status marked as tokenized.</p>
 </div>
-<el-button plain @click="goBack">Back</el-button>
+<el-button-group>
+<el-button plain @click="goToMyTokens">
+My Tokens
+</el-button>
+</el-button-group>
 </div>
 
-<div class="card-inner">
+<div class="card-inner token-table-body">
 <div v-if="batches.length" class="table-responsive">
 <table class="table table-sm table-middle mb-0 token-table">
 <thead>
@@ -65,7 +80,7 @@ router.get(route('cooperative.produce'));
 </tr>
 </thead>
 <tbody>
-<tr v-for="item in batches" :key="item.id">
+<tr v-for="item in batches" :key="item.id" class="token-row-clickable" @click="openBatchDetails(item.id)">
 <td>{{ item.batch_code ?? `#${item.id}` }}</td>
 <td class="text-capitalize">{{ item.commodity_name ?? 'N/A' }}</td>
 <td class="text-capitalize">{{ item.commodity_type ?? 'N/A' }}</td>
@@ -102,6 +117,20 @@ gap: 12px;
 flex-wrap: wrap;
 }
 
+.token-table-body {
+padding: 0 !important;
+}
+
+.token-table-body .table-responsive {
+margin: 0;
+width: 100%;
+}
+
+.token-table {
+width: 100%;
+margin: 0;
+}
+
 .token-table th {
 background: #f8fafc;
 color: #526484;
@@ -113,11 +142,19 @@ white-space: nowrap;
 white-space: nowrap;
 }
 
+.token-row-clickable {
+cursor: pointer;
+}
+
+.token-row-clickable:hover {
+background: #f8fafc;
+}
+
 .empty-state {
 border: 1px dashed #d9e2f0;
 border-radius: 10px;
 background: #f8fafc;
-padding: 14px;
+padding: 16px 24px;
 color: #64748b;
 }
 </style>

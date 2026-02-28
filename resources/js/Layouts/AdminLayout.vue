@@ -33,7 +33,7 @@ const appInitial = computed(() => (app_user.value.fname || 'B').slice(0, 1).toUp
 
 <div class="nk-apps-sidebar is-silver">
 <div class="nk-apps-brand">
-<a :href="route('buyer.dashboard')" class="logo-link">
+<a :href="route('admin.dashboard')" class="logo-link">
 <img class="logo-light logo-img" src="../../images/logo.png" alt="logo" style="border-radius:20px;">
 <img class="logo-dark logo-img" src="../../images/logo.png" alt="logo-dark" style="border-radius:20px;">
 </a>
@@ -60,12 +60,17 @@ const appInitial = computed(() => (app_user.value.fname || 'B').slice(0, 1).toUp
 </Link>
 </li>
 <li class="nk-menu-item">
+<Link :href="route('admin.marketplace')" class="nk-menu-link" title="Marketplace">
+<span class="nk-menu-icon"><em class="icon ni ni-store"></em></span>
+</Link>
+</li>
+<li class="nk-menu-item">
 <Link :href="route('buyer.orders')" class="nk-menu-link" title="Trade Activity">
 <span class="nk-menu-icon"><em class="icon ni ni-tranx"></em></span>
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('buyer.market')" class="nk-menu-link" title="Marketplace Listings">
+<Link :href="route('admin.marketplace')" class="nk-menu-link" title="Marketplace Listings">
 <span class="nk-menu-icon"><em class="icon ni ni-card-view"></em></span>
 </Link>
 </li>
@@ -152,25 +157,17 @@ Commodity Origin
 
 <ul class="nk-menu nk-menu-main">
 <li class="nk-menu-item">
-<Link :href="route('buyer.dashboard')" class="nk-menu-link">
+<Link :href="route('admin.dashboard')" class="nk-menu-link">
 <span class="nk-menu-text">Home</span>
 </Link>
 </li>
+
 <li class="nk-menu-item">
-<Link :href="route('buyer.suppliers')" class="nk-menu-link">
-<span class="nk-menu-text">Suppliers</span>
-</Link>
-</li>
-<li class="nk-menu-item">
-<Link :href="route('buyer.market')" class="nk-menu-link">
+<Link :href="route('admin.marketplace')" class="nk-menu-link">
 <span class="nk-menu-text">Marketplace</span>
 </Link>
 </li>
-<li class="nk-menu-item">
-<Link :href="route('buyer.orders')" class="nk-menu-link">
-<span class="nk-menu-text">Orders</span>
-</Link>
-</li>
+
 </ul>
 
 </div>
@@ -233,14 +230,14 @@ Sign Out
 </li>
 
 <li class="nk-menu-item">
-<Link :href="route('buyer.dashboard')" class="nk-menu-link">
+<Link :href="route('admin.dashboard')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-dashboard"></em></span>
 <span class="nk-menu-text">Operations Dashboard</span>
 </Link>
 </li>
 
 <li class="nk-menu-item">
-<Link :href="route('buyer.market')" class="nk-menu-link">
+<Link :href="route('admin.marketplace')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-package"></em></span>
 <span class="nk-menu-text">Market Listed</span>
 </Link>
@@ -254,6 +251,13 @@ Sign Out
 </li>
 
 <li class="nk-menu-item">
+<Link :href="route('admin.marketplace')" class="nk-menu-link">
+<span class="nk-menu-icon"><em class="icon ni ni-store"></em></span>
+<span class="nk-menu-text">Marketplace</span>
+</Link>
+</li>
+
+<li class="nk-menu-item">
 <Link :href="route('buyer.watchlist')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-archive"></em></span>
 <span class="nk-menu-text">Watchlist</span>
@@ -261,7 +265,7 @@ Sign Out
 </li>
 
 <li class="nk-menu-item">
-<Link :href="route('buyer.market')" class="nk-menu-link">
+<Link :href="route('admin.marketplace')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-bag"></em></span>
 <span class="nk-menu-text">Commodity Listings</span>
 </Link>
@@ -273,7 +277,7 @@ Sign Out
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('buyer.dashboard')" class="nk-menu-link">
+<Link :href="route('admin.dashboard')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-growth"></em></span>
 <span class="nk-menu-text">Spend Trends</span>
 </Link>

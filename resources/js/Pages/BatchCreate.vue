@@ -43,7 +43,7 @@ preserveScroll: true,
 };
 
 const goBack = () => {
-router.get(route('cooperative.batches.listed'));
+router.get(route('cooperative.produce'));
 };
 
 </script>

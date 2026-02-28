@@ -19,6 +19,36 @@ class TokenController extends Controller
         $user = auth()->user();
 
         $batches = Batch::query()
+            // ->where('owner_id', $user->id)
+            ->whereIn('status', ['tokenized'])
+            ->latest('id')
+            ->get()
+            ->map(fn (Batch $batch) => $this->mapTokenizedBatch($batch))
+            ->values();
+
+        return Inertia::render('TokenPage', [
+            'title' => 'Tokenized Batches',
+            'batches' => $batches,
+        ]);
+    }
+
+
+
+
+
+
+
+
+
+    
+    /**
+     * Render token page with tokenized batches for the authenticated owner.
+     */
+   public function userToken(): Response
+    {
+        $user = auth()->user();
+
+        $batches = Batch::query()
             ->where('owner_id', $user->id)
             ->whereIn('status', ['tokenized', 'tokenised'])
             ->latest('id')
@@ -31,6 +61,11 @@ class TokenController extends Controller
             'batches' => $batches,
         ]);
     }
+
+
+
+
+
 
 
 
