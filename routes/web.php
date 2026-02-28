@@ -119,6 +119,14 @@ Route::middleware(['auth'])->prefix('commodity')->name('commodity.')->group(func
 include_once('commodity.php');
 });
 
+Route::middleware(['auth'])->prefix('token')->name('token.')->group(function () {
+include_once('token.php');
+});
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+include_once('admin.php');
+});
+
 $subRoutes = ['cooperative', 'buyer'];
 foreach ($subRoutes as $subRoute) {
 include_once($subRoute.'.php');

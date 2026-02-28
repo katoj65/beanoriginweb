@@ -1,108 +1,81 @@
 <script setup>
-import { ref } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { Search, Bell, User } from '@element-plus/icons-vue';
-import { onMounted, computed } from 'vue';
+import { computed } from 'vue';
 
-
-
-
+const capitalizeFirst = (value) => {
+  const text = String(value ?? '').trim();
+  if (!text) return '';
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
 
 const logout = () => {
-router.post(route('logout'));
+  router.post(route('logout'));
 };
 
-
-
-
-onMounted(()=>{
-console.log(usePage);
+const app_user = computed(() => {
+  const page = usePage();
+  const data = page.props.auth?.user ?? {};
+  return {
+    id: data.id,
+    fname: capitalizeFirst(data.fname ?? 'Buyer'),
+    lname: capitalizeFirst(data.lname ?? ''),
+    email: data.email ?? '',
+  };
 });
 
-
-const  app_user=computed(()=>{
-const page=usePage();
-const data=page.props.auth.user;
-return {
-id:data.id,
-fname:data.fname,
-lname:data.lname,
-email:data.email
-};
-});
-
-
-const cooperative=computed(()=>{
-const page=usePage();
-const data=page.props;
-return data.cooperative;
-});
-
-
-
-
+const appInitial = computed(() => (app_user.value.fname || 'B').slice(0, 1).toUpperCase());
 </script>
 
 <template>
-
-
 <div class="nk-body npc-default has-apps-sidebar has-sidebar ">
 <div class="nk-app-root">
 
-
-
-
 <div class="nk-apps-sidebar is-silver">
 <div class="nk-apps-brand">
-<a :href="route('dashboard')" class="logo-link">
-<img class="logo-light logo-img" src="../../images/logo.png"  alt="logo" style="border-radius:20px;">
-<img class="logo-dark logo-img" src="../../images/logo.png"  alt="logo-dark" style="border-radius:20px;">
+<a :href="route('buyer.dashboard')" class="logo-link">
+<img class="logo-light logo-img" src="../../images/logo.png" alt="logo" style="border-radius:20px;">
+<img class="logo-dark logo-img" src="../../images/logo.png" alt="logo-dark" style="border-radius:20px;">
 </a>
 </div>
 <div class="nk-sidebar-element">
 <div class="nk-sidebar-body">
 <div class="nk-sidebar-content" data-simplebar>
 <div class="nk-sidebar-menu">
-<!-- Menu -->
 <ul class="nk-menu apps-menu">
 <li class="nk-menu-item">
-<Link :href="cooperative?.id ? route('cooperative.show', cooperative.id) : route('dashboard')" class="nk-menu-link" title="Cooperative Home">
+<Link :href="route('admin.dashboard')" class="nk-menu-link" title="Buyer Home">
 <span class="nk-menu-icon"><em class="icon ni ni-home-alt"></em></span>
 </Link>
 </li>
 <li class="nk-menu-hr"></li>
 <li class="nk-menu-item">
-<Link :href="route('dashboard')" class="nk-menu-link" title="Dashboard Overview">
+<Link :href="route('admin.dashboard')" class="nk-menu-link" title="Dashboard Overview">
 <span class="nk-menu-icon"><em class="icon ni ni-dashboard"></em></span>
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('dashboard')" class="nk-menu-link" title="Trade Activity">
+<Link :href="route('buyer.orders')" class="nk-menu-link" title="Trade Activity">
 <span class="nk-menu-icon"><em class="icon ni ni-tranx"></em></span>
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('cooperative.produce')" class="nk-menu-link" title="Batches & Listings">
+<Link :href="route('buyer.market')" class="nk-menu-link" title="Marketplace Listings">
 <span class="nk-menu-icon"><em class="icon ni ni-card-view"></em></span>
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('token.index')" class="nk-menu-link" title="Tokenized Batches">
-<span class="nk-menu-icon"><em class="icon ni ni-coins"></em></span>
-</Link>
-</li>
-<li class="nk-menu-item">
-<Link :href="route('cooperative.farmers')" class="nk-menu-link" title="Farmers">
+<Link :href="route('buyer.suppliers')" class="nk-menu-link" title="Suppliers">
 <span class="nk-menu-icon"><em class="icon ni ni-users"></em></span>
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('cooperative.notifications')" class="nk-menu-link" title="Notifications">
+<Link :href="route('buyer.notifications')" class="nk-menu-link" title="Notifications">
 <span class="nk-menu-icon"><em class="icon ni ni-bell"></em></span>
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('cooperative.account.settings')" class="nk-menu-link" title="Compliance & Settings">
+<Link :href="route('buyer.account.settings')" class="nk-menu-link" title="Compliance & Settings">
 <span class="nk-menu-icon"><em class="icon ni ni-shield-check"></em></span>
 </Link>
 </li>
@@ -112,7 +85,7 @@ return data.cooperative;
 <div class="nk-sidebar-profile nk-sidebar-profile-fixed dropdown">
 <a href="#" class="toggle sidebar-profile-trigger" data-target="profileDD" aria-label="Open profile menu">
 <div class="user-avatar sidebar-profile-avatar">
-<span>JO</span>
+<span>{{ appInitial }}</span>
 </div>
 <span class="sidebar-profile-caret"><em class="icon ni ni-chevron-up"></em></span>
 </a>
@@ -120,24 +93,28 @@ return data.cooperative;
 <div class="dropdown-inner user-card-wrap d-none d-md-block">
 <div class="user-card sidebar-user-card">
 <div class="user-avatar sidebar-profile-avatar">
-<span>JO</span>
+<span>{{ appInitial }}</span>
 </div>
 <div class="user-info">
-<span class="lead-text">Joshua Origin</span>
-<span class="sub-text text-soft">joshua@commodityorigin.com</span>
+<span class="lead-text">{{ `${app_user.fname} ${app_user.lname}`.trim() }}</span>
+<span class="sub-text text-soft">{{ app_user.email }}</span>
 </div>
 </div>
 </div>
 <div class="dropdown-inner">
 <ul class="link-list">
-<li><a href="html/user-profile-regular.html"><em class="icon ni ni-user-alt"></em><span>View Profile</span></a></li>
-<li><a href="html/user-profile-setting.html"><em class="icon ni ni-setting-alt"></em><span>Account Setting</span></a></li>
-<li><a href="html/user-profile-activity.html"><em class="icon ni ni-activity-alt"></em><span>Login Activity</span></a></li>
+<li><Link :href="route('buyer.profile')"><em class="icon ni ni-user-alt"></em><span>View Profile</span></Link></li>
+<li><Link :href="route('buyer.account.settings')"><em class="icon ni ni-setting-alt"></em><span>Account Setting</span></Link></li>
+<li><Link :href="route('buyer.orders')"><em class="icon ni ni-activity-alt"></em><span>Purchase Activity</span></Link></li>
 </ul>
 </div>
 <div class="dropdown-inner">
 <ul class="link-list">
-<li><a href="#"><em class="icon ni ni-signout"></em><span>Sign out</span></a></li>
+<li>
+<form @submit.prevent="logout">
+<button type="submit" class="signout-btn"><em class="icon ni ni-signout"></em><span>Sign out</span></button>
+</form>
+</li>
 </ul>
 </div>
 </div>
@@ -146,22 +123,9 @@ return data.cooperative;
 </div>
 </div>
 
-
-
-
-
-
-
-
-
-<!-- main @s -->
 <div class="nk-main ">
-<!-- wrap @s -->
 <div class="nk-wrap ">
 
-
-
-<!-- main header @s -->
 <div class="nk-header nk-header-fixed is-light">
 <div class="container-fluid">
 <div class="nk-header-wrap">
@@ -169,62 +133,47 @@ return data.cooperative;
 <a href="#" class="nk-nav-toggle nk-quick-nav-icon" data-target="sidebarMenu"><em class="icon ni ni-menu"></em></a>
 </div>
 <div class="nk-header-app-name">
-<!-- <div class="nk-header-app-logo">
-<em class="icon ni ni-dashlite bg-purple-dim"></em>
-</div> -->
 <div class="nk-header-app-info">
 <span class="sub-text header-app-subtitle">
-Cooperative
+Administrator
 </span>
 <span class="lead-text header-app-title text-capitalize">
-{{ cooperative.legal_name }}
+Commodity Origin
 </span>
 </div>
 </div>
 <div class="nk-header-menu is-light">
 <div class="nk-header-menu-inner">
 
-
 <ul class="nk-menu nk-menu-main">
 <li class="nk-menu-item">
-<Link :href="cooperative?.id ? route('cooperative.show', cooperative.id) : '#'" class="nk-menu-link">
+<Link :href="route('buyer.dashboard')" class="nk-menu-link">
 <span class="nk-menu-text">Home</span>
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('cooperative.farmers')" class="nk-menu-link">
-<span class="nk-menu-text">Farmers</span>
+<Link :href="route('buyer.suppliers')" class="nk-menu-link">
+<span class="nk-menu-text">Suppliers</span>
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('cooperative.produce')" class="nk-menu-link">
-<span class="nk-menu-text">Commodity</span>
+<Link :href="route('buyer.market')" class="nk-menu-link">
+<span class="nk-menu-text">Marketplace</span>
 </Link>
-</li><!-- .nk-menu-item -->
+</li>
 <li class="nk-menu-item">
-<Link :href="route('token.index')" class="nk-menu-link">
-<span class="nk-menu-text">Token</span>
-</Link>
-</li><!-- .nk-menu-item -->
-<li class="nk-menu-item">
-<Link :href="route('cooperative.batches.listed')" class="nk-menu-link">
-<span class="nk-menu-text">Batch Listed</span>
+<Link :href="route('buyer.orders')" class="nk-menu-link">
+<span class="nk-menu-text">Orders</span>
 </Link>
 </li>
 </ul>
 
-
-
-
 </div>
 </div>
-
-
-
 
 <div class="nk-header-tools d-flex align-items-center">
 <el-button size="medium" :icon="Search" round>Search</el-button>
-<Link :href="route('cooperative.notifications')" class="ml-4 mr-4 d-inline-flex">
+<Link :href="route('buyer.notifications')" class="ml-4 mr-4 d-inline-flex">
 <el-button :icon="Bell" circle />
 </Link>
 <el-dropdown trigger="click" placement="bottom-end" popper-class="user-dropdown-popper" class="p-0 m-0 ml-1">
@@ -239,23 +188,21 @@ Cooperative
 <template #dropdown>
 <el-dropdown-menu>
 <el-dropdown-item>
-<Link :href="route('cooperative.profile')" class="d-block w-100 text-dark">
+<Link :href="route('buyer.profile')" class="d-block w-100 text-dark">
 View Profile
 </Link>
 </el-dropdown-item>
 <el-dropdown-item>
-<Link :href="route('cooperative.account.settings')" class="d-block w-100 text-dark">
+<Link :href="route('buyer.account.settings')" class="d-block w-100 text-dark">
 Account Settings
 </Link>
 </el-dropdown-item>
 <el-dropdown-item>
-<Link :href="route('cooperative.help')" class="d-block w-100 text-dark">
+<Link :href="route('buyer.help')" class="d-block w-100 text-dark">
 Help
 </Link>
 </el-dropdown-item>
 <el-dropdown-item divided>
-
-
 
 <form @submit.prevent="logout">
 <button type="submit">
@@ -263,24 +210,16 @@ Sign Out
 </button>
 </form>
 
-
 </el-dropdown-item>
 </el-dropdown-menu>
 </template>
 </el-dropdown>
 </div>
 
-
-
-
-
 </div>
 </div>
 </div>
 
-
-
-<!-- main header @e -->
 <div class="nk-sidebar" data-content="sidebarMenu">
 <div class="nk-sidebar-inner" data-simplebar>
 <ul class="nk-menu nk-menu-md">
@@ -289,83 +228,76 @@ Sign Out
 </li>
 
 <li class="nk-menu-item">
-<Link :href="route('dashboard')" class="nk-menu-link">
+<Link :href="route('buyer.dashboard')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-dashboard"></em></span>
 <span class="nk-menu-text">Operations Dashboard</span>
 </Link>
 </li>
 
-
 <li class="nk-menu-item">
-<Link :href="route('cooperative.batches.listed')" class="nk-menu-link">
+<Link :href="route('buyer.market')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-package"></em></span>
-<span class="nk-menu-text">Batch Listed</span>
+<span class="nk-menu-text">Market Listed</span>
 </Link>
 </li>
 
 <li class="nk-menu-item">
-<Link :href="route('cooperative.batches.unlisted')" class="nk-menu-link">
+<Link :href="route('buyer.watchlist')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-archive"></em></span>
-<span class="nk-menu-text">Batch Unlisted</span>
+<span class="nk-menu-text">Watchlist</span>
 </Link>
 </li>
 
 <li class="nk-menu-item">
-<Link :href="route('cooperative.produce')" class="nk-menu-link">
+<Link :href="route('buyer.market')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-bag"></em></span>
 <span class="nk-menu-text">Commodity Listings</span>
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('token.index')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-coins"></em></span>
-<span class="nk-menu-text">Tokenized Batches</span>
-</Link>
-</li>
-<li class="nk-menu-item">
-<Link :href="route('cooperative.produce.create')" class="nk-menu-link">
+<Link :href="route('buyer.orders')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-plus-circle"></em></span>
-<span class="nk-menu-text">Create Commodity Batch</span>
+<span class="nk-menu-text">Create Purchase Order</span>
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('dashboard')" class="nk-menu-link">
+<Link :href="route('buyer.dashboard')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-growth"></em></span>
-<span class="nk-menu-text">Carbon Credits</span>
+<span class="nk-menu-text">Spend Trends</span>
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('cooperative.notifications')" class="nk-menu-link">
+<Link :href="route('buyer.notifications')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-bell"></em></span>
 <span class="nk-menu-text">Market Notifications</span>
 </Link>
 </li>
 
 <li class="nk-menu-heading">
-<h6 class="overline-title text-primary-alt">Cooperative Services</h6>
+<h6 class="overline-title text-primary-alt">Buyer Services</h6>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('cooperative.farmers')" class="nk-menu-link">
+<Link :href="route('buyer.suppliers')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-users"></em></span>
-<span class="nk-menu-text">Farmer Directory</span>
+<span class="nk-menu-text">Supplier Directory</span>
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('cooperative.farmers.create')" class="nk-menu-link">
+<Link :href="route('buyer.orders')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-user"></em></span>
-<span class="nk-menu-text">Farmer Onboarding</span>
+<span class="nk-menu-text">Order Workflow</span>
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('cooperative.farms.create')" class="nk-menu-link">
+<Link :href="route('buyer.watchlist')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-growth"></em></span>
-<span class="nk-menu-text">Farm Registration</span>
+<span class="nk-menu-text">Saved Watchlist</span>
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('cooperative.profile')" class="nk-menu-link">
+<Link :href="route('buyer.profile')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-building"></em></span>
-<span class="nk-menu-text">Organization Profile</span>
+<span class="nk-menu-text">Buyer Profile</span>
 </Link>
 </li>
 
@@ -373,13 +305,13 @@ Sign Out
 <h6 class="overline-title text-primary-alt">Risk & Support</h6>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('cooperative.account.settings')" class="nk-menu-link">
+<Link :href="route('buyer.account.settings')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-shield-check"></em></span>
 <span class="nk-menu-text">Trade Compliance</span>
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('cooperative.help')" class="nk-menu-link">
+<Link :href="route('buyer.help')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-help-alt"></em></span>
 <span class="nk-menu-text">Help Center</span>
 </Link>
@@ -388,9 +320,6 @@ Sign Out
 </div>
 </div>
 
-
-
-<!-- content @s -->
 <div class="nk-content app-page-shell">
 <div class="container-fluid">
 <div class="nk-content-inner">
@@ -401,18 +330,10 @@ Sign Out
 </div>
 </div>
 </div>
-<!-- content @e -->
 </div>
-<!-- wrap @e -->
 </div>
-<!-- main @e -->
 </div>
-<!-- app-root @e -->
-
-
 </div>
-
-
 </template>
 
 <style scoped>
@@ -524,5 +445,16 @@ Sign Out
 
 :deep(.user-dropdown-popper.el-popper) {
   margin-left: 8px;
+}
+
+.signout-btn {
+  border: 0;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #364a63;
 }
 </style>

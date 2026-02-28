@@ -241,7 +241,8 @@ $validated = $request->validate([
 'warehouse' => ['required', 'string', 'max:255'],
 ]);
 
-$batch->update([
+// Normalize payload once so we can both compare and update from the same values.
+$payload = [
 'batch_code' => $validated['batch_code'],
 'commodity_name' => $validated['commodity_name'],
 'commodity_type' => $validated['commodity_type'],
@@ -250,19 +251,62 @@ $batch->update([
 'grade' => $validated['grade'],
 'moisture' => $validated['moisture'] ?? null,
 'warehouse' => $validated['warehouse'],
+];
+
+// Prevent no-op updates and return a form-level validation error.
+$numericFields = ['weight', 'price', 'moisture'];
+$hasChanges = false;
+foreach ($payload as $field => $value) {
+$current = $batch->{$field};
+
+if (in_array($field, $numericFields, true)) {
+$currentValue = $current === null ? null : (float) $current;
+$newValue = $value === null || $value === '' ? null : (float) $value;
+if ($currentValue !== $newValue) {
+$hasChanges = true;
+break;
+}
+continue;
+}
+
+if ((string) $current !== (string) $value) {
+$hasChanges = true;
+break;
+}
+}
+
+if (!$hasChanges) {
+throw ValidationException::withMessages([
+'batch' => 'Nothing has been changed.',
 ]);
+}
+
+$batch->update($payload);
 
 return redirect()
 ->route('commodity.batch.verify', ['id' => $batch->id])
 ->with('success', 'Batch updated successfully.');
 }
 
+
+
+
+
 /**
- * Remove the specified resource from storage.
+ * Delete a batch owned by the authenticated user.
  */
-public function destroy(string $id)
+public function destroy(Request $request, string $id)
 {
-//
+$batch = Batch::query()
+->where('id', $id)
+->where('owner_id', $request->user()->id)
+->firstOrFail();
+
+$batch->delete();
+
+return redirect()
+->route('cooperative.produce')
+->with('success', 'Batch deleted successfully.');
 }
 
 

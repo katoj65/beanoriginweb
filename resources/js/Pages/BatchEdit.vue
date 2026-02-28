@@ -67,6 +67,12 @@ router.get(route('commodity.batch.verify', { id: batch.value.id }));
 
 <div class="card-inner batch-edit-body theme-no-highlight">
 <form class="row g-4 form-shell" @submit.prevent="submit">
+<div v-if="form.errors.batch" class="col-12">
+<div class="alert alert-warning mb-0">
+{{ form.errors.batch }}
+</div>
+</div>
+
 <div class="col-12 col-md-6 field-block">
 <label class="form-label">Batch Code</label>
 <el-input v-model="form.batch_code" size="large" placeholder="e.g. BATCH-2026-001" />

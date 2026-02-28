@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import AddCommodityToBatch from '@/Components/AddCommodityToBatch.vue';
@@ -25,7 +25,6 @@ created_at: createdAt,
 
 return activities;
 });
-const flashSuccess = computed(() => page.props.flash?.success ?? null);
 
 const statusClass = computed(() => {
 const status = String(batch.value?.status ?? '').toLowerCase();
@@ -53,26 +52,9 @@ const goBack = () => {
 router.get(route('cooperative.produce'));
 };
 
-watch(
-() => flashSuccess.value,
-(message) => {
-if (message) {
-ElNotification({
-title: 'Successful',
-message,
-type: 'success',
-duration: 3200,
-position: 'top-right',
-offset: 84,
-showClose: true,
-customClass: 'theme-notification-success',
-});
-}
-},
-{ immediate: true }
-);
-
 const addActivityModalVisible = ref(false);
+const deleteDialogVisible = ref(false);
+const deletingBatch = ref(false);
 const activityForm = useForm({
 activity: '',
 });
@@ -80,6 +62,26 @@ activity: '',
 const closeActivityModal = () => {
 addActivityModalVisible.value = false;
 activityForm.clearErrors();
+};
+
+const closeDeleteDialog = () => {
+if (deletingBatch.value) return;
+deleteDialogVisible.value = false;
+};
+
+const confirmDeleteBatch = () => {
+const batchId = batch.value?.id ?? page.props.batch?.id ?? null;
+if (!batchId) return;
+
+router.delete(route('commodity.batch.destroy', { id: batchId }), {
+preserveScroll: true,
+onStart: () => {
+deletingBatch.value = true;
+},
+onFinish: () => {
+deletingBatch.value = false;
+},
+});
 };
 
 const handleMoreCommand = (command) => {
@@ -93,6 +95,11 @@ if (command === 'edit') {
 const batchId = batch.value?.id ?? page.props.batch?.id ?? null;
 if (!batchId) return;
 router.get(route('commodity.batch.edit', { id: batchId }));
+return;
+}
+
+if (command === 'delete') {
+deleteDialogVisible.value = true;
 }
 };
 
@@ -102,7 +109,18 @@ if (!batchId) return;
 
 activityForm.post(route('commodity.batch.activities.store', { id: batchId }), {
 preserveScroll: true,
-onSuccess: () => {
+onSuccess: (response) => {
+const message = response?.props?.flash?.success || 'Batch activity added successfully.';
+ElNotification({
+title: 'Successful',
+message,
+type: 'success',
+duration: 3200,
+position: 'top-right',
+offset: 84,
+showClose: true,
+customClass: 'theme-notification-success',
+});
 closeActivityModal();
 activityForm.reset('activity');
 },
@@ -297,6 +315,42 @@ Save Activity
 </el-button>
 </div>
 </form>
+</el-dialog>
+
+<el-dialog
+v-model="deleteDialogVisible"
+class="delete-dialog"
+width="440"
+align-center
+destroy-on-close
+:close-on-click-modal="false"
+>
+<template #header>
+<div class="delete-dialog-header">
+<div class="delete-dialog-icon">
+<i class="bi bi-exclamation-triangle"></i>
+</div>
+<div>
+<h5 class="mb-1">Delete Batch</h5>
+<p class="sub-text mb-0">Are you sure you want to delete this batch?</p>
+</div>
+</div>
+</template>
+
+<div class="delete-dialog-body">
+<p class="mb-0">
+This action will permanently remove
+<strong>{{ batch.batch_code ?? 'this batch' }}</strong>
+and related records.
+</p>
+</div>
+
+<template #footer>
+<div class="delete-dialog-actions">
+<el-button @click="closeDeleteDialog" :disabled="deletingBatch">Cancel</el-button>
+<el-button type="danger" :loading="deletingBatch" @click="confirmDeleteBatch">Delete</el-button>
+</div>
+</template>
 </el-dialog>
 
 
@@ -525,6 +579,59 @@ background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
 padding: 20px 26px 24px;
 }
 
+.delete-dialog-header {
+display: flex;
+align-items: flex-start;
+gap: 12px;
+}
+
+.delete-dialog-header h5 {
+margin: 0;
+font-size: 1.05rem;
+font-weight: 700;
+color: #7f1d1d;
+}
+
+.delete-dialog-icon {
+width: 36px;
+height: 36px;
+border-radius: 11px;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+background: #fef2f2;
+color: #dc2626;
+font-size: 18px;
+flex-shrink: 0;
+}
+
+.delete-dialog-body {
+padding: 2px 2px 6px;
+color: #475569;
+line-height: 1.55;
+}
+
+.delete-dialog-actions {
+display: flex;
+justify-content: flex-end;
+gap: 10px;
+}
+
+.delete-dialog :deep(.el-dialog__header) {
+padding: 20px 22px 10px;
+border-bottom: 1px solid #fee2e2;
+background: linear-gradient(180deg, #fff7f7 0%, #ffffff 100%);
+}
+
+.delete-dialog :deep(.el-dialog__body) {
+padding: 16px 22px 10px;
+}
+
+.delete-dialog :deep(.el-dialog__footer) {
+padding: 12px 22px 18px;
+border-top: 1px solid #fee2e2;
+}
+
 @media (max-width: 767px) {
 .activity-context {
 grid-template-columns: 1fr;
@@ -557,6 +664,22 @@ padding: 18px 18px 12px;
 
 .activity-dialog :deep(.el-dialog__body) {
 padding: 14px 18px 18px;
+}
+
+.delete-dialog :deep(.el-dialog__header) {
+padding: 16px 16px 10px;
+}
+
+.delete-dialog :deep(.el-dialog__body) {
+padding: 12px 16px 8px;
+}
+
+.delete-dialog :deep(.el-dialog__footer) {
+padding: 10px 16px 14px;
+}
+
+.delete-dialog-actions :deep(.el-button) {
+min-width: 96px;
 }
 }
 </style>

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\UserProfile;
 use App\Http\Controllers\Cooperative\CooperativeController;
 use App\Http\Controllers\Buyer\BuyerController;
+use App\Http\Controllers\Admin\AdminController;
 
 
 class HomeController extends Controller
@@ -26,6 +27,8 @@ $cooperative=new CooperativeController;
 return $cooperative->dashboard();
 }else if($user->role=='buyer'){
 return BuyerController::dashboard();
+}else if($user->role=='admin'){
+return AdminController::dashboard();
 }
 
 

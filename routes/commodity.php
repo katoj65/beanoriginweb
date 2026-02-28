@@ -23,6 +23,9 @@ Route::get('/batch/{id}/edit', [BatchController::class, 'edit'])
 Route::put('/batch/{id}', [BatchController::class, 'update'])
 ->whereNumber('id')
 ->name('batch.update');
+Route::delete('/batch/{id}', [BatchController::class, 'destroy'])
+->whereNumber('id')
+->name('batch.destroy');
 Route::get('/batch/verification/{id}', [CommodityController::class, 'verifyBatchCommodities'])->whereNumber('id')->name('batch.verify');
 Route::post('/batch/{id}/commodities', [CommodityController::class, 'attachCommodityToBatch'])
 ->whereNumber('id')
