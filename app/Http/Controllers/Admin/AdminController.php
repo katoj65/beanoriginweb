@@ -88,10 +88,36 @@ class AdminController extends Controller
         ]);
     }
 
+    /**
+     * Render tokens pending admin verification.
+     */
+    public function unverifiedTokens(): Response
+    {
+        $tokens = Batch::query()
+            ->with('owner:id,fname,lname,email')
+            // ->where('status', 'create')
+            ->latest('id')
+            ->get()
+            ->map(fn (Batch $batch) => [
+                'id' => $batch->id,
+                'token_index' => null,
+                'token_hash' => null,
+                'block_id' => null,
+                'batch_id' => $batch->id,
+                'batch_code' => $batch->batch_code,
+                'commodity_name' => $batch->commodity_name,
+                'weight' => $batch->weight,
+                'price' => $batch->price,
+                'owner_name' => trim(($batch->owner?->fname ?? '') . ' ' . ($batch->owner?->lname ?? '')),
+                'owner_email' => $batch->owner?->email,
+                'status' => $batch->status,
+                'created_at' => $batch->created_at?->toDateTimeString(),
+            ])
+            ->values();
 
-
-
-
-
-
+        return Inertia::render('AdminToken', [
+            'title' => 'Unverified Tokens',
+            'tokens' => $tokens,
+        ]);
+    }
 }
