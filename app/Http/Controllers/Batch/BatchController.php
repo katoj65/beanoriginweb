@@ -16,6 +16,7 @@ use App\Models\Block;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 use App\Http\Resources\BatchBlockResource;
 use App\Http\Resources\BlockBatchLatestResource;
 use Inertia\Inertia;
@@ -174,6 +175,13 @@ return Inertia::render('BatchDetailsPage', [
 ]);
 }
 
+
+
+
+
+
+
+
 public function storeBatchActivity(Request $request, string $id)
 {
 $validated = $request->validate([
@@ -206,12 +214,47 @@ return redirect()
 ->with('success', 'Batch activity added successfully.');
 }
 
+
+
+
+
 /**
- * Update the specified resource in storage.
+ * Update an existing batch for the authenticated owner.
  */
 public function update(Request $request, string $id)
 {
-//
+// Restrict updates to batches owned by the current user.
+$batch = Batch::query()
+->where('id', $id)
+->where('owner_id', $request->user()->id)
+->firstOrFail();
+
+// Keep validation rules aligned with batch creation, while allowing current batch code.
+$validated = $request->validate([
+'batch_code' => ['required', 'string', 'max:255', Rule::unique('batches', 'batch_code')->ignore($batch->id)],
+'commodity_name' => ['required', 'string', 'max:255', 'exists:crops,name'],
+'commodity_type' => ['required', 'string', 'max:255'],
+'weight' => ['required', 'numeric', 'min:0.01'],
+'price' => ['required', 'numeric', 'min:0.01'],
+'grade' => ['required', 'string', 'max:100', 'exists:crop_grades,name'],
+'moisture' => ['nullable', 'numeric', 'min:0', 'max:100'],
+'warehouse' => ['required', 'string', 'max:255'],
+]);
+
+$batch->update([
+'batch_code' => $validated['batch_code'],
+'commodity_name' => $validated['commodity_name'],
+'commodity_type' => $validated['commodity_type'],
+'weight' => $validated['weight'],
+'price' => $validated['price'],
+'grade' => $validated['grade'],
+'moisture' => $validated['moisture'] ?? null,
+'warehouse' => $validated['warehouse'],
+]);
+
+return redirect()
+->route('commodity.batch.verify', ['id' => $batch->id])
+->with('success', 'Batch updated successfully.');
 }
 
 /**
@@ -220,6 +263,35 @@ public function update(Request $request, string $id)
 public function destroy(string $id)
 {
 //
+}
+
+
+
+/**
+ * Render the edit page for a batch owned by the authenticated user.
+ */
+public function edit(Request $request, string $id)
+{
+// Scope the edit target to the logged-in cooperative user.
+$batch = Batch::query()
+->where('id', $id)
+->where('owner_id', $request->user()->id)
+->firstOrFail();
+
+// Load dropdown options used by the edit form.
+$crops = Crops::query()
+->orderBy('name')
+->get(['id', 'name']);
+
+$grades = CropGrade::query()
+->orderBy('name')
+->get(['id', 'name']);
+
+return Inertia::render('BatchEdit', [
+'batch' => new BatchResource($batch),
+'crops' => $crops,
+'grades' => $grades,
+]);
 }
 
 

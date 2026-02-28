@@ -56,7 +56,7 @@ router.get(route('cooperative.produce'));
 watch(
 () => flashSuccess.value,
 (message) => {
-if (message === 'Batch activity added successfully.') {
+if (message) {
 ElNotification({
 title: 'Successful',
 message,
@@ -86,6 +86,13 @@ const handleMoreCommand = (command) => {
 if (command === 'activity') {
 activityForm.clearErrors();
 addActivityModalVisible.value = true;
+return;
+}
+
+if (command === 'edit') {
+const batchId = batch.value?.id ?? page.props.batch?.id ?? null;
+if (!batchId) return;
+router.get(route('commodity.batch.edit', { id: batchId }));
 }
 };
 
