@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Token;
 
 use App\Http\Controllers\Controller;
 use App\Models\Batch;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -30,6 +32,44 @@ class TokenController extends Controller
         ]);
     }
 
+
+
+    /**
+     * Mark a batch as listed when tokenize is triggered from verification page.
+     */
+    public function tokenize(Request $request, string $id): RedirectResponse
+    {
+        // Ensure the action only targets a batch owned by the authenticated user.
+        $batch = Batch::query()
+            ->where('id', $id)
+            ->where('owner_id', $request->user()->id)
+            ->firstOrFail();
+
+        // Keep the operation idempotent and avoid duplicate success updates.
+        if (strtolower((string) $batch->status) === 'listed') {
+            return redirect()
+                ->route('commodity.batch.verify', ['id' => $batch->id])
+                ->with('success', 'Batch is already listed.');
+        }
+
+        // Tokenize action should transition the batch to listed status.
+        $batch->update([
+            'status' => 'listed',
+        ]);
+
+        return redirect()
+            ->route('commodity.batch.verify', ['id' => $batch->id])
+            ->with('success', 'Batch tokenized and moved to listed status successfully.');
+    }
+
+
+
+
+
+
+
+
+
     /**
      * Transform a tokenized batch model into page-friendly data.
      */
@@ -48,4 +88,29 @@ class TokenController extends Controller
             'created_at' => $batch->created_at?->toDateTimeString(),
         ];
     }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }

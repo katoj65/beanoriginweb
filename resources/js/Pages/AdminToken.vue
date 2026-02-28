@@ -60,7 +60,6 @@ const goBack = () => {
 <thead>
 <tr>
 <th>#</th>
-<th>Token Hash</th>
 <th>Batch</th>
 <th>Commodity</th>
 <th>Weight</th>
@@ -68,12 +67,12 @@ const goBack = () => {
 <th>Owner</th>
 <th>Created At</th>
 <th>Status</th>
+<th>Action</th>
 </tr>
 </thead>
 <tbody>
 <tr v-for="item in tokens" :key="item.id">
 <td>{{ item.token_index ?? item.id }}</td>
-<td :title="item.token_hash">{{ shortHash(item.token_hash) }}</td>
 <td>{{ item.batch_code ?? `#${item.batch_id ?? 'N/A'}` }}</td>
 <td class="text-capitalize">{{ item.commodity_name ?? 'N/A' }}</td>
 <td>{{ item.weight ?? 'N/A' }} kg</td>
@@ -81,6 +80,11 @@ const goBack = () => {
 <td>{{ ownerText(item) }}</td>
 <td>{{ formatDateTime(item.created_at) }}</td>
 <td><span class="badge bg-warning text-dark text-capitalize">{{ item.status ?? 'pending' }}</span></td>
+<td>
+<el-button size="small" @click="router.get(route('admin.batch.verification', { id: item.batch_id ?? item.id }))">
+Verify
+</el-button>
+</td>
 </tr>
 </tbody>
 </table>

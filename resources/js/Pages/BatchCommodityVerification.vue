@@ -34,6 +34,12 @@ if (status === 'processing' || status === 'processed') return 'badge bg-warning-
 return 'badge bg-light text-dark';
 });
 
+// Prevent tokenize action once the batch is already listed.
+const isTokenizeDisabled = computed(() => {
+const status = String(batch.value?.status ?? '').toLowerCase();
+return status === 'listed';
+});
+
 const formatMoney = (value) => {
 if (value === null || value === undefined || value === '') return 'N/A';
 const amount = Number(value);
@@ -55,6 +61,7 @@ router.get(route('cooperative.produce'));
 const addActivityModalVisible = ref(false);
 const deleteDialogVisible = ref(false);
 const deletingBatch = ref(false);
+const tokenizingBatch = ref(false);
 const activityForm = useForm({
 activity: '',
 });
@@ -127,6 +134,35 @@ activityForm.reset('activity');
 });
 };
 
+// Trigger tokenize flow via token controller route and refresh batch verification page.
+const tokenizeBatch = () => {
+const batchId = batch.value?.id ?? page.props.batch?.id ?? null;
+if (!batchId || tokenizingBatch.value) return;
+
+router.post(route('token.batch.tokenize', { id: batchId }), {}, {
+preserveScroll: true,
+onStart: () => {
+tokenizingBatch.value = true;
+},
+onSuccess: (response) => {
+const message = response?.props?.flash?.success || 'Batch tokenized successfully.';
+ElNotification({
+title: 'Successful',
+message,
+type: 'success',
+duration: 3200,
+position: 'top-right',
+offset: 84,
+showClose: true,
+customClass: 'theme-notification-success',
+});
+},
+onFinish: () => {
+tokenizingBatch.value = false;
+},
+});
+};
+
 
 
 
@@ -161,9 +197,17 @@ return data>0? true : false;
 
 <el-button-group>
 <el-button :icon="Back" @click="goBack">Back</el-button>
-<el-button  :icon="Plus" v-if="commodityBatchState ==true">Tokenize</el-button>
-<el-dropdown trigger="click" class="more-dropdown-trigger" @command="handleMoreCommand">
-<el-button :icon="MoreFilled" class="more-dropdown-button" />
+<el-button
+:icon="Plus"
+:loading="tokenizingBatch"
+:disabled="isTokenizeDisabled"
+v-if="commodityBatchState == true"
+@click="tokenizeBatch"
+>
+Tokenize
+</el-button>
+<el-dropdown trigger="click" class="more-dropdown-trigger" :disabled="isTokenizeDisabled" @command="handleMoreCommand">
+<el-button :icon="MoreFilled" class="more-dropdown-button" :disabled="isTokenizeDisabled" />
 <template #dropdown>
 <el-dropdown-menu>
 <el-dropdown-item :icon="Plus" command="activity">Activity</el-dropdown-item>
