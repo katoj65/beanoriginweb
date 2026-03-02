@@ -3,6 +3,8 @@ import { computed, ref } from 'vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import SubmitButton from '@/Components/SubmitButton.vue';
+import ReserveButton from '@/Components/ReserveButton.vue';
+import { Back, ShoppingCart } from '@element-plus/icons-vue';
 
 const page = usePage();
 const batch = computed(() => page.props.batch?.data ?? page.props.batch ?? {});
@@ -36,7 +38,7 @@ return amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFract
 };
 
 const goBack = () => {
-router.get(route('cooperative.produce'));
+router.get(route('token.index'));
 };
 
 const addBatchModalVisible = ref(false);
@@ -64,11 +66,6 @@ addBatchModalVisible.value = false;
 
 
 
-
-
-
-
-
 </script>
 
 <template>
@@ -81,7 +78,8 @@ addBatchModalVisible.value = false;
 <p class="sub-text mb-0">View full details of the selected commodity batch.</p>
 </div>
 <el-button-group>
-<el-button plain @click="goBack">Back</el-button>
+<el-button plain :icon="Back" @click="goBack">Back</el-button>
+<reserve-button :batch="batch" title="Buy Coffee Batch" />
 </el-button-group>
 </div>
 

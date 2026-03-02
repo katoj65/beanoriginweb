@@ -106,7 +106,6 @@ public function show(string $id)
 
 $batch = Batch::query()
 ->with('owner:id,fname,lname,email')
-->where('owner_id', auth()->id())
 ->findOrFail($id);
 
 $blockchain = Block::where('batch_id', $batch->id)
@@ -372,6 +371,19 @@ return Inertia::render('BatchUnlistedPage', [
 'batches' => $batches,
 ]);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

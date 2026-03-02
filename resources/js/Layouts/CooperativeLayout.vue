@@ -14,12 +14,6 @@ router.post(route('logout'));
 
 
 
-
-onMounted(()=>{
-console.log(usePage);
-});
-
-
 const  app_user=computed(()=>{
 const page=usePage();
 const data=page.props.auth.user;

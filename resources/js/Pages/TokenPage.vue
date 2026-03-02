@@ -43,7 +43,7 @@ router.get(route('token.user-token'));
 // Open selected batch details page from tokenized batches table.
 const openBatchDetails = (batchId) => {
 if (!batchId) return;
-router.get(route('cooperative.batches.show', { id: batchId }));
+router.get(route('buy.batch.show', { id: batchId }));
 };
 </script>
 

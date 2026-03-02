@@ -399,6 +399,7 @@ class BuyerController extends Controller
         return back()->with('success', 'Help request submitted successfully.');
     }
 
+
     private function marketListingsBaseQuery(): Builder
     {
         $query = Block::query()

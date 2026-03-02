@@ -29,6 +29,8 @@ $enteredPrice = $this->resolveEnteredPrice($batch, $eventData);
 $previousPrice = is_numeric($latestBlock?->price) ? (float) $latestBlock->price : null;
 $resolvedPrice = $this->resolveBlockPrice($enteredPrice, $previousPrice);
 $eventType = (string) ($eventData['event_type'] ?? 'created');
+$resolvedCurrentOwner = $this->resolveOwnerId($eventData['current_owner'] ?? null, (int) $batch->owner_id);
+$resolvedPreviousOwner = $this->resolveOwnerId($eventData['previous_owner'] ?? null, (int) $batch->owner_id);
 
 // Mark previous block as used only when it belongs to the same batch.
 if ($latestBlock && (int) $latestBlock->batch_id === (int) $batch->id) {
@@ -54,7 +56,7 @@ return Block::create([
 'block_index' => $blockIndex,
 'event_type' => $eventType,
 'event_data' => array_merge([
-'owner_id' => $batch->owner_id,
+'owner_id' => $resolvedCurrentOwner,
 'batch_code' => $batch->batch_code,
 'commodity_name' => $batch->commodity_name,
 'commodity_type' => $batch->commodity_type,
@@ -63,14 +65,16 @@ return Block::create([
 'moisture' => $batch->moisture,
 'warehouse' => $batch->warehouse,
 'status' => $batch->status,
+'current_owner' => $resolvedCurrentOwner,
+'previous_owner' => $resolvedPreviousOwner,
 'previous_price' => $previousPrice,
 'ask_price' => $enteredPrice,
 'resolved_price' => $resolvedPrice,
 ], $eventData),
 'current_hash' => $currentHash,
 'previous_hash' => $previousHash,
-'current_owner' => $batch->owner_id,
-'previous_owner' => $batch->owner_id,
+'current_owner' => $resolvedCurrentOwner,
+'previous_owner' => $resolvedPreviousOwner,
 'weight' => $batch->weight,
 'price' => $resolvedPrice,
 ]);
@@ -112,5 +116,18 @@ return $enteredPrice;
 return round($enteredPrice, 2) === round($previousPrice, 2)
 ? $previousPrice
 : $enteredPrice;
+}
+
+private function resolveOwnerId(mixed $candidate, int $fallback): int
+{
+if ($candidate === null || $candidate === '') {
+return $fallback;
+}
+
+if (is_numeric($candidate) && (int) $candidate > 0) {
+return (int) $candidate;
+}
+
+return $fallback;
 }
 }

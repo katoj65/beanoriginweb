@@ -8,8 +8,10 @@ use App\Models\CommodityBatch;
 use App\Models\Commodity;
 use App\Models\Token;
 use App\Models\User;
+use App\Services\Blockchain\BlockService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -318,11 +320,11 @@ class AdminController extends Controller
 
 
 
-    
+
     /**
      * Verify a batch and transition it to tokenized status.
      */
-    public function verifyBatch(string $id): RedirectResponse
+    public function verifyBatch(string $id, BlockService $blockService): RedirectResponse
     {
         $batch = Batch::query()->findOrFail($id);
         $status = strtolower((string) $batch->status);
@@ -339,9 +341,23 @@ class AdminController extends Controller
                 ->withErrors(['batch' => 'Only listed batches can be verified and tokenized.']);
         }
 
-        $batch->update([
-            'status' => 'tokenized',
-        ]);
+        DB::transaction(function () use ($batch, $blockService): void {
+            $previousStatus = (string) $batch->status;
+
+            $batch->update([
+                'status' => 'tokenized',
+            ]);
+
+            $batch->refresh();
+            $blockService->addBlock($batch, [
+                'event_type' => 'tokenized',
+                'action' => 'admin_batch_verification',
+                'previous_status' => $previousStatus,
+                'new_status' => (string) $batch->status,
+                'entered_price' => $batch->price,
+                'verified_by' => auth()->id(),
+            ]);
+        });
 
         return redirect()
             ->route('admin.tokens.unverified')

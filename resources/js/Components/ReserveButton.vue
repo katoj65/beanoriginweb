@@ -55,6 +55,11 @@ const buyForm = useForm({
 id: null,
 });
 
+const loading = computed(() => {
+const externalLoading = typeof props.isLoading === 'boolean' ? props.isLoading : props.status;
+return externalLoading || buyForm.processing;
+});
+
 const submitBuy = () => {
 const batchId = page.props.batch?.id ?? props.batch?.id ?? null;
 if (!batchId) return;

@@ -123,6 +123,10 @@ Route::middleware(['auth'])->prefix('token')->name('token.')->group(function () 
 include_once('token.php');
 });
 
+Route::middleware(['auth'])->prefix('buy')->name('buy.')->group(function () {
+include_once('buy.php');
+});
+
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
 include_once('admin.php');
 });
