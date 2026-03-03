@@ -231,60 +231,51 @@ Sign Out
 
 <li class="nk-menu-item">
 <Link :href="route('admin.dashboard')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-dashboard"></em></span>
 <span class="nk-menu-text">Operations Dashboard</span>
 </Link>
 </li>
 
 <li class="nk-menu-item">
 <Link :href="route('market.index')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-package"></em></span>
 <span class="nk-menu-text">Market Listed</span>
 </Link>
 </li>
 
 <li class="nk-menu-item">
 <Link :href="route('admin.tokens.unverified')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-coins"></em></span>
 <span class="nk-menu-text">Token Verification</span>
 </Link>
 </li>
 
 <li class="nk-menu-item">
 <Link :href="route('market.index')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-store"></em></span>
 <span class="nk-menu-text">Marketplace</span>
 </Link>
 </li>
 
 <li class="nk-menu-item">
 <Link :href="route('buyer.watchlist')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-archive"></em></span>
 <span class="nk-menu-text">Watchlist</span>
 </Link>
 </li>
 
 <li class="nk-menu-item">
 <Link :href="route('market.index')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-bag"></em></span>
 <span class="nk-menu-text">Commodity Listings</span>
 </Link>
 </li>
 <li class="nk-menu-item">
 <Link :href="route('buyer.orders')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-plus-circle"></em></span>
 <span class="nk-menu-text">Create Purchase Order</span>
 </Link>
 </li>
 <li class="nk-menu-item">
 <Link :href="route('admin.dashboard')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-growth"></em></span>
 <span class="nk-menu-text">Spend Trends</span>
 </Link>
 </li>
 <li class="nk-menu-item">
 <Link :href="route('buyer.notifications')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-bell"></em></span>
 <span class="nk-menu-text">Market Notifications</span>
 </Link>
 </li>

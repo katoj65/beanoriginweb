@@ -7,6 +7,7 @@ use App\Http\Resources\BatchResource;
 use App\Models\Batch;
 use App\Models\BatchActivity;
 use App\Models\CropGrade;
+use App\Models\CropType;
 use App\Models\Crops;
 use App\Models\UserProfile;
 use App\Services\Blockchain\BatchChainService;
@@ -30,12 +31,18 @@ $crops = Crops::query()
 ->orderBy('name')
 ->get(['id', 'name']);
 
+$cropTypes = CropType::query()
+->orderBy('name')
+->get(['id', 'name']);
+
 $grades = CropGrade::query()
 ->orderBy('name')
 ->get(['id', 'name']);
 
+
 return Inertia::render('BatchCreate', [
 'crops' => $crops,
+'crop_type' => $cropTypes,
 'grades' => $grades,
 'status_options' => ['created', 'processing', 'processed', 'hulled', 'graded', 'listed', 'sold'],
 ]);

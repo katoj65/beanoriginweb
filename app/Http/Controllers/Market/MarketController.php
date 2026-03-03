@@ -11,6 +11,7 @@ use App\Models\UserProfile;
 use App\Services\Buy\BuyService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -80,32 +81,48 @@ return Inertia::render('TokenPage', [
 
 public function marketRequests(Request $request): Response
 {
+    
 $ownerId = (int) $request->user()->id;
-
-$requests = BatchPurchaseRequest::query()
-->with([
-'user:id,fname,lname,email',
-'batch:id,owner_id,batch_code,commodity_name,commodity_type,grade,weight,status',
+$requests = DB::table('batches')
+->join('batch_purchase_requests', 'batches.id', '=', 'batch_purchase_requests.batch_id')
+->join('users', 'batch_purchase_requests.user_id', '=', 'users.id')
+->join('user_profile','users.id','=','user_profile.user_id')
+->where('batches.status', 'request')
+->where('batches.owner_id',$ownerId)
+->orWhere('batch_purchase_requests.user_id',$ownerId)
+->orderByDesc('batch_purchase_requests.id')
+->select([
+'batch_purchase_requests.id',
+'batch_purchase_requests.batch_id',
+'batch_purchase_requests.activity',
+'batch_purchase_requests.created_at',
+'batches.batch_code',
+'batches.commodity_name',
+'batches.commodity_type',
+'users.fname',
+'users.lname',
+'users.email as buyer_email',
+'user_profile.tel',
+'user_profile.address'
 ])
-->whereHas('batch', function ($query) use ($ownerId) {
-$query->where('owner_id', $ownerId);
-})
-->latest('id')
 ->get()
-->map(fn (BatchPurchaseRequest $item) => [
+->map(function ($item) {
+$buyerName = trim(($item->fname ?? '') . ' ' . ($item->lname ?? ''));
+
+return [
 'id' => $item->id,
 'batch_id' => $item->batch_id,
-'batch_code' => $item->batch?->batch_code,
-'commodity_name' => $item->batch?->commodity_name,
-'commodity_type' => $item->batch?->commodity_type,
-'grade' => $item->batch?->grade,
-'weight' => $item->batch?->weight,
-'status' => $item->batch?->status,
+'batch_code' => $item->batch_code,
+'commodity_name' => $item->commodity_name,
+'commodity_type' => $item->commodity_type,
 'activity' => $item->activity,
-'buyer_name' => trim(($item->user?->fname ?? '') . ' ' . ($item->user?->lname ?? '')),
-'buyer_email' => $item->user?->email,
-'created_at' => $item->created_at?->toDateTimeString(),
-])
+'buyer_name' => $buyerName !== '' ? $buyerName : 'N/A',
+'buyer_email' => $item->buyer_email ?? 'N/A',
+'created_at' => $item->created_at,
+'address'=>$item->address,
+'telephone'=>$item->tel
+];
+})
 ->values();
 
 return Inertia::render('MarketRequests', [

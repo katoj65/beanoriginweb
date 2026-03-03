@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
-import { Search, Bell, User } from '@element-plus/icons-vue';
+import { Search, Bell, User, House, UserFilled, Tickets, ShoppingCart, Document } from '@element-plus/icons-vue';
 import { onMounted, computed } from 'vue';
 
 
@@ -182,27 +182,27 @@ Cooperative
 <ul class="nk-menu nk-menu-main">
 <li class="nk-menu-item">
 <Link :href="cooperative?.id ? route('cooperative.show', cooperative.id) : '#'" class="nk-menu-link">
-<span class="nk-menu-text">Home</span>
+<span class="nk-menu-text"><el-icon class="mr-1"><House /></el-icon>Home</span>
 </Link>
 </li>
 <li class="nk-menu-item">
 <Link :href="route('cooperative.farmers')" class="nk-menu-link">
-<span class="nk-menu-text">Farmers</span>
+<span class="nk-menu-text"><el-icon class="mr-1"><UserFilled /></el-icon>Farmers</span>
 </Link>
 </li>
 <li class="nk-menu-item">
 <Link :href="route('cooperative.produce')" class="nk-menu-link">
-<span class="nk-menu-text">Commodity</span>
+<span class="nk-menu-text"><el-icon class="mr-1"><Tickets /></el-icon>Commodity</span>
 </Link>
 </li><!-- .nk-menu-item -->
 <li class="nk-menu-item">
 <Link :href="route('market.index')" class="nk-menu-link">
-<span class="nk-menu-text">Marketplace</span>
+<span class="nk-menu-text"><el-icon class="mr-1"><ShoppingCart /></el-icon>Marketplace</span>
 </Link>
 </li><!-- .nk-menu-item -->
 <li class="nk-menu-item">
 <Link :href="route('market.requests')" class="nk-menu-link">
-<span class="nk-menu-text">Request</span>
+<span class="nk-menu-text"><el-icon class="mr-1"><Document /></el-icon>Requests</span>
 </Link>
 </li><!-- .nk-menu-item -->
 </ul>
@@ -284,7 +284,6 @@ Sign Out
 
 <li class="nk-menu-item">
 <Link :href="route('dashboard')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-dashboard"></em></span>
 <span class="nk-menu-text">Operations Dashboard</span>
 </Link>
 </li>
@@ -292,38 +291,32 @@ Sign Out
 
 <li class="nk-menu-item">
 <Link :href="route('cooperative.batches.unlisted')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-archive"></em></span>
 <span class="nk-menu-text">Batch Unlisted</span>
 </Link>
 </li>
 
 <li class="nk-menu-item">
 <Link :href="route('cooperative.produce')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-bag"></em></span>
 <span class="nk-menu-text">Commodity Listings</span>
 </Link>
 </li>
 <li class="nk-menu-item">
 <Link :href="route('token.index')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-coins"></em></span>
 <span class="nk-menu-text">Tokenized Batches</span>
 </Link>
 </li>
 <li class="nk-menu-item">
 <Link :href="route('cooperative.produce.create')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-plus-circle"></em></span>
 <span class="nk-menu-text">Create Commodity Batch</span>
 </Link>
 </li>
 <li class="nk-menu-item">
 <Link :href="route('dashboard')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-growth"></em></span>
 <span class="nk-menu-text">Carbon Credits</span>
 </Link>
 </li>
 <li class="nk-menu-item">
 <Link :href="route('cooperative.notifications')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-bell"></em></span>
 <span class="nk-menu-text">Market Notifications</span>
 </Link>
 </li>
@@ -333,25 +326,21 @@ Sign Out
 </li>
 <li class="nk-menu-item">
 <Link :href="route('cooperative.farmers')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-users"></em></span>
 <span class="nk-menu-text">Farmer Directory</span>
 </Link>
 </li>
 <li class="nk-menu-item">
 <Link :href="route('cooperative.farmers.create')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-user"></em></span>
 <span class="nk-menu-text">Farmer Onboarding</span>
 </Link>
 </li>
 <li class="nk-menu-item">
 <Link :href="route('cooperative.farms.create')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-growth"></em></span>
 <span class="nk-menu-text">Farm Registration</span>
 </Link>
 </li>
 <li class="nk-menu-item">
 <Link :href="route('cooperative.profile')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-building"></em></span>
 <span class="nk-menu-text">Organization Profile</span>
 </Link>
 </li>
@@ -361,13 +350,11 @@ Sign Out
 </li>
 <li class="nk-menu-item">
 <Link :href="route('cooperative.account.settings')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-shield-check"></em></span>
 <span class="nk-menu-text">Trade Compliance</span>
 </Link>
 </li>
 <li class="nk-menu-item">
 <Link :href="route('cooperative.help')" class="nk-menu-link">
-<span class="nk-menu-icon"><em class="icon ni ni-help-alt"></em></span>
 <span class="nk-menu-text">Help Center</span>
 </Link>
 </li>
@@ -507,6 +494,14 @@ Sign Out
 .header-caret-icon {
   font-size: 0.95rem;
   line-height: 1;
+}
+
+:deep(.nk-header-menu .nk-menu-main .nk-menu-link .nk-menu-text) {
+  font-weight: 400 !important;
+}
+
+:deep(.nk-sidebar .nk-menu .nk-menu-link .nk-menu-text) {
+  font-weight: 400 !important;
 }
 
 :deep(.user-dropdown-popper.el-popper) {

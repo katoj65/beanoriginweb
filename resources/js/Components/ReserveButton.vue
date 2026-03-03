@@ -83,9 +83,9 @@ return reserved === true || reserved === 1 || reserved === '1';
 
 const buttonTitle=computed(()=>{
 const status=page.props.is_reserved_by_user;
-let title='Reserve';
+let title='Offer Request';
 if(status==true){
-title='Reserved';
+title='Offer Requested';
 }
 return title;
 });

@@ -8,6 +8,14 @@ import SubmitButton from '@/Components/SubmitButton.vue';
 const page = usePage();
 const grades = computed(() => page.props.grades ?? []);
 const crops = computed(() => page.props.crops ?? []);
+const cropTypes = computed(() => {
+const source = page.props.crop_types?.data ?? page.props.crop_types ?? page.props.crop_type?.data ?? page.props.crop_type ?? [];
+if (Array.isArray(source) && source.length > 0) {
+return source;
+}
+const cropFallback = page.props.crops?.data ?? page.props.crops ?? [];
+return Array.isArray(cropFallback) ? cropFallback : [];
+});
 
 const capitalizeLabel = (value) => {
 const text = String(value ?? '').trim();
@@ -98,7 +106,24 @@ class="text-capitalize"
 
 <div class="col-12 col-md-6 field-block">
 <label class="form-label" for="02">Commodity Type</label>
-<el-input v-model="form.commodity_type" size="large" placeholder="e.g. Green Bean" id="02" />
+<el-select
+v-model="form.commodity_type"
+class="w-100 theme-no-highlight-select text-capitalize"
+size="large"
+clearable
+filterable
+popper-class="theme-no-highlight-select-popper text-capitalize"
+placeholder="Select commodity type"
+id="02"
+>
+<el-option
+v-for="item in cropTypes"
+:key="item.id"
+class="text-capitalize"
+:label="capitalizeLabel(item.name)"
+:value="item.name"
+/>
+</el-select>
 <InputError :message="form.errors.commodity_type" class="mt-2" />
 </div>
 

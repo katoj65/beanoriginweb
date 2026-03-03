@@ -89,14 +89,14 @@ My Tokens
 <table class="table table-sm table-middle mb-0 token-table">
 <thead>
 <tr>
-<th>Batch</th>
-<th>Commodity</th>
-<th>Type</th>
-<th>Grade</th>
-<th>Weight</th>
-<th>Price</th>
-<th>Warehouse</th>
-<th>Created At</th>
+<th><span class="table-head-label"><em class="icon ni ni-hash"></em>Batch</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-growth"></em>Commodity</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-box-view"></em>Type</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-award"></em>Grade</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-package"></em>Weight</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-coins"></em>Price</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-home-fill"></em>Warehouse</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-calendar"></em>Created At</span></th>
 </tr>
 </thead>
 <tbody>
@@ -159,6 +159,12 @@ white-space: nowrap;
 
 .token-table td {
 white-space: nowrap;
+}
+
+.table-head-label {
+display: inline-flex;
+align-items: center;
+gap: 6px;
 }
 
 .token-row-clickable {

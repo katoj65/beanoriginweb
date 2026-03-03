@@ -357,9 +357,15 @@ return Inertia::render('CommodityFarm', [
 public function createBatch(Request $request)
 {
 $cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
+$crops = Crops::query()->orderBy('name')->get(['id', 'name']);
+$cropTypes = CropType::query()->orderBy('name')->get(['id', 'name']);
+$grades = CropGrade::query()->orderBy('name')->get(['id', 'name']);
 return Inertia::render('BatchCreate', [
 'title' => 'Create Commodity Batch',
-
+'crops' => $crops,
+'crop_types' => $cropTypes,
+'crop_type' => $cropTypes,
+'grades' => $grades,
 ]);
 }
 
