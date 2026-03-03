@@ -60,7 +60,7 @@ const appInitial = computed(() => (app_user.value.fname || 'B').slice(0, 1).toUp
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('buyer.market')" class="nk-menu-link" title="Marketplace Listings">
+<Link :href="route('market.index')" class="nk-menu-link" title="Marketplace Listings">
 <span class="nk-menu-icon"><em class="icon ni ni-card-view"></em></span>
 </Link>
 </li>
@@ -157,7 +157,7 @@ Commodity Origin
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('buyer.market')" class="nk-menu-link">
+<Link :href="route('market.index')" class="nk-menu-link">
 <span class="nk-menu-text">Marketplace</span>
 </Link>
 </li>
@@ -235,7 +235,7 @@ Sign Out
 </li>
 
 <li class="nk-menu-item">
-<Link :href="route('buyer.market')" class="nk-menu-link">
+<Link :href="route('market.index')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-package"></em></span>
 <span class="nk-menu-text">Market Listed</span>
 </Link>
@@ -249,7 +249,7 @@ Sign Out
 </li>
 
 <li class="nk-menu-item">
-<Link :href="route('buyer.market')" class="nk-menu-link">
+<Link :href="route('market.index')" class="nk-menu-link">
 <span class="nk-menu-icon"><em class="icon ni ni-bag"></em></span>
 <span class="nk-menu-text">Commodity Listings</span>
 </Link>

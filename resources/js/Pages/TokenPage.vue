@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
+import { Back, Clock, ShoppingCart } from '@element-plus/icons-vue';
 
 const page = usePage();
 const batches = computed(() => page.props.batches ?? []);
@@ -32,7 +33,7 @@ return status;
 
 // Navigate back to cooperative produce page.
 const goBack = () => {
-router.get(route('cooperative.produce'));
+router.get(route('market.index'));
 };
 
 // Open authenticated user's tokenized batches.
@@ -40,10 +41,20 @@ const goToMyTokens = () => {
 router.get(route('token.user-token'));
 };
 
+// Open reserved market batches.
+const goToReservedMarket = () => {
+router.get(route('market.reserved'));
+};
+
+// Open bought market batches.
+const goToBoughtMarket = () => {
+router.get(route('market.bought'));
+};
+
 // Open selected batch details page from tokenized batches table.
 const openBatchDetails = (batchId) => {
 if (!batchId) return;
-router.get(route('buy.batch.show', { id: batchId }));
+router.get(route('market.show', { id: batchId }));
 };
 </script>
 
@@ -53,13 +64,23 @@ router.get(route('buy.batch.show', { id: batchId }));
 <div class="card card-bordered token-page-card">
 <div class="card-inner border-bottom token-head">
 <div>
-<h6 class="title mb-1"><em class="icon ni ni-coins mr-1"></em>Tokenized Batches</h6>
-<p class="sub-text mb-0">Batches with status marked as tokenized.</p>
+<h6 class="title mb-1"><em class="icon ni ni-coins mr-1"></em>
+ Batch  Market </h6>
+<p class="sub-text mb-0">Batches available on the market.</p>
 </div>
 <el-button-group>
-<el-button plain @click="goToMyTokens">
-My Tokens
+<el-button plain :icon="Back" @click="goBack">
+Back
 </el-button>
+<el-button plain :icon="Clock" @click="goToReservedMarket">
+Reserved
+</el-button>
+<el-button plain :icon="ShoppingCart" @click="goToBoughtMarket">
+Bought
+</el-button>
+<!-- <el-button plain @click="goToMyTokens">
+My Tokens
+</el-button> -->
 </el-button-group>
 </div>
 
@@ -75,7 +96,6 @@ My Tokens
 <th>Weight</th>
 <th>Price</th>
 <th>Warehouse</th>
-<th>Status</th>
 <th>Created At</th>
 </tr>
 </thead>
@@ -88,7 +108,6 @@ My Tokens
 <td>{{ item.weight ?? 'N/A' }} kg</td>
 <td>{{ formatMoney(item.price) }}</td>
 <td class="text-capitalize">{{ item.warehouse ?? 'N/A' }}</td>
-<td><span class="badge bg-success-subtle text-success text-capitalize">{{ formatStatus(item.status) }}</span></td>
 <td>{{ formatDateTime(item.created_at) }}</td>
 </tr>
 </tbody>

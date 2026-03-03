@@ -196,8 +196,13 @@ Cooperative
 </Link>
 </li><!-- .nk-menu-item -->
 <li class="nk-menu-item">
-<Link :href="route('token.index')" class="nk-menu-link">
+<Link :href="route('market.index')" class="nk-menu-link">
 <span class="nk-menu-text">Marketplace</span>
+</Link>
+</li><!-- .nk-menu-item -->
+<li class="nk-menu-item">
+<Link :href="route('market.requests')" class="nk-menu-link">
+<span class="nk-menu-text">Request</span>
 </Link>
 </li><!-- .nk-menu-item -->
 </ul>

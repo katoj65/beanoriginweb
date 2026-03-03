@@ -27,7 +27,7 @@ farm_locations: farms.length ? farms.map((farm) => farm.location).filter(Boolean
 });
 
 const goBack = () => {
-router.get(route('token.index'));
+router.get(route('market.index'));
 };
 
 const formatPrice = (value) => {

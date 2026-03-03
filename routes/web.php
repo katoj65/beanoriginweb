@@ -131,7 +131,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 include_once('admin.php');
 });
 
-$subRoutes = ['cooperative', 'buyer', 'market'];
+
+Route::middleware(['auth'])->prefix('market')->name('market.')->group(function(){
+include_once('market.php');
+});
+
+
+
+
+$subRoutes = ['cooperative', 'buyer'];
 foreach ($subRoutes as $subRoute) {
 include_once($subRoute.'.php');
 }

@@ -23,7 +23,7 @@ $user = auth()->user();
 $batches = Batch::query()
 // ->where('owner_id', $user->id)
 // ->whereIn('status', ['tokenized'])
-->latest('id')
+->latest('created_at')
 ->get()
 ->map(fn (Batch $batch) => $this->mapTokenizedBatch($batch))
 ->values();
