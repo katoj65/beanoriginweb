@@ -9,7 +9,7 @@ use App\Services\Buy\BuyService;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Models\BatchActivityLog;
+use App\Models\BatchPurchaseRequest;
 use App\Models\Commodity;
 use App\Models\UserProfile;
 use App\Models\Cooperative;
@@ -34,6 +34,18 @@ public function index()
  */
 public function store(Request $request, string $id, BuyService $buyService): RedirectResponse
 {
+// Normalize id when frontend accidentally submits an object payload.
+$requestId = $request->input('id');
+if (is_array($requestId) && isset($requestId['id'])) {
+$request->merge(['id' => $requestId['id']]);
+}
+if (is_string($requestId) && str_starts_with(trim($requestId), '{')) {
+$decoded = json_decode($requestId, true);
+if (is_array($decoded) && isset($decoded['id'])) {
+$request->merge(['id' => $decoded['id']]);
+}
+}
+
 // Validate optional batch id submitted from the reserve form.
 $validated = $request->validate([
 'id' => ['nullable', 'integer', 'exists:batches,id'],
@@ -167,10 +179,10 @@ return [
 
 
 // Check whether logged-in user already reserved this batch.
-$isReservedByUser = BatchActivityLog::query()
+$isReservedByUser = BatchPurchaseRequest::query()
 ->where('batch_id', $batchId)
 ->where('user_id', (int) $request->user()->id)
-->where('activity', 'reserved')
+->where('activity', 'request')
 ->exists();
 
 

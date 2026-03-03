@@ -61,8 +61,9 @@ return externalLoading || buyForm.processing;
 });
 
 const submitBuy = () => {
-const batchId = page.props.batch?.id ?? props.batch?.id ?? null;
-if (!batchId) return;
+const rawBatchId = page.props.batch?.id ?? page.props.batch?.data?.id ?? props.batch?.id ?? props.batch?.data?.id ?? null;
+const batchId = typeof rawBatchId === 'object' ? Number(rawBatchId?.id ?? 0) : Number(rawBatchId);
+if (!Number.isInteger(batchId) || batchId < 1) return;
 buyForm.id = batchId;
 buyForm.post(route('buy.batch.store', { id: batchId }), {
 preserveScroll: true,

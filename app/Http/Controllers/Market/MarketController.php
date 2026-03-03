@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Market;
 
 use App\Http\Controllers\Controller;
-use App\Models\BatchActivityLog;
 use App\Models\Batch;
 use App\Models\BatchPurchaseRequest;
 use App\Models\Commodity;
 use App\Models\Cooperative;
 use App\Models\UserProfile;
+use App\Services\Buy\BuyService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -71,6 +72,12 @@ return Inertia::render('TokenPage', [
 ]);
 }
 
+
+
+
+
+
+
 public function marketRequests(Request $request): Response
 {
 $ownerId = (int) $request->user()->id;
@@ -122,6 +129,38 @@ return Inertia::render('MarketRequests', [
 public function store(Request $request)
 {
 //
+}
+
+/**
+ * Store a batch purchase request using the same flow as BuyController store.
+ */
+public function storePurchaseRequest(Request $request, string $id, BuyService $buyService): RedirectResponse
+{
+// Normalize id when frontend accidentally submits an object payload.
+$requestId = $request->input('id');
+if (is_array($requestId) && isset($requestId['id'])) {
+$request->merge(['id' => $requestId['id']]);
+}
+if (is_string($requestId) && str_starts_with(trim($requestId), '{')) {
+$decoded = json_decode($requestId, true);
+if (is_array($decoded) && isset($decoded['id'])) {
+$request->merge(['id' => $decoded['id']]);
+}
+}
+
+// Validate optional batch id submitted from the reserve form.
+$validated = $request->validate([
+'id' => ['nullable', 'integer', 'exists:batches,id'],
+]);
+
+// Resolve batch id from payload first, fallback to route parameter.
+$batchId = (int) ($validated['id'] ?? $id);
+// Load target batch for reservation.
+$batch = Batch::query()->findOrFail($batchId);
+// Delegate reservation logic to the buy service.
+$buyService->ReserveBatch($batch, $request);
+// Return to current page with feedback.
+return back()->with('success', 'Batch selected for buy successfully.');
 }
 
 /**
@@ -232,11 +271,13 @@ return [
 })
 ->values();
 
+
+
 // Check whether logged-in user already reserved this batch.
-$isReservedByUser = BatchActivityLog::query()
+$isReservedByUser = BatchPurchaseRequest::query()
 ->where('batch_id', $batchId)
 ->where('user_id', (int) $request->user()->id)
-->where('activity', 'reserved')
+->where('activity', 'request')
 ->exists();
 
 // Check if the logged-in user owns this batch.
@@ -332,7 +373,33 @@ return [
 
 
 
+public function purchaseRequest(Request $request, string $id, BuyService $buyService): RedirectResponse
+{
+// Normalize id when frontend accidentally submits an object payload.
+$requestId = $request->input('id');
+if (is_array($requestId) && isset($requestId['id'])) {
+$request->merge(['id' => $requestId['id']]);
+}
+if (is_string($requestId) && str_starts_with(trim($requestId), '{')) {
+$decoded = json_decode($requestId, true);
+if (is_array($decoded) && isset($decoded['id'])) {
+$request->merge(['id' => $decoded['id']]);
+}
+}
 
+// Validate optional batch id submitted from the reserve form.
+$validated = $request->validate([
+'id' => ['nullable', 'integer', 'exists:batches,id'],
+]);
+// Resolve batch id from payload first, fallback to route parameter.
+$batchId = (int) ($validated['id'] ?? $id);
+// Load target batch for reservation.
+$batch = Batch::query()->findOrFail($batchId);
+// Delegate reservation logic to the buy service.
+$buyService->ReserveBatch($batch, $request);
+// Return to current page with feedback.
+return back()->with('success', 'Batch selected for buy successfully.');
+}
 
 
 
