@@ -21,6 +21,7 @@ class BatchResource extends JsonResource
             'commodity_name' => $this->commodity_name,
             'commodity_type' => $this->commodity_type,
             'weight' => $this->weight,
+            'quantity' => $this->quantity,
             'price' => $this->price,
             'grade' => $this->grade,
             'moisture' => $this->moisture,

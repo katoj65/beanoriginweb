@@ -39,6 +39,9 @@ return Inertia::render('TokenPage', [
 
 
 
+/**
+ * Display batches currently marked as reserved.
+ */
 public function reservedMarket(): Response
 {
 $user = auth()->user();
@@ -58,6 +61,9 @@ return Inertia::render('TokenPage', [
 
 
 
+/**
+ * Display batches currently marked as bought.
+ */
 public function boughtMarket(): Response
 {
 $user = auth()->user();
@@ -329,6 +335,7 @@ return [
 'commodity_type' => $batch->commodity_type,
 'grade' => $batch->grade,
 'weight' => $batch->weight,
+'quantity' => $batch->quantity,
 'price' => $batch->price,
 'warehouse' => $batch->warehouse,
 'status' => $batch->status,
@@ -340,6 +347,9 @@ return [
 
 
 
+/**
+ * Store a purchase request entry for a batch.
+ */
 public function purchaseRequest(Request $request, string $id, BuyService $buyService): RedirectResponse
 {
 // Normalize id when frontend accidentally submits an object payload.
@@ -373,7 +383,9 @@ return back()->with('success', 'Batch selected for buy successfully.');
 
 
 
-//add item to cart
+/**
+ * Add a batch to the logged-in user's active cart.
+ */
 public function storeNewCart(Request $request){
 $validated = $request->validate([
 'batch_id' => ['required', 'integer', 'exists:batches,id'],
@@ -382,7 +394,7 @@ $validated = $request->validate([
 $userId = (int) $request->user()->id;
 $batchId = (int) $validated['batch_id'];
 
-
+// Reuse an existing active row for this user and batch when present.
 $cartItem = ShoppingCart::query()->firstOrNew([
 'user_id' => $userId,
 'batch_id' => $batchId,
@@ -402,6 +414,9 @@ return back()->with('success', 'Batch added to cart successfully.');
 
 
 
+/**
+ * Render the shopping cart page for the logged-in user.
+ */
 public function shoppingCart(Request $request): Response{
     $userId = (int) $request->user()->id;
 
@@ -416,6 +431,9 @@ public function shoppingCart(Request $request): Response{
 
 
 
+/**
+ * Render checkout page with active cart items and totals.
+ */
 public function checkout(Request $request): Response{
     $userId = (int) $request->user()->id;
     $cartItems = $this->mapCartItems($userId);
@@ -429,6 +447,9 @@ public function checkout(Request $request): Response{
 }
 
 
+/**
+ * Map active shopping cart rows into the payload used by Inertia pages.
+ */
 private function mapCartItems(int $userId)
 {
     return ShoppingCart::query()
@@ -437,6 +458,7 @@ private function mapCartItems(int $userId)
     ->where('status', 'active')
     ->latest('id')
     ->get()
+    // Flatten cart row + related batch data into a single display object.
     ->map(function (ShoppingCart $item) {
         $unitPrice = (float) ($item->batch?->price ?? 0);
         $quantity = (int) ($item->quantity ?? 1);
@@ -466,8 +488,12 @@ private function mapCartItems(int $userId)
 
 
 
-public function storeCheckout(Request $request): RedirectResponse{
-    $request->validate([
+/**
+ * Validate checkout input and ensure the user still has active cart items.
+ */
+public function storeCheckout(Request $request) : RedirectResponse
+{
+  $request->validate([
     'shipping_name' => ['required', 'string', 'max:255'],
     'shipping_phone' => ['required', 'string', 'max:50'],
     'shipping_email' => ['required', 'email', 'max:255'],
@@ -480,6 +506,7 @@ public function storeCheckout(Request $request): RedirectResponse{
     'payment_reference' => ['required', 'string', 'max:255'],
     ]);
 
+    // Prevent submission when cart has no active items.
     $cartExists = ShoppingCart::query()
     ->where('user_id', (int) $request->user()->id)
     ->where('status', 'active')
@@ -497,7 +524,19 @@ public function storeCheckout(Request $request): RedirectResponse{
 
 
 
+/**
+ * Delete one active cart item owned by the logged-in user.
+ */
+public function destroyCartItem(Request $request, string $id): RedirectResponse
+{
+    ShoppingCart::query()
+    ->where('id', (int) $id)
+    ->where('user_id', (int) $request->user()->id)
+    ->where('status', 'active')
+    ->delete();
 
+    return back()->with('success', 'Cart item removed successfully.');
+}
 
 
 

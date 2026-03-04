@@ -25,7 +25,6 @@ const app_user = computed(() => {
   };
 });
 
-const appInitial = computed(() => (app_user.value.fname || 'B').slice(0, 1).toUpperCase());
 const cartCount = computed(() => {
   return Number(page.props.shoppingCart ?? page.props.shopping_cart ?? 0) || 0;
 });
@@ -86,42 +85,35 @@ const cartCount = computed(() => {
 </ul>
 </div>
 </div>
-<div class="nk-sidebar-profile nk-sidebar-profile-fixed dropdown">
-<a href="#" class="toggle sidebar-profile-trigger" data-target="profileDD" aria-label="Open profile menu">
-<div class="user-avatar sidebar-profile-avatar">
-<span>{{ appInitial }}</span>
-</div>
+<div class="nk-sidebar-profile nk-sidebar-profile-fixed">
+<el-dropdown trigger="click" placement="top-start" popper-class="sidebar-profile-menu" class="w-100">
+<span class="sidebar-profile-trigger" aria-label="Open profile menu">
+<span class="d-flex align-items-center">
+<span class="user-avatar sidebar-profile-avatar">
+<em class="icon ni ni-user-alt"></em>
+</span>
+</span>
 <span class="sidebar-profile-caret"><em class="icon ni ni-chevron-up"></em></span>
-</a>
-<div class="dropdown-menu dropdown-menu-md m-1 nk-sidebar-profile-dropdown sidebar-profile-menu" data-content="profileDD">
-<div class="dropdown-inner user-card-wrap d-none d-md-block">
-<div class="user-card sidebar-user-card">
-<div class="user-avatar sidebar-profile-avatar">
-<span>{{ appInitial }}</span>
-</div>
-<div class="user-info">
-<span class="lead-text">{{ `${app_user.fname} ${app_user.lname}`.trim() }}</span>
-<span class="sub-text text-soft">{{ app_user.email }}</span>
-</div>
-</div>
-</div>
-<div class="dropdown-inner">
-<ul class="link-list">
-<li><Link :href="route('buyer.profile')"><em class="icon ni ni-user-alt"></em><span>View Profile</span></Link></li>
-<li><Link :href="route('buyer.account.settings')"><em class="icon ni ni-setting-alt"></em><span>Account Setting</span></Link></li>
-<li><Link :href="route('buyer.orders')"><em class="icon ni ni-activity-alt"></em><span>Purchase Activity</span></Link></li>
-</ul>
-</div>
-<div class="dropdown-inner">
-<ul class="link-list">
-<li>
+</span>
+<template #dropdown>
+<el-dropdown-menu>
+<el-dropdown-item>
+<Link :href="route('buyer.profile')" class="d-block w-100 text-dark">View Profile</Link>
+</el-dropdown-item>
+<el-dropdown-item>
+<Link :href="route('buyer.account.settings')" class="d-block w-100 text-dark">Account Settings</Link>
+</el-dropdown-item>
+<el-dropdown-item>
+<Link :href="route('buyer.orders')" class="d-block w-100 text-dark">Purchase Activity</Link>
+</el-dropdown-item>
+<el-dropdown-item divided>
 <form @submit.prevent="logout">
-<button type="submit" class="signout-btn"><em class="icon ni ni-signout"></em><span>Sign out</span></button>
+<button type="submit" class="signout-btn">Sign Out</button>
 </form>
-</li>
-</ul>
-</div>
-</div>
+</el-dropdown-item>
+</el-dropdown-menu>
+</template>
+</el-dropdown>
 </div>
 </div>
 </div>
@@ -371,9 +363,11 @@ Sign Out
 .sidebar-profile-trigger {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 0.4rem;
-  padding: 0.45rem 0.25rem;
+  padding: 0.45rem 0.75rem;
+  width: 100%;
+  cursor: pointer;
 }
 
 .sidebar-profile-avatar {
@@ -384,6 +378,11 @@ Sign Out
   color: #ffffff;
   font-weight: 700;
   font-size: 0.72rem;
+}
+
+.sidebar-profile-avatar .icon {
+  font-size: 0.95rem;
+  line-height: 1;
 }
 
 .sidebar-profile-caret .icon {
@@ -446,6 +445,10 @@ Sign Out
 }
 
 :deep(.user-dropdown-popper.el-popper) {
+  margin-left: 8px;
+}
+
+:deep(.sidebar-profile-menu.el-popper) {
   margin-left: 8px;
 }
 

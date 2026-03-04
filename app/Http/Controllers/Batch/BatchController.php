@@ -46,6 +46,8 @@ return Inertia::render('BatchCreate', [
 'grades' => $grades,
 'status_options' => ['created', 'processing', 'processed', 'hulled', 'graded', 'listed', 'sold'],
 ]);
+
+
 }
 
 
@@ -64,6 +66,7 @@ $validated = $request->validate([
 'commodity_name' => ['required', 'string', 'max:255', 'exists:crops,name'],
 'commodity_type' => ['required', 'string', 'max:255'],
 'weight' => ['required', 'numeric', 'min:0.01'],
+'quantity' => ['required', 'numeric', 'min:0.01'],
 'price' => ['required', 'numeric', 'min:0.01'],
 'grade' => ['required', 'string', 'max:100', 'exists:crop_grades,name'],
 'moisture' => ['nullable', 'numeric', 'min:0', 'max:100'],
@@ -80,6 +83,7 @@ $batch = Batch::create([
 'commodity_name' => $validated['commodity_name'],
 'commodity_type' => $validated['commodity_type'],
 'weight' => $validated['weight'],
+'quantity' => $validated['quantity'] ?? 0,
 'grade' => $validated['grade'],
 'moisture' => $validated['moisture'] ?? null,
 'warehouse' => $validated['warehouse'],
@@ -200,6 +204,7 @@ $validated = $request->validate([
 'commodity_name' => ['required', 'string', 'max:255', 'exists:crops,name'],
 'commodity_type' => ['required', 'string', 'max:255'],
 'weight' => ['required', 'numeric', 'min:0.01'],
+'quantity' => ['nullable', 'numeric', 'min:0'],
 'price' => ['required', 'numeric', 'min:0.01'],
 'grade' => ['required', 'string', 'max:100', 'exists:crop_grades,name'],
 'moisture' => ['nullable', 'numeric', 'min:0', 'max:100'],
@@ -212,6 +217,7 @@ $payload = [
 'commodity_name' => $validated['commodity_name'],
 'commodity_type' => $validated['commodity_type'],
 'weight' => $validated['weight'],
+'quantity' => $validated['quantity'] ?? ($batch->quantity ?? 0),
 'price' => $validated['price'],
 'grade' => $validated['grade'],
 'moisture' => $validated['moisture'] ?? null,
@@ -219,7 +225,7 @@ $payload = [
 ];
 
 // Prevent no-op updates and return a form-level validation error.
-$numericFields = ['weight', 'price', 'moisture'];
+$numericFields = ['weight', 'quantity', 'price', 'moisture'];
 $hasChanges = false;
 foreach ($payload as $field => $value) {
 $current = $batch->{$field};

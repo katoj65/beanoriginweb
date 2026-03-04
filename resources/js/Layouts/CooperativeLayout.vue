@@ -24,7 +24,6 @@ email:data.email
 };
 });
 
-
 const cooperative=computed(()=>{
 return page.props?.cooperative ?? null;
 });
@@ -107,38 +106,35 @@ return Number(page.props.shoppingCart ?? page.props.shopping_cart ?? 0) || 0;
 </ul>
 </div>
 </div>
-<div class="nk-sidebar-profile nk-sidebar-profile-fixed dropdown">
-<a href="#" class="toggle sidebar-profile-trigger" data-target="profileDD" aria-label="Open profile menu">
-<div class="user-avatar sidebar-profile-avatar">
-<span>JO</span>
-</div>
+<div class="nk-sidebar-profile nk-sidebar-profile-fixed">
+<el-dropdown trigger="click" placement="top-start" popper-class="sidebar-profile-menu" class="w-100">
+<span class="sidebar-profile-trigger" aria-label="Open profile menu">
+<span class="d-flex align-items-center">
+<span class="user-avatar sidebar-profile-avatar">
+<em class="icon ni ni-user-alt"></em>
+</span>
+</span>
 <span class="sidebar-profile-caret"><em class="icon ni ni-chevron-up"></em></span>
-</a>
-<div class="dropdown-menu dropdown-menu-md m-1 nk-sidebar-profile-dropdown sidebar-profile-menu" data-content="profileDD">
-<div class="dropdown-inner user-card-wrap d-none d-md-block">
-<div class="user-card sidebar-user-card">
-<div class="user-avatar sidebar-profile-avatar">
-<span>JO</span>
-</div>
-<div class="user-info">
-<span class="lead-text">Joshua Origin</span>
-<span class="sub-text text-soft">joshua@commodityorigin.com</span>
-</div>
-</div>
-</div>
-<div class="dropdown-inner">
-<ul class="link-list">
-<li><a href="html/user-profile-regular.html"><em class="icon ni ni-user-alt"></em><span>View Profile</span></a></li>
-<li><a href="html/user-profile-setting.html"><em class="icon ni ni-setting-alt"></em><span>Account Setting</span></a></li>
-<li><a href="html/user-profile-activity.html"><em class="icon ni ni-activity-alt"></em><span>Login Activity</span></a></li>
-</ul>
-</div>
-<div class="dropdown-inner">
-<ul class="link-list">
-<li><a href="#"><em class="icon ni ni-signout"></em><span>Sign out</span></a></li>
-</ul>
-</div>
-</div>
+</span>
+<template #dropdown>
+<el-dropdown-menu>
+<el-dropdown-item>
+<Link :href="route('cooperative.profile')" class="d-block w-100 text-dark">View Profile</Link>
+</el-dropdown-item>
+<el-dropdown-item>
+<Link :href="route('cooperative.account.settings')" class="d-block w-100 text-dark">Account Settings</Link>
+</el-dropdown-item>
+<el-dropdown-item>
+<Link :href="route('cooperative.help')" class="d-block w-100 text-dark">Help</Link>
+</el-dropdown-item>
+<el-dropdown-item divided>
+<form @submit.prevent="logout">
+<button type="submit" class="signout-btn">Sign Out</button>
+</form>
+</el-dropdown-item>
+</el-dropdown-menu>
+</template>
+</el-dropdown>
 </div>
 </div>
 </div>
@@ -426,9 +422,11 @@ Sign Out
 .sidebar-profile-trigger {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 0.4rem;
-  padding: 0.45rem 0.25rem;
+  padding: 0.45rem 0.75rem;
+  width: 100%;
+  cursor: pointer;
 }
 
 .sidebar-profile-avatar {
@@ -441,6 +439,11 @@ Sign Out
   font-size: 0.72rem;
 }
 
+.sidebar-profile-avatar .icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
 .sidebar-profile-caret .icon {
   color: #6b7280;
   font-size: 0.75rem;
@@ -451,6 +454,14 @@ Sign Out
   box-shadow: 0 10px 24px rgba(17, 24, 39, 0.12);
   border-radius: 0.65rem;
   overflow: hidden;
+}
+
+.signout-btn {
+  border: 0;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  color: #364a63;
 }
 
 .sidebar-user-card {
@@ -509,6 +520,10 @@ Sign Out
 }
 
 :deep(.user-dropdown-popper.el-popper) {
+  margin-left: 8px;
+}
+
+:deep(.sidebar-profile-menu.el-popper) {
   margin-left: 8px;
 }
 </style>

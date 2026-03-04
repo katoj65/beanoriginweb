@@ -11,6 +11,7 @@ Route::get('/checkout', [MarketController::class, 'checkout'])->name('checkout')
 Route::post('/checkout/store', [MarketController::class, 'storeCheckout'])->name('checkout.store');
 Route::get('/batch/{id}', [MarketController::class, 'show'])->whereNumber('id')->name('show');
 Route::post('/cart/store', [MarketController::class, 'storeNewCart'])->name('cart.store');
+Route::delete('/cart/{id}', [MarketController::class, 'destroyCartItem'])->whereNumber('id')->name('cart.destroy');
 
 
 

@@ -38,6 +38,7 @@ const checkoutForm = useForm({
   payment_reference: '',
 });
 
+// Submit checkout details to server-side validation endpoint.
 const submitCheckout = () => {
   checkoutForm.post(route('market.checkout.store'), {
     preserveScroll: true,

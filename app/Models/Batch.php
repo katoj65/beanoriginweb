@@ -16,6 +16,7 @@ class Batch extends Model
         'commodity_name',
         'commodity_type',
         'weight',
+        'quantity',
         'grade',
         'moisture',
         'warehouse',
@@ -26,6 +27,7 @@ class Batch extends Model
 
     protected $casts = [
         'weight' => 'decimal:2',
+        'quantity' => 'decimal:2',
         'moisture' => 'decimal:2',
         'is_on_chain' => 'boolean',
     ];

@@ -102,6 +102,7 @@ My Tokens
 <th><span class="table-head-label"><em class="icon ni ni-box-view"></em>Type</span></th>
 <th><span class="table-head-label"><em class="icon ni ni-award"></em>Grade</span></th>
 <th><span class="table-head-label"><em class="icon ni ni-package"></em>Weight</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-layers"></em>Quantity</span></th>
 <th><span class="table-head-label"><em class="icon ni ni-coins"></em>Price</span></th>
 <th><span class="table-head-label"><em class="icon ni ni-calendar"></em>Created At</span></th>
 <th><span class="table-head-label"><em class="icon ni ni-cart"></em>Action</span></th>
@@ -114,6 +115,7 @@ My Tokens
 <td class="text-capitalize" @click="openBatchDetails(item.id)">{{ item.commodity_type ?? 'N/A' }}</td>
 <td class="text-capitalize" @click="openBatchDetails(item.id)">{{ item.grade ?? 'N/A' }}</td>
 <td @click="openBatchDetails(item.id)">{{ item.weight ?? 'N/A' }} kg</td>
+<td @click="openBatchDetails(item.id)">{{ item.quantity ?? 'N/A' }}</td>
 <td @click="openBatchDetails(item.id)">{{ formatMoney(item.price) }}</td>
 <td @click="openBatchDetails(item.id)">{{ formatDateTime(item.created_at) }}</td>
 <td>

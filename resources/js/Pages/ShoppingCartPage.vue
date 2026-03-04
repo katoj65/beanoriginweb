@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
-import { Back, ShoppingCart, Money } from '@element-plus/icons-vue';
+import { Back, ShoppingCart, Money, Delete as DeleteIcon } from '@element-plus/icons-vue';
 
 const page = usePage();
 const cartItems = computed(() => page.props.cart_items ?? []);
@@ -11,9 +11,12 @@ const goBack = () => {
   router.get(route('market.index'));
 };
 
-const openBatch = (batchId) => {
-  if (!batchId) return;
-  router.get(route('market.show', { id: batchId }));
+// Remove a specific cart row and keep current scroll position.
+const deleteCartItem = (cartItemId) => {
+  if (!cartItemId) return;
+  router.delete(route('market.cart.destroy', { id: cartItemId }), {
+    preserveScroll: true,
+  });
 };
 
 const formatMoney = (value) => {
@@ -26,6 +29,7 @@ const cartTotal = computed(() =>
   cartItems.value.reduce((sum, item) => sum + (Number(item?.line_total) || 0), 0)
 );
 
+// Navigate to checkout with the current active cart.
 const checkout = () => {
   router.get(route('market.checkout'));
 };
@@ -78,7 +82,7 @@ const checkout = () => {
                   <td>{{ formatMoney(item.unit_price) }}</td>
                   <td>{{ formatMoney(item.line_total) }}</td>
                   <td>
-                    <el-button plain size="small" @click.stop="openBatch(item.batch_id)">View</el-button>
+                    <el-button plain size="small" type="danger" :icon="DeleteIcon" @click.stop="deleteCartItem(item.id)">Delete</el-button>
                   </td>
                 </tr>
               </tbody>

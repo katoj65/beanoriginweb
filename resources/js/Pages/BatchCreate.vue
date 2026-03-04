@@ -4,6 +4,7 @@ import { router, useForm, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import SubmitButton from '@/Components/SubmitButton.vue';
+import { Back } from '@element-plus/icons-vue';
 
 const page = usePage();
 const grades = computed(() => page.props.grades ?? []);
@@ -38,6 +39,7 @@ batch_code: '',
 commodity_name: '',
 commodity_type: '',
 weight: '',
+quantity: 1,
 price: '',
 grade: '',
 moisture: '',
@@ -67,7 +69,7 @@ router.get(route('cooperative.produce'));
 <h6 class="title mb-1"><em class="icon ni ni-plus-circle mr-1"></em>Add Batch</h6>
 <p class="sub-text mb-0">Create a new batch using commodity details and warehouse information.</p>
 </div>
-<el-button plain class="back-btn" @click="goBack">Back</el-button>
+<el-button plain class="back-btn" :icon="Back" @click="goBack">Back</el-button>
 </div>
 </div>
 
@@ -134,6 +136,12 @@ class="text-capitalize"
 </div>
 
 <div class="col-12 col-md-6 field-block">
+<label class="form-label">Quantity</label>
+<el-input v-model="form.quantity" size="large" type="number" min="0" step="0.01" placeholder="Enter quantity" />
+<InputError :message="form.errors.quantity" class="mt-2" />
+</div>
+
+<div class="col-12 col-md-6 field-block">
 <label class="form-label">Price </label>
 <el-input v-model="form.price" size="large" type="number" min="0.01" step="0.01" placeholder="Enter batch price"/>
 <InputError :message="form.errors.price" class="mt-2" />
@@ -165,13 +173,13 @@ class="text-capitalize"
 <InputError :message="form.errors.moisture" class="mt-2" />
 </div>
 
-<div class="col-6 field-block">
+<div class="col-12 field-block">
 <label class="form-label">Warehouse</label>
 <el-input v-model="form.warehouse" size="large" placeholder="Enter warehouse location or code" />
 <InputError :message="form.errors.warehouse" class="mt-2" />
 </div>
 
-<div class="col-12 col-md-3 action-row">
+<div class="col-12 action-row">
 <SubmitButton :title="'Create Batch'" :status="form.processing" />
 </div>
 </form>
