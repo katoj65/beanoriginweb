@@ -1,6 +1,6 @@
 <script setup>
 import { Link, router, usePage } from '@inertiajs/vue3';
-import { Search, Bell, User, House, UserFilled, Tickets, ShoppingCart, Document } from '@element-plus/icons-vue';
+import { Search, Bell, User, House, UserFilled, Tickets, ShoppingCart } from '@element-plus/icons-vue';
 import { onMounted, computed } from 'vue';
 
 const page = usePage();
@@ -202,11 +202,6 @@ Cooperative
 <li class="nk-menu-item">
 <Link :href="route('market.index')" class="nk-menu-link">
 <span class="nk-menu-text"><el-icon class="mr-1"><ShoppingCart /></el-icon>Marketplace</span>
-</Link>
-</li><!-- .nk-menu-item -->
-<li class="nk-menu-item">
-<Link :href="route('market.requests')" class="nk-menu-link">
-<span class="nk-menu-text"><el-icon class="mr-1"><Document /></el-icon>Requests</span>
 </Link>
 </li><!-- .nk-menu-item -->
 </ul>

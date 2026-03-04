@@ -80,57 +80,6 @@ return Inertia::render('TokenPage', [
 
 
 
-public function marketRequests(Request $request): Response
-{
-
-$ownerId = (int) $request->user()->id;
-$requests = DB::table('batches')
-->join('batch_purchase_requests', 'batches.id', '=', 'batch_purchase_requests.batch_id')
-->join('users', 'batch_purchase_requests.user_id', '=', 'users.id')
-->join('user_profile','users.id','=','user_profile.user_id')
-->where('batches.status', 'request')
-->where('batches.owner_id',$ownerId)
-->orWhere('batch_purchase_requests.user_id',$ownerId)
-->orderByDesc('batch_purchase_requests.id')
-->select([
-'batch_purchase_requests.id',
-'batch_purchase_requests.batch_id',
-'batch_purchase_requests.activity',
-'batch_purchase_requests.created_at',
-'batches.batch_code',
-'batches.commodity_name',
-'batches.commodity_type',
-'users.fname',
-'users.lname',
-'users.email as buyer_email',
-'user_profile.tel',
-'user_profile.address'
-])
-->get()
-->map(function ($item) {
-$buyerName = trim(($item->fname ?? '') . ' ' . ($item->lname ?? ''));
-
-return [
-'id' => $item->id,
-'batch_id' => $item->batch_id,
-'batch_code' => $item->batch_code,
-'commodity_name' => $item->commodity_name,
-'commodity_type' => $item->commodity_type,
-'activity' => $item->activity,
-'buyer_name' => $buyerName !== '' ? $buyerName : 'N/A',
-'buyer_email' => $item->buyer_email ?? 'N/A',
-'created_at' => $item->created_at,
-'address'=>$item->address,
-'telephone'=>$item->tel
-];
-})
-->values();
-
-return Inertia::render('MarketRequests', [
-'title' => 'Market Requests',
-'requests' => $requests,
-]);
-}
 
 
 
@@ -447,13 +396,8 @@ $cartItem->status = 'active';
 }
 $cartItem->save();
 
-
-
 return back()->with('success', 'Batch added to cart successfully.');
 }
-
-
-
 
 
 
@@ -461,9 +405,36 @@ return back()->with('success', 'Batch added to cart successfully.');
 public function shoppingCart(Request $request): Response{
     $userId = (int) $request->user()->id;
 
-    $cartItems = ShoppingCart::query()
+    $cartItems = $this->mapCartItems($userId);
+
+    return Inertia::render('ShoppingCartPage', [
+    'title' => 'Shopping Cart',
+    'cart_items' => $cartItems,
+    ]);
+}
+
+
+
+
+public function checkout(Request $request): Response{
+    $userId = (int) $request->user()->id;
+    $cartItems = $this->mapCartItems($userId);
+    $cartTotal = $cartItems->sum('line_total');
+
+    return Inertia::render('CheckoutPage', [
+    'title' => 'Checkout',
+    'cart_items' => $cartItems,
+    'cart_total' => $cartTotal,
+    ]);
+}
+
+
+private function mapCartItems(int $userId)
+{
+    return ShoppingCart::query()
     ->with('batch:id,batch_code,commodity_name,commodity_type,grade,weight,price,status,created_at')
     ->where('user_id', $userId)
+    ->where('status', 'active')
     ->latest('id')
     ->get()
     ->map(function (ShoppingCart $item) {
@@ -486,11 +457,6 @@ public function shoppingCart(Request $request): Response{
         ];
     })
     ->values();
-
-    return Inertia::render('ShoppingCartPage', [
-    'title' => 'Shopping Cart',
-    'cart_items' => $cartItems,
-    ]);
 }
 
 
@@ -500,10 +466,33 @@ public function shoppingCart(Request $request): Response{
 
 
 
+public function storeCheckout(Request $request): RedirectResponse{
+    $request->validate([
+    'shipping_name' => ['required', 'string', 'max:255'],
+    'shipping_phone' => ['required', 'string', 'max:50'],
+    'shipping_email' => ['required', 'email', 'max:255'],
+    'shipping_country' => ['required', 'string', 'max:120'],
+    'shipping_city' => ['required', 'string', 'max:120'],
+    'shipping_address' => ['required', 'string', 'max:1000'],
+    'shipping_notes' => ['nullable', 'string', 'max:1000'],
+    'payment_method' => ['required', 'string', 'in:mobile_money,bank_transfer,card'],
+    'payer_name' => ['required', 'string', 'max:255'],
+    'payment_reference' => ['required', 'string', 'max:255'],
+    ]);
 
+    $cartExists = ShoppingCart::query()
+    ->where('user_id', (int) $request->user()->id)
+    ->where('status', 'active')
+    ->exists();
 
+    if (!$cartExists) {
+    return back()->with('error', 'No active cart items found for checkout.');
+    }
 
-
+    return redirect()
+    ->route('market.checkout')
+    ->with('success', 'Checkout details submitted successfully.');
+}
 
 
 

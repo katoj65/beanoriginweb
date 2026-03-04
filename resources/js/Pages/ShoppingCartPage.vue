@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import { Back, ShoppingCart, Money } from '@element-plus/icons-vue';
@@ -22,35 +22,13 @@ const formatMoney = (value) => {
   return amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
-const formatDateTime = (value) => {
-  if (!value) return 'N/A';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return String(value);
-  return date.toLocaleString();
-};
-
 const cartTotal = computed(() =>
   cartItems.value.reduce((sum, item) => sum + (Number(item?.line_total) || 0), 0)
 );
 
 const checkout = () => {
-  // Checkout flow route/service can be wired here when ready.
+  router.get(route('market.checkout'));
 };
-
-
-
-onMounted(()=>{
-console.log(page.props);
-});
-
-
-
-
-
-
-
-
-
 </script>
 
 
