@@ -13,6 +13,7 @@ use App\Services\Buy\BuyService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -387,23 +388,37 @@ return back()->with('success', 'Batch selected for buy successfully.');
  * Add a batch to the logged-in user's active cart.
  */
 public function storeNewCart(Request $request){
+// Validate required batch id and requested quantity.
 $validated = $request->validate([
 'batch_id' => ['required', 'integer', 'exists:batches,id'],
+'quantity' => ['nullable', 'integer', 'min:1'],
 ]);
 
+// Resolve request values and load the tokenized batch stock.
 $userId = (int) $request->user()->id;
 $batchId = (int) $validated['batch_id'];
+$quantity = (int) ($validated['quantity'] ?? 1);
+$batch = Batch::query()->select(['id', 'quantity'])->where('status','tokenised')->findOrFail($batchId);
+$availableQuantity = (float) ($batch->quantity ?? 0);
 
-// Reuse an existing active row for this user and batch when present.
+// Prevent adding more than the currently available batch quantity.
+if ($quantity > $availableQuantity) {
+throw ValidationException::withMessages([
+'quantity' => 'Requested quantity cannot be greater than the available batch quantity.',
+]);
+}
+
+// Reuse existing cart line for this user + batch, otherwise create one.
 $cartItem = ShoppingCart::query()->firstOrNew([
 'user_id' => $userId,
 'batch_id' => $batchId,
 ]);
 
+// Increase existing quantity, or initialize a new active cart row.
 if ($cartItem->exists) {
-$cartItem->quantity = ((int) $cartItem->quantity) + 1;
+$cartItem->quantity = ((int) $cartItem->quantity) + $quantity;
 } else {
-$cartItem->quantity = 1;
+$cartItem->quantity = $quantity;
 $cartItem->status = 'active';
 }
 $cartItem->save();

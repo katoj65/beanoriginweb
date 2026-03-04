@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import { Back, Clock, ShoppingCart } from '@element-plus/icons-vue';
+import BuyButton from '@/Components/BuyButton.vue';
 
 const page = usePage();
 const batches = computed(() => page.props.batches ?? []);
@@ -13,14 +14,6 @@ if (value === null || value === undefined || value === '') return 'N/A';
 const amount = Number(value);
 if (Number.isNaN(amount)) return value;
 return amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-};
-
-// Format date and time values for readable table output.
-const formatDateTime = (value) => {
-if (!value) return 'N/A';
-const date = new Date(value);
-if (Number.isNaN(date.getTime())) return value;
-return date.toLocaleString();
 };
 
 // Normalize status labels for display consistency.
@@ -51,14 +44,6 @@ const goToBoughtMarket = () => {
 router.get(route('market.bought'));
 };
 
-// Add selected batch to shopping cart via market route.
-const storeNewCart = (batchId) => {
-if (!batchId) return;
-router.post(route('market.cart.store'), { batch_id: batchId }, {
-preserveScroll: true,
-});
-};
-
 // Open selected batch details page from tokenized batches table.
 const openBatchDetails = (batchId) => {
 if (!batchId) return;
@@ -72,11 +57,10 @@ router.get(route('market.show', { id: batchId }));
 <div class="card card-bordered token-page-card">
 <div class="card-inner border-bottom token-head">
 <div>
-<h6 class="title mb-1"><em class="icon ni ni-coins mr-1"></em>
- Batch  Market </h6>
+<h6 class="title mb-1">Marketplace </h6>
 <p class="sub-text mb-0">Batches available on the market.</p>
 </div>
-<el-button-group>
+<!-- <el-button-group>
 <el-button plain :icon="Back" @click="goBack">
 Back
 </el-button>
@@ -86,10 +70,7 @@ Reserved
 <el-button plain :icon="ShoppingCart" @click="goToBoughtMarket">
 Bought
 </el-button>
-<!-- <el-button plain @click="goToMyTokens">
-My Tokens
-</el-button> -->
-</el-button-group>
+</el-button-group> -->
 </div>
 
 <div class="card-inner token-table-body">
@@ -97,29 +78,25 @@ My Tokens
 <table class="table table-sm table-middle mb-0 token-table">
 <thead>
 <tr>
-<th><span class="table-head-label"><em class="icon ni ni-hash"></em>Batch</span></th>
-<th><span class="table-head-label"><em class="icon ni ni-growth"></em>Commodity</span></th>
-<th><span class="table-head-label"><em class="icon ni ni-box-view"></em>Type</span></th>
+<th ><span class="table-head-label"><em class="icon ni ni-hash"></em>Batch</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-growth"></em>Commodity - Type</span></th>
 <th><span class="table-head-label"><em class="icon ni ni-award"></em>Grade</span></th>
 <th><span class="table-head-label"><em class="icon ni ni-package"></em>Weight</span></th>
 <th><span class="table-head-label"><em class="icon ni ni-layers"></em>Quantity</span></th>
 <th><span class="table-head-label"><em class="icon ni ni-coins"></em>Price</span></th>
-<th><span class="table-head-label"><em class="icon ni ni-calendar"></em>Created At</span></th>
 <th><span class="table-head-label"><em class="icon ni ni-cart"></em>Action</span></th>
 </tr>
 </thead>
 <tbody>
 <tr v-for="item in batches" :key="item.id" class="token-row-clickable">
-<td @click="openBatchDetails(item.id)">{{ item.batch_code ?? `#${item.id}` }}</td>
-<td class="text-capitalize" @click="openBatchDetails(item.id)">{{ item.commodity_name ?? 'N/A' }}</td>
-<td class="text-capitalize" @click="openBatchDetails(item.id)">{{ item.commodity_type ?? 'N/A' }}</td>
+<td @click="openBatchDetails(item.id)" style="width:50px;">{{ item.batch_code ?? `#${item.id}` }}</td>
+<td class="text-capitalize" @click="openBatchDetails(item.id)">{{ item.commodity_name ?? 'N/A' }} - {{ item.commodity_type ?? 'N/A' }}</td>
 <td class="text-capitalize" @click="openBatchDetails(item.id)">{{ item.grade ?? 'N/A' }}</td>
 <td @click="openBatchDetails(item.id)">{{ item.weight ?? 'N/A' }} kg</td>
 <td @click="openBatchDetails(item.id)">{{ item.quantity ?? 'N/A' }}</td>
 <td @click="openBatchDetails(item.id)">{{ formatMoney(item.price) }}</td>
-<td @click="openBatchDetails(item.id)">{{ formatDateTime(item.created_at) }}</td>
 <td>
-<el-button plain size="small" :icon="ShoppingCart" @click.stop="storeNewCart(item.id)">Buy</el-button>
+<BuyButton :item="item" />
 </td>
 </tr>
 </tbody>
