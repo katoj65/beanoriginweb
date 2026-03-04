@@ -1,9 +1,9 @@
 <script setup>
-import { ref } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { Search, Bell, User, House, UserFilled, Tickets, ShoppingCart, Document } from '@element-plus/icons-vue';
 import { onMounted, computed } from 'vue';
 
+const page = usePage();
 
 
 
@@ -15,8 +15,7 @@ router.post(route('logout'));
 
 
 const  app_user=computed(()=>{
-const page=usePage();
-const data=page.props.auth.user;
+const data=page.props?.auth?.user ?? {};
 return {
 id:data.id,
 fname:data.fname,
@@ -27,10 +26,15 @@ email:data.email
 
 
 const cooperative=computed(()=>{
-const page=usePage();
-const data=page.props;
-return data.cooperative;
+return page.props?.cooperative ?? null;
 });
+
+const cartCount = computed(() => {
+return Number(page.props.shoppingCart ?? page.props.shopping_cart ?? 0) || 0;
+});
+
+
+
 
 
 
@@ -218,6 +222,11 @@ Cooperative
 
 <div class="nk-header-tools d-flex align-items-center">
 <el-button size="medium" :icon="Search" round>Search</el-button>
+<Link :href="route('market.cart.index')" class="ml-2 d-inline-flex">
+<el-badge :value="cartCount" :max="99" :hidden="!cartCount">
+<el-button :icon="ShoppingCart" circle />
+</el-badge>
+</Link>
 <Link :href="route('cooperative.notifications')" class="ml-4 mr-4 d-inline-flex">
 <el-button :icon="Bell" circle />
 </Link>

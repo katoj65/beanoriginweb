@@ -51,6 +51,14 @@ const goToBoughtMarket = () => {
 router.get(route('market.bought'));
 };
 
+// Add selected batch to shopping cart via market route.
+const storeNewCart = (batchId) => {
+if (!batchId) return;
+router.post(route('market.cart.store'), { batch_id: batchId }, {
+preserveScroll: true,
+});
+};
+
 // Open selected batch details page from tokenized batches table.
 const openBatchDetails = (batchId) => {
 if (!batchId) return;
@@ -95,20 +103,22 @@ My Tokens
 <th><span class="table-head-label"><em class="icon ni ni-award"></em>Grade</span></th>
 <th><span class="table-head-label"><em class="icon ni ni-package"></em>Weight</span></th>
 <th><span class="table-head-label"><em class="icon ni ni-coins"></em>Price</span></th>
-<th><span class="table-head-label"><em class="icon ni ni-home-fill"></em>Warehouse</span></th>
 <th><span class="table-head-label"><em class="icon ni ni-calendar"></em>Created At</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-cart"></em>Action</span></th>
 </tr>
 </thead>
 <tbody>
-<tr v-for="item in batches" :key="item.id" class="token-row-clickable" @click="openBatchDetails(item.id)">
-<td>{{ item.batch_code ?? `#${item.id}` }}</td>
-<td class="text-capitalize">{{ item.commodity_name ?? 'N/A' }}</td>
-<td class="text-capitalize">{{ item.commodity_type ?? 'N/A' }}</td>
-<td class="text-capitalize">{{ item.grade ?? 'N/A' }}</td>
-<td>{{ item.weight ?? 'N/A' }} kg</td>
-<td>{{ formatMoney(item.price) }}</td>
-<td class="text-capitalize">{{ item.warehouse ?? 'N/A' }}</td>
-<td>{{ formatDateTime(item.created_at) }}</td>
+<tr v-for="item in batches" :key="item.id" class="token-row-clickable">
+<td @click="openBatchDetails(item.id)">{{ item.batch_code ?? `#${item.id}` }}</td>
+<td class="text-capitalize" @click="openBatchDetails(item.id)">{{ item.commodity_name ?? 'N/A' }}</td>
+<td class="text-capitalize" @click="openBatchDetails(item.id)">{{ item.commodity_type ?? 'N/A' }}</td>
+<td class="text-capitalize" @click="openBatchDetails(item.id)">{{ item.grade ?? 'N/A' }}</td>
+<td @click="openBatchDetails(item.id)">{{ item.weight ?? 'N/A' }} kg</td>
+<td @click="openBatchDetails(item.id)">{{ formatMoney(item.price) }}</td>
+<td @click="openBatchDetails(item.id)">{{ formatDateTime(item.created_at) }}</td>
+<td>
+<el-button plain size="small" :icon="ShoppingCart" @click.stop="storeNewCart(item.id)">Buy</el-button>
+</td>
 </tr>
 </tbody>
 </table>

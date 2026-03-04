@@ -1,7 +1,9 @@
 <script setup>
 import { Link, router, usePage } from '@inertiajs/vue3';
-import { Search, Bell, User } from '@element-plus/icons-vue';
+import { Search, Bell, User, ShoppingCart } from '@element-plus/icons-vue';
 import { computed } from 'vue';
+
+const page = usePage();
 
 const capitalizeFirst = (value) => {
   const text = String(value ?? '').trim();
@@ -14,7 +16,6 @@ const logout = () => {
 };
 
 const app_user = computed(() => {
-  const page = usePage();
   const data = page.props.auth?.user ?? {};
   return {
     id: data.id,
@@ -25,6 +26,9 @@ const app_user = computed(() => {
 });
 
 const appInitial = computed(() => (app_user.value.fname || 'B').slice(0, 1).toUpperCase());
+const cartCount = computed(() => {
+  return Number(page.props.shoppingCart ?? page.props.shopping_cart ?? 0) || 0;
+});
 </script>
 
 <template>
@@ -175,6 +179,11 @@ Commodity Origin
 
 <div class="nk-header-tools d-flex align-items-center">
 <el-button size="medium" :icon="Search" round>Search</el-button>
+<Link :href="route('market.cart.index')" class="ml-2 d-inline-flex">
+<el-badge :value="cartCount" :max="99" :hidden="!cartCount">
+<el-button :icon="ShoppingCart" circle />
+</el-badge>
+</Link>
 <Link :href="route('buyer.notifications')" class="ml-4 mr-4 d-inline-flex">
 <el-button :icon="Bell" circle />
 </Link>

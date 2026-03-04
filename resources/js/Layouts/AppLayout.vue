@@ -1,8 +1,9 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
-import { Search, Bell, User } from '@element-plus/icons-vue';
-import { onMounted } from 'vue';
+import { Search, Bell, User, ShoppingCart } from '@element-plus/icons-vue';
+
+const page = usePage();
 
 
 
@@ -26,6 +27,10 @@ console.log(usePage);
 
 
 
+
+const cartCount = computed(() => {
+return Number(page.props.shoppingCart ?? page.props.shopping_cart ?? 0) || 0;
+});
 
 </script>
 
@@ -236,6 +241,11 @@ Commodity Origin
 
 <div class="nk-header-tools d-flex align-items-center">
 <el-button size="medium" :icon="Search" round>Search</el-button>
+<Link :href="route('market.cart.index')" class="ml-2 d-inline-flex">
+<el-badge :value="cartCount" :max="99" :hidden="!cartCount">
+<el-button :icon="ShoppingCart" circle />
+</el-badge>
+</Link>
 <el-button :icon="Bell" circle class="mr-2" />
 <el-dropdown trigger="click" placement="bottom-end" popper-class="user-dropdown-popper" class="p-0 m-0 ml-1">
 <span class="el-dropdown-link m-0 p-0 d-flex align-items-center cursor-pointer">

@@ -7,6 +7,7 @@ use App\Models\Batch;
 use App\Models\BatchPurchaseRequest;
 use App\Models\Commodity;
 use App\Models\Cooperative;
+use App\Models\ShoppingCart;
 use App\Models\UserProfile;
 use App\Services\Buy\BuyService;
 use Illuminate\Http\RedirectResponse;
@@ -81,7 +82,7 @@ return Inertia::render('TokenPage', [
 
 public function marketRequests(Request $request): Response
 {
-    
+
 $ownerId = (int) $request->user()->id;
 $requests = DB::table('batches')
 ->join('batch_purchase_requests', 'batches.id', '=', 'batch_purchase_requests.batch_id')
@@ -423,6 +424,33 @@ return back()->with('success', 'Batch selected for buy successfully.');
 
 
 
+//add item to cart
+public function storeNewCart(Request $request){
+$validated = $request->validate([
+'batch_id' => ['required', 'integer', 'exists:batches,id'],
+]);
+
+$userId = (int) $request->user()->id;
+$batchId = (int) $validated['batch_id'];
+
+
+$cartItem = ShoppingCart::query()->firstOrNew([
+'user_id' => $userId,
+'batch_id' => $batchId,
+]);
+
+if ($cartItem->exists) {
+$cartItem->quantity = ((int) $cartItem->quantity) + 1;
+} else {
+$cartItem->quantity = 1;
+$cartItem->status = 'active';
+}
+$cartItem->save();
+
+
+
+return back()->with('success', 'Batch added to cart successfully.');
+}
 
 
 
@@ -430,6 +458,40 @@ return back()->with('success', 'Batch selected for buy successfully.');
 
 
 
+public function shoppingCart(Request $request): Response{
+    $userId = (int) $request->user()->id;
+
+    $cartItems = ShoppingCart::query()
+    ->with('batch:id,batch_code,commodity_name,commodity_type,grade,weight,price,status,created_at')
+    ->where('user_id', $userId)
+    ->latest('id')
+    ->get()
+    ->map(function (ShoppingCart $item) {
+        $unitPrice = (float) ($item->batch?->price ?? 0);
+        $quantity = (int) ($item->quantity ?? 1);
+
+        return [
+        'id' => $item->id,
+        'batch_id' => $item->batch_id,
+        'batch_code' => $item->batch?->batch_code,
+        'commodity_name' => $item->batch?->commodity_name,
+        'commodity_type' => $item->batch?->commodity_type,
+        'grade' => $item->batch?->grade,
+        'weight' => $item->batch?->weight,
+        'batch_status' => $item->batch?->status,
+        'quantity' => $quantity,
+        'unit_price' => $unitPrice,
+        'line_total' => $unitPrice * $quantity,
+        'created_at' => $item->created_at?->toDateTimeString(),
+        ];
+    })
+    ->values();
+
+    return Inertia::render('ShoppingCartPage', [
+    'title' => 'Shopping Cart',
+    'cart_items' => $cartItems,
+    ]);
+}
 
 
 

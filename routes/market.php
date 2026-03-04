@@ -7,7 +7,9 @@ Route::get('/', [MarketController::class, 'index'])->name('index');
 Route::get('/reserved', [MarketController::class, 'reservedMarket'])->name('reserved');
 Route::get('/bought', [MarketController::class, 'boughtMarket'])->name('bought');
 Route::get('/requests', [MarketController::class, 'marketRequests'])->name('requests');
+Route::get('/cart', [MarketController::class, 'shoppingCart'])->name('cart.index');
 Route::get('/batch/{id}', [MarketController::class, 'show'])->whereNumber('id')->name('show');
+Route::post('/cart/store', [MarketController::class, 'storeNewCart'])->name('cart.store');
 
 
 
