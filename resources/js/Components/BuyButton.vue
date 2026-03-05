@@ -45,10 +45,15 @@ const errorMessage = computed(() => serverError.value || clientError.value);
 const lineTotal = computed(() => {
 if (unitPrice.value === null) return null;
 const requested = Number(quantity.value);
-if (!Number.isInteger(requested) || requested < 1) return null;
+if (!Number.isInteger(requested) || requested < 0) return null;
+if (requested === 0) return 0;
 return unitPrice.value * requested;
 });
-const canSubmit = computed(() => !isSubmitting.value && !errorMessage.value);
+const quantityHint = computed(() => {
+if (availableQuantity.value === null) return 'Enter a quantity to continue.';
+if (availableQuantity.value < 1) return 'No stock available for this batch.';
+return `Enter a quantity between 1 and ${availableQuantity.value}.`;
+});
 
 const openModal = () => {
 if (!batchId.value) return;
@@ -65,7 +70,6 @@ serverError.value = '';
 
 const submitBuy = () => {
 if (!batchId.value || clientError.value) return;
-
 const requested = Number(quantity.value);
 isSubmitting.value = true;
 router.post(
@@ -106,6 +110,13 @@ const amount = Number(value);
 if (Number.isNaN(amount)) return `${value} kg`;
 return `${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} kg`;
 };
+
+const formatWhole = (value) => {
+if (value === null || value === undefined || value === '') return 'N/A';
+const amount = Number(value);
+if (!Number.isFinite(amount)) return String(value);
+return Math.floor(amount).toLocaleString();
+};
 </script>
 
 <template>
@@ -116,36 +127,39 @@ return `${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFr
 
 <el-dialog
 v-model="isModalVisible"
-title="Buy Product"
+title="Buy Batch"
 width="420px"
 append-to-body
 @closed="closeModal"
 >
 <div class="buy-modal-body">
 <p class="buy-title text-capitalize mb-1">{{ commodityLabel }}</p>
-<div class="buy-details mb-3">
-<div class="buy-detail">
-<span class="buy-detail-label">Batch Code</span>
-<strong class="buy-detail-value">{{ batchCode }}</strong>
+<p class="buy-subtitle mb-3">
+Review batch details, choose quantity, and add this item to your cart.
+</p>
+<div class="buy-simple-summary mb-3">
+<div class="buy-simple-row">
+<span>Batch</span>
+<strong>{{ batchCode }}</strong>
 </div>
-<div class="buy-detail">
-<span class="buy-detail-label">Grade</span>
-<strong class="buy-detail-value text-capitalize">{{ props.item?.grade ?? 'N/A' }}</strong>
+<div class="buy-simple-row">
+<span>Grade</span>
+<strong class="text-capitalize">{{ props.item?.grade ?? 'N/A' }}</strong>
 </div>
-<div class="buy-detail">
-<span class="buy-detail-label">Weight</span>
-<strong class="buy-detail-value">{{ formatWeight(props.item?.weight) }}</strong>
+<div class="buy-simple-row">
+<span>Weight</span>
+<strong>{{ formatWeight(props.item?.weight) }}</strong>
 </div>
-<div class="buy-detail">
-<span class="buy-detail-label">Available</span>
-<strong class="buy-detail-value">{{ availableQuantity ?? 'N/A' }}</strong>
+<div class="buy-simple-row">
+<span>Available</span>
+<strong>{{ formatWhole(availableQuantity) }}</strong>
 </div>
-<div class="buy-detail">
-<span class="buy-detail-label">Unit Price</span>
-<strong class="buy-detail-value">{{ formatMoney(unitPrice) }}</strong>
+<div class="buy-simple-row">
+<span>Unit Price</span>
+<strong>{{ formatMoney(unitPrice) }}</strong>
 </div>
-<div class="buy-detail">
-<span class="buy-detail-label">Status</span>
+<div class="buy-simple-row">
+<span>Status</span>
 <span class="stock-pill" :class="isOutOfStock ? 'stock-pill--out' : 'stock-pill--in'">
 {{ isOutOfStock ? 'Out of stock' : 'In stock' }}
 </span>
@@ -155,12 +169,14 @@ append-to-body
 <label class="buy-label mb-1 d-block">Quantity to buy</label>
 <el-input-number
 v-model="quantity"
-:min="1"
+:min="0"
 :step="1"
 step-strictly
 class="buy-qty-input"
 @keyup.enter="submitBuy"
 />
+<p class="buy-hint mt-2 mb-0">{{ quantityHint }}</p>
+
 <p class="buy-total mt-3 mb-0">
 Estimated total: <strong>{{ formatMoney(lineTotal) }}</strong>
 </p>
@@ -168,7 +184,7 @@ Estimated total: <strong>{{ formatMoney(lineTotal) }}</strong>
 </div>
 
 <template #footer>
-<el-button type="primary" :icon="ShoppingCart" :loading="isSubmitting" :disabled="!canSubmit" @click="submitBuy">
+<el-button type="primary" :icon="ShoppingCart" :loading="isSubmitting" :disabled="isSubmitting || !batchId" @click="submitBuy">
 Add to Cart
 </el-button>
 </template>
@@ -182,41 +198,36 @@ display: block;
 }
 
 .buy-title {
-font-size: 16px;
+font-size: 18px;
 font-weight: 600;
 color: #101828;
 }
 
-.buy-details {
-display: grid;
-grid-template-columns: repeat(2, minmax(0, 1fr));
-gap: 10px;
+.buy-subtitle {
+font-size: 14px;
+color: #64748b;
+line-height: 1.35;
+}
+
+.buy-simple-summary {
 background: #f8fafc;
 border: 1px solid #e2e8f0;
 border-radius: 8px;
 padding: 10px 12px;
 }
 
-.buy-detail {
-background: #ffffff;
-border-radius: 8px;
-padding: 8px 10px;
+.buy-simple-row {
 display: flex;
-flex-direction: column;
-gap: 4px;
+align-items: center;
+justify-content: space-between;
+gap: 8px;
+padding: 4px 0;
+font-size: 14px;
+color: #334155;
 }
 
-.buy-detail-label {
-font-size: 11px;
-letter-spacing: 0.04em;
-text-transform: uppercase;
-color: #64748b;
-}
-
-.buy-detail-value {
-font-size: 13px;
-line-height: 1.2;
-color: #0f172a;
+.buy-simple-row + .buy-simple-row {
+border-top: 1px dashed #dbe5f0;
 }
 
 .stock-pill {
@@ -243,10 +254,16 @@ color: #b42318;
 .buy-label {
 color: #526484;
 font-weight: 600;
+font-size: 14px;
 }
 
 .buy-qty-input {
 width: 100%;
+}
+
+.buy-hint {
+color: #64748b;
+font-size: 13px;
 }
 
 .buy-total {
@@ -256,12 +273,7 @@ font-size: 14px;
 
 .buy-error {
 color: #dc2626;
-font-size: 13px;
+font-size: 14px;
 }
 
-@media (max-width: 520px) {
-.buy-details {
-grid-template-columns: 1fr;
-}
-}
 </style>

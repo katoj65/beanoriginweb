@@ -203,6 +203,7 @@ return Inertia::render('BuyBatchPage', [
 'commodity_type' => $batch->commodity_type,
 'grade' => $batch->grade,
 'weight' => $batch->weight,
+'quantity' => $batch->quantity,
 'price' => $batch->price,
 'moisture' => $batch->moisture,
 'warehouse' => $batch->warehouse,

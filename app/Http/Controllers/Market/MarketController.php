@@ -137,6 +137,10 @@ $buyService->ReserveBatch($batch, $request);
 return back()->with('success', 'Batch selected for buy successfully.');
 }
 
+
+
+
+
 /**
  * Display the specified resource.
  */
@@ -269,6 +273,7 @@ return Inertia::render('BuyBatchPage', [
 'commodity_type' => $batch->commodity_type,
 'grade' => $batch->grade,
 'weight' => $batch->weight,
+'quantity' => $batch->quantity,
 'price' => $batch->price,
 'moisture' => $batch->moisture,
 'warehouse' => $batch->warehouse,
@@ -391,13 +396,13 @@ public function storeNewCart(Request $request){
 // Validate required batch id and requested quantity.
 $validated = $request->validate([
 'batch_id' => ['required', 'integer', 'exists:batches,id'],
-'quantity' => ['nullable', 'integer', 'min:1'],
+'quantity' => ['required', 'integer', 'min:1'],
 ]);
 
 // Resolve request values and load the tokenized batch stock.
 $userId = (int) $request->user()->id;
 $batchId = (int) $validated['batch_id'];
-$quantity = (int) ($validated['quantity'] ?? 1);
+$quantity = (int) $validated['quantity'];
 $batch = Batch::query()->select(['id', 'quantity'])->where('status','tokenised')->findOrFail($batchId);
 $availableQuantity = (float) ($batch->quantity ?? 0);
 
@@ -416,11 +421,46 @@ $cartItem = ShoppingCart::query()->firstOrNew([
 
 // Increase existing quantity, or initialize a new active cart row.
 if ($cartItem->exists) {
+
+$batchQty = (int) $batch->quantity;
+$cartQty = (int) $cartItem->quantity;
+$cartQtySum = $cartQty + $quantity;
+
+
+if($quantity==0){
+throw ValidationException::withMessages([
+'quantity' => 'Quantity cannot be 0'
+]);
+}
+
+
+if($cartQtySum>$batchQty){
+throw ValidationException::withMessages([
+'quantity' => 'You have '.$cartQty.'/'.$batchQty. ' of this batch in your cart.',
+]);
+
+}
+
 $cartItem->quantity = ((int) $cartItem->quantity) + $quantity;
+
+
+
+
+
+
+
+
+
 } else {
 $cartItem->quantity = $quantity;
 $cartItem->status = 'active';
 }
+
+
+
+
+
+
 $cartItem->save();
 
 return back()->with('success', 'Batch added to cart successfully.');

@@ -1,9 +1,9 @@
 <script setup>
 import { computed } from 'vue';
-import { router, usePage } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
+import BuyButton from '@/Components/BuyButton.vue';
 import ReserveButton from '@/Components/ReserveButton.vue';
-import { Back } from '@element-plus/icons-vue';
 
 const page = usePage();
 const batch = computed(() => page.props.batch ?? {});
@@ -25,10 +25,6 @@ farm_locations: farms.length ? farms.map((farm) => farm.location).filter(Boolean
 };
 });
 });
-
-const goBack = () => {
-router.get(route('market.index'));
-};
 
 const formatPrice = (value) => {
 if (value === null || value === undefined || value === '') return 'N/A';
@@ -70,8 +66,7 @@ return 'warning';
 <p class="sub-text mb-0">Review batch details and reserve this lot.</p>
 </div>
 <el-button-group>
-<el-button plain :icon="Back" @click="goBack">Back</el-button>
-<ReserveButton/>
+<BuyButton :item="batch" />
 </el-button-group>
 </div>
 
@@ -98,6 +93,10 @@ return 'warning';
 <strong>{{ batch.weight ?? 'N/A' }} kg</strong>
 </div>
 <div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-layers mr-1"></em>Quantity</span>
+<strong>{{ batch.quantity ?? 'N/A' }}</strong>
+</div>
+<div class="detail-item">
 <span class="sub-text"><em class="icon ni ni-coins mr-1"></em>Price</span>
 <strong>UGX {{ formatPrice(batch.price) }}</strong>
 </div>
@@ -117,7 +116,7 @@ return 'warning';
 <span class="sub-text"><em class="icon ni ni-calendar mr-1"></em>Created At</span>
 <strong>{{ formatDateTime(batch.created_at) }}</strong>
 </div>
-<div class="detail-item detail-item-full">
+<div class="detail-item">
 <span class="sub-text"><em class="icon ni ni-user mr-1"></em>Owner</span>
 <strong>{{ batch.owner?.name || 'N/A' }}</strong>
 </div>

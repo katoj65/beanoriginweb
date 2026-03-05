@@ -11,6 +11,12 @@ const goBack = () => {
   router.get(route('market.index'));
 };
 
+// Open selected batch details page from the cart table.
+const openBatchDetails = (batchId) => {
+  if (!batchId) return;
+  router.get(route('market.show', { id: batchId }));
+};
+
 // Remove a specific cart row and keep current scroll position.
 const deleteCartItem = (cartItemId) => {
   if (!cartItemId) return;
@@ -74,7 +80,9 @@ const checkout = () => {
               </thead>
               <tbody>
                 <tr v-for="item in cartItems" :key="item.id">
-                  <td>{{ item.batch_code ?? `#${item.batch_id}` }}</td>
+                  <td class="batch-cell-link" @click="openBatchDetails(item.batch_id)">
+                    {{ item.batch_code ?? `#${item.batch_id}` }}
+                  </td>
                   <td class="text-capitalize">{{ item.commodity_name ?? 'N/A' }}</td>
                   <td class="text-capitalize">{{ item.commodity_type ?? 'N/A' }}</td>
                   <td class="text-capitalize">{{ item.grade ?? 'N/A' }}</td>
@@ -126,6 +134,16 @@ const checkout = () => {
 
 .cart-table td {
   white-space: nowrap;
+}
+
+.batch-cell-link {
+  cursor: pointer;
+  color: #0f766e;
+  font-weight: 600;
+}
+
+.batch-cell-link:hover {
+  text-decoration: underline;
 }
 
 .empty-state {
