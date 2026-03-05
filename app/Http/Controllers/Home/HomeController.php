@@ -11,6 +11,9 @@ use App\Models\UserProfile;
 use App\Http\Controllers\Cooperative\CooperativeController;
 use App\Http\Controllers\Buyer\BuyerController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Models\CropType;
+use App\Http\Resources\MarketBoardResource;
+use App\Models\Batch;
 
 
 class HomeController extends Controller
@@ -33,9 +36,6 @@ return AdminController::dashboard();
 
 
 
-
-
-
 return Inertia::render('Dashboard', [
 'title' => 'dashboard',
 'response' => [
@@ -46,14 +46,26 @@ return Inertia::render('Dashboard', [
 ],
 ]);
 
-
 }
 
 
 
+static function marketBoard(): object
+{
+$market=CropType::select('name')->whereIn('name', ['arabica', 'robusta','liberica'])->get();
+return MarketBoardResource::collection($market);
+}
 
 
 
+static function batchesListed() : array
+{
+$batchesSum= (int) Batch::where('status','!=','bought')->sum('quantity');
+return [
+'batches'=>$batchesSum,
+'buyers'=>0
+];
+}
 
 
 
