@@ -14,6 +14,8 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Models\CropType;
 use App\Http\Resources\MarketBoardResource;
 use App\Models\Batch;
+use App\Models\PriceIndex;
+use App\Http\Resources\PriceIndexResource;
 
 
 class HomeController extends Controller
@@ -50,7 +52,7 @@ return Inertia::render('Dashboard', [
 
 
 
-static function marketBoard(): object
+static function marketBoard() : object
 {
 $market=CropType::select('name')->whereIn('name', ['arabica', 'robusta','liberica'])->get();
 return MarketBoardResource::collection($market);
@@ -66,6 +68,39 @@ return [
 'buyers'=>0
 ];
 }
+
+
+
+static function priceIndex() : object
+{
+return PriceIndexResource::collection(PriceIndex::get());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

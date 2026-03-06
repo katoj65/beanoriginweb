@@ -17,10 +17,29 @@ return Inertia::render('IndexPage', [
 'canRegister' => Route::has('register'),
 'laravelVersion' => Application::VERSION,
 'phpVersion' => PHP_VERSION,
+'marketBoard'=>HomeController::priceIndex(),
+'batchListed'=>HomeController::batchesListed(),
+
+
+
 ]);
 
 
 });
+
+Route::get('/live-markets', function () {
+return Inertia::render('MarketUpdatesLive', [
+'marketBoard' => HomeController::priceIndex(),
+'batchListed' => HomeController::batchesListed(),
+]);
+})->name('live.markets');
+
+Route::get('/start-trading', function () {
+return Inertia::render('StartTradingPage', [
+'marketBoard' => HomeController::priceIndex(),
+'batchListed' => HomeController::batchesListed(),
+]);
+})->name('start.trading');
 
 
 Route::get('/demo',function(){

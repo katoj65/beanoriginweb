@@ -1,17 +1,11 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 
 const currentYear = new Date().getFullYear();
 const billingCycle = ref('monthly');
 const activeFaq = ref('0');
-
-const marketRows = [
-{ commodity: 'Arabica AA', region: 'Kilimanjaro', volume: '42 MT', bid: '$3.39/kg', ask: '$3.46/kg', spread: '2.1%' },
-{ commodity: 'Cocoa Grade 1', region: 'Ashanti', volume: '30 MT', bid: '$4.80/kg', ask: '$4.92/kg', spread: '2.4%' },
-{ commodity: 'Sesame Premium', region: 'Dodoma', volume: '18 MT', bid: '$1.70/kg', ask: '$1.76/kg', spread: '3.4%' },
-{ commodity: 'Robusta FAQ', region: 'Bukoba', volume: '27 MT', bid: '$2.68/kg', ask: '$2.74/kg', spread: '2.2%' },
-];
 
 const metrics = [
 { label: 'Active Buyers', value: '1,850+' },
@@ -164,6 +158,89 @@ const supportChannels = [
 { title: 'Help Center', detail: 'Guides and onboarding docs', icon: 'bi-life-preserver' },
 { title: 'Email Support', detail: 'support@tradeharbor.com', icon: 'bi-envelope' },
 ];
+
+
+
+const page=usePage();
+const marketBoard=computed(() => {
+const source = page.props.marketBoard;
+if (Array.isArray(source)) return source;
+return source?.data ?? [];
+});
+const batchListed=computed(()=>page.props.batchListed ?? { buyers: 0, batches: 0 });
+
+const formatInteger = (value) =>
+Number(value ?? 0).toLocaleString('en-UG', { maximumFractionDigits: 0 });
+const formatCurrency = (value) =>
+`Shs. ${Number(value ?? 0).toLocaleString('en-UG', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+
+const marketRows = computed(() =>
+marketBoard.value
+.map((row) => {
+const commodity = row.commodity ?? 'Unknown';
+const type = row.type ?? null;
+const grade = row.grade ?? null;
+const min = Number(row.min_price ?? 0);
+const max = Number(row.max_price ?? 0);
+const quantity = Number(row.quantity ?? 0);
+const midpoint = min > 0 && max > 0 ? (min + max) / 2 : max || min || 1;
+const spreadValue = Math.max(max - min, 0);
+const spreadPct = midpoint > 0 ? (spreadValue / midpoint) * 100 : 0;
+const notional = quantity * midpoint;
+
+return {
+commodity,
+instrument: [commodity, type, grade].filter(Boolean).join(' · '),
+quantity,
+min,
+max,
+spreadValue,
+spreadPct,
+notional,
+};
+})
+.sort((a, b) => b.quantity - a.quantity),
+);
+
+const tickerRows = computed(() => [...marketRows.value, ...marketRows.value]);
+const heroRows = computed(() => marketRows.value.slice(0, 6));
+const marketSearch = ref('');
+const selectedCommodity = ref('all');
+
+const commodityOptions = computed(() =>
+[...new Set(marketRows.value.map((row) => row.commodity).filter(Boolean))],
+);
+
+const filteredMarketRows = computed(() => {
+const query = marketSearch.value.trim().toLowerCase();
+
+return marketRows.value.filter((row) => {
+const matchesCommodity = selectedCommodity.value === 'all' || row.commodity === selectedCommodity.value;
+const matchesQuery = !query || row.instrument.toLowerCase().includes(query);
+return matchesCommodity && matchesQuery;
+});
+});
+
+const totalMarketDepth = computed(() =>
+marketRows.value.reduce((sum, row) => sum + row.quantity, 0),
+);
+
+const averageSpreadPct = computed(() =>
+marketRows.value.length === 0
+? 0
+: marketRows.value.reduce((sum, row) => sum + row.spreadPct, 0) / marketRows.value.length,
+);
+
+const totalNotional = computed(() =>
+marketRows.value.reduce((sum, row) => sum + row.notional, 0),
+);
+
+const marketLeader = computed(() => marketRows.value[0]?.instrument ?? 'No active instruments');
+
+
+
+
+
 </script>
 
 <template>
@@ -184,6 +261,7 @@ const supportChannels = [
 </div>
 </header>
 
+
 <section class="hero-section">
 <div class="container">
 <div class="row align-items-center g-4">
@@ -196,8 +274,8 @@ A digital marketplace for cooperatives, suppliers, and buyers to list lots, nego
 prices, and settle trades with full transparency.
 </p>
 <div class="d-flex flex-wrap gap-2 mt-4">
-<Link href="/register" class="btn btn-brand btn-lg">Start Trading</Link>
-<a href="#markets" class="btn btn-soft btn-lg">View Live Markets</a>
+<Link href="/start-trading" class="btn btn-brand btn-lg">Start Trading</Link>
+<Link href="/live-markets" class="btn btn-soft btn-lg">View Live Markets</Link>
 </div>
 </div>
 </div>
@@ -205,7 +283,7 @@ prices, and settle trades with full transparency.
 <div class="card hero-panel reveal delay-1">
 <div class="card-body p-4">
 <div class="d-flex justify-content-between align-items-center mb-3">
-<h5 class="mb-0">Live Market Board</h5>
+<h5 class="mb-0">Commodity Price Index</h5>
 <span class="badge badge-live">Live</span>
 </div>
 <div class="table-responsive">
@@ -213,29 +291,77 @@ prices, and settle trades with full transparency.
 <thead>
 <tr>
 <th>Commodity</th>
-<th>Bid</th>
-<th>Ask</th>
+<th>Quantity (Kgs)</th>
+<th>Min Price (UGX)</th>
+<th>Max Price (UGX)</th>
 </tr>
 </thead>
 <tbody>
-<tr v-for="row in marketRows.slice(0, 3)" :key="row.commodity">
+<tr v-for="(row, index) in heroRows" :key="`${row.instrument}-${index}`">
 <td>
-<strong class="d-block">{{ row.commodity }}</strong>
-<small class="text-muted">{{ row.region }}</small>
+<strong class="d-block text-capitalize">{{ row.commodity }}</strong>
+<small class="text-muted text-capitalize">{{ row.instrument }}</small>
 </td>
-<td>{{ row.bid }}</td>
-<td>{{ row.ask }}</td>
+<td>{{ formatInteger(row.quantity) }}</td>
+<td>{{ formatCurrency(row.min) }}</td>
+<td>{{ formatCurrency(row.max) }}</td>
+</tr>
+<tr v-if="heroRows.length === 0">
+<td colspan="4" class="text-center text-muted py-3">No market board data available.</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="row g-2 mt-2">
-<div v-for="metric in metrics.slice(0, 2)" :key="metric.label" class="col-6">
+
+
+<div class="col-6 col-md-3">
 <div class="metric-box">
-<small>{{ metric.label }}</small>
-<strong>{{ metric.value }}</strong>
+<div class="metric-label">
+<i class="bi bi-people-fill metric-icon" aria-hidden="true"></i>
+<small>Active Buyers</small>
+</div>
+<strong>
+{{ batchListed.buyers }}
+</strong>
 </div>
 </div>
+
+
+
+
+<div class="col-6 col-md-3">
+<div class="metric-box">
+<div class="metric-label">
+<i class="bi bi-box-seam-fill metric-icon" aria-hidden="true"></i>
+<small>Batches Listed</small>
+</div>
+<strong>
+{{ batchListed.batches }}
+</strong>
+</div>
+</div>
+
+<div class="col-6 col-md-3">
+<div class="metric-box">
+<div class="metric-label">
+<i class="bi bi-layers-fill metric-icon" aria-hidden="true"></i>
+<small>Depth (Kgs)</small>
+</div>
+<strong>{{ formatInteger(totalMarketDepth) }}</strong>
+</div>
+</div>
+
+<div class="col-6 col-md-3">
+<div class="metric-box">
+<div class="metric-label">
+<i class="bi bi-activity metric-icon" aria-hidden="true"></i>
+<small>Avg Spread</small>
+</div>
+<strong>{{ averageSpreadPct.toFixed(2) }}%</strong>
+</div>
+</div>
+
 </div>
 </div>
 </div>
@@ -248,9 +374,17 @@ prices, and settle trades with full transparency.
 <div class="container">
 <div class="ticker-shell">
 <div class="ticker-track">
-<span v-for="(row, index) in [...marketRows, ...marketRows]" :key="`${row.commodity}-${index}`">
-{{ row.commodity }} · {{ row.region }} · Bid {{ row.bid }} · Ask {{ row.ask }}
+
+<span v-for="(row, index) in tickerRows" :key="`${row.instrument}-${index}`">
+
+
+{{ row.instrument }} · {{ formatInteger(row.quantity) }} Kgs · Low {{ formatCurrency(row.min) }} · High {{ formatCurrency(row.max) }}
+
+
+
 </span>
+<span v-if="marketRows.length === 0">No market board data available.</span>
+
 </div>
 </div>
 </div>
@@ -285,28 +419,79 @@ prices, and settle trades with full transparency.
 <h2>Active Lots and Price Discovery</h2>
 <p>Track live bids, asks, and spread movement across high-demand commodities.</p>
 </div>
+
+<div class="market-insight-grid reveal">
+<article class="insight-card">
+<div class="insight-head">
+<i class="bi bi-graph-up-arrow insight-icon" aria-hidden="true"></i>
+<small>Lead Instrument</small>
+</div>
+<strong class="text-capitalize">{{ marketLeader }}</strong>
+</article>
+<article class="insight-card">
+<div class="insight-head">
+<i class="bi bi-currency-exchange insight-icon" aria-hidden="true"></i>
+<small>Total Notional</small>
+</div>
+<strong>{{ formatCurrency(totalNotional) }}</strong>
+</article>
+<article class="insight-card">
+<div class="insight-head">
+<i class="bi bi-table insight-icon" aria-hidden="true"></i>
+<small>Visible Rows</small>
+</div>
+<strong>{{ filteredMarketRows.length }} / {{ marketRows.length }}</strong>
+</article>
+</div>
+
+<div class="market-toolbar reveal">
+<div class="toolbar-search-wrap">
+<i class="bi bi-search toolbar-icon" aria-hidden="true"></i>
+<input
+v-model="marketSearch"
+type="text"
+class="toolbar-search"
+placeholder="Search commodity, type, or grade"
+/>
+</div>
+<div class="toolbar-select-wrap">
+<i class="bi bi-funnel-fill toolbar-icon" aria-hidden="true"></i>
+<select v-model="selectedCommodity" class="toolbar-select">
+<option value="all">All Commodities</option>
+<option v-for="commodity in commodityOptions" :key="commodity" :value="commodity">
+{{ commodity }}
+</option>
+</select>
+</div>
+</div>
+
 <div class="card glass-card reveal delay-1">
 <div class="card-body p-0">
 <div class="table-responsive">
 <table class="table table-hover align-middle mb-0">
 <thead>
 <tr>
-<th>Commodity</th>
-<th>Region</th>
-<th>Volume</th>
-<th>Best Bid</th>
-<th>Best Ask</th>
-<th>Spread</th>
+<th>Instrument</th>
+<th>Quantity (Kgs)</th>
+<th>Low (UGX)</th>
+<th>High (UGX)</th>
+<th>Spread (UGX)</th>
+<th>Spread (%)</th>
 </tr>
 </thead>
 <tbody>
-<tr v-for="row in marketRows" :key="row.commodity + row.region">
-<td><strong>{{ row.commodity }}</strong></td>
-<td>{{ row.region }}</td>
-<td>{{ row.volume }}</td>
-<td>{{ row.bid }}</td>
-<td>{{ row.ask }}</td>
-<td><span class="spread-pill">{{ row.spread }}</span></td>
+<tr v-for="(row, index) in filteredMarketRows" :key="`${row.instrument}-${index}`">
+<td><strong class="text-capitalize">{{ row.instrument }}</strong></td>
+<td>{{ formatInteger(row.quantity) }}</td>
+<td>{{ formatCurrency(row.min) }}</td>
+<td>{{ formatCurrency(row.max) }}</td>
+<td>{{ formatCurrency(row.spreadValue) }}</td>
+<td><span class="spread-pill">{{ row.spreadPct.toFixed(2) }}%</span></td>
+</tr>
+<tr v-if="filteredMarketRows.length === 0">
+<td colspan="6" class="text-center text-muted py-4">
+{{ marketRows.length === 0 ? 'No market board data available.' : 'No rows match the current filter.' }}
+</td>
 </tr>
 </tbody>
 </table>
@@ -808,8 +993,99 @@ gap: 2px;
 border-radius: var(--hero-inner-radius);
 }
 
+.metric-label {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+}
+
+.metric-icon {
+font-size: 0.78rem;
+color: #0b6f65;
+}
+
 .metric-box small {
 color: #627d98;
+}
+
+.market-insight-grid {
+display: grid;
+grid-template-columns: repeat(3, minmax(0, 1fr));
+gap: 10px;
+margin-bottom: 12px;
+}
+
+.insight-card {
+border: 1px solid var(--mx-border);
+border-radius: 12px;
+background: rgba(255, 255, 255, 0.88);
+padding: 10px 12px;
+display: grid;
+gap: 2px;
+}
+
+.insight-head {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+}
+
+.insight-icon {
+font-size: 0.82rem;
+color: #0b6f65;
+}
+
+.insight-card small {
+font-size: 0.74rem;
+color: #627d98;
+text-transform: uppercase;
+letter-spacing: 0.04em;
+}
+
+.insight-card strong {
+font-size: 0.95rem;
+color: #243b53;
+}
+
+.market-toolbar {
+display: grid;
+grid-template-columns: minmax(0, 1fr) 220px;
+gap: 10px;
+margin-bottom: 12px;
+}
+
+.toolbar-search-wrap,
+.toolbar-select-wrap {
+position: relative;
+}
+
+.toolbar-icon {
+position: absolute;
+left: 11px;
+top: 50%;
+transform: translateY(-50%);
+font-size: 0.78rem;
+color: #5c7188;
+pointer-events: none;
+}
+
+.toolbar-search,
+.toolbar-select {
+height: 40px;
+width: 100%;
+border: 1px solid #cfe1eb;
+border-radius: 10px;
+background: #fff;
+padding: 0 12px 0 32px;
+color: #334e68;
+font-size: 0.88rem;
+}
+
+.toolbar-search:focus,
+.toolbar-select:focus {
+outline: none;
+border-color: #0e8a7d;
+box-shadow: 0 0 0 3px rgba(14, 138, 125, 0.12);
 }
 
 .metrics-section {
@@ -1308,6 +1584,10 @@ padding: 1.4rem;
 margin-top: 4px;
 position: static;
 }
+
+.market-insight-grid {
+grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 }
 
 @media (max-width: 575.98px) {
@@ -1342,6 +1622,14 @@ padding-left: 15px;
 
 .faq-index {
 min-width: 36px;
+}
+
+.market-insight-grid {
+grid-template-columns: 1fr;
+}
+
+.market-toolbar {
+grid-template-columns: 1fr;
 }
 }
 </style>
