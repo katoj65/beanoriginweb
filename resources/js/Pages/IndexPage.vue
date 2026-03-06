@@ -15,12 +15,78 @@ const metrics = [
 ];
 
 const partners = [
-'Atlas Roasters',
-'Greenline Commodities',
-'Harvest Guild',
-'Northstar Foods',
-'Horizon Export',
-'Summit Trading',
+{
+name: 'Atlas Roasters',
+segment: 'Global Coffee Buyer',
+status: 'Buyer',
+tone: 'buyer',
+icon: 'bi-cup-hot-fill',
+goodFor: 'Premium coffee contracts',
+typicalLot: '12-30 MT',
+delivery: '2-4 days',
+region: 'East Africa',
+},
+{
+name: 'Greenline Commodities',
+segment: 'Regional Export Partner',
+status: 'Exporter',
+tone: 'exporter',
+icon: 'bi-globe2',
+goodFor: 'Export-ready volumes',
+typicalLot: '20-60 MT',
+delivery: '3-5 days',
+region: 'COMESA',
+},
+{
+name: 'Harvest Guild',
+segment: 'Farmer Cooperative Network',
+status: 'Cooperative',
+tone: 'cooperative',
+icon: 'bi-diagram-3-fill',
+goodFor: 'Origin-traceable supply',
+typicalLot: '8-25 MT',
+delivery: '2-3 days',
+region: 'Great Lakes',
+},
+{
+name: 'Northstar Foods',
+segment: 'Food Industry Buyer',
+status: 'Procurement',
+tone: 'procurement',
+icon: 'bi-building-check',
+goodFor: 'Large monthly demand',
+typicalLot: '25-80 MT',
+delivery: '1-3 days',
+region: 'EAC',
+},
+{
+name: 'Horizon Export',
+segment: 'Cross-Border Exporter',
+status: 'Exporter',
+tone: 'exporter',
+icon: 'bi-airplane-fill',
+goodFor: 'Container-scale orders',
+typicalLot: '30-100 MT',
+delivery: '3-6 days',
+region: 'Intercontinental',
+},
+{
+name: 'Summit Trading',
+segment: 'Brokered Matchmaking',
+status: 'Broker',
+tone: 'broker',
+icon: 'bi-bar-chart-line-fill',
+goodFor: 'Fast buyer-seller matching',
+typicalLot: '10-40 MT',
+delivery: '1-2 days',
+region: 'Regional Hub',
+},
+];
+
+const trustSignals = [
+{ label: 'Identity Checked', icon: 'bi-shield-check' },
+{ label: 'Quality Info Up Front', icon: 'bi-file-earmark-lock2-fill' },
+{ label: 'Payment and Delivery Tracked', icon: 'bi-cash-coin' },
 ];
 
 const features = [
@@ -236,6 +302,25 @@ marketRows.value.reduce((sum, row) => sum + row.notional, 0),
 );
 
 const marketLeader = computed(() => marketRows.value[0]?.instrument ?? 'No active instruments');
+const trustStats = computed(() => {
+const roles = new Set(partners.map((partner) => partner.status)).size;
+
+return [
+{ label: 'Verified Trade Partners', value: `${partners.length}+`, note: 'Buyers, exporters, and cooperatives' },
+{ label: 'Partner Types', value: roles, note: 'Different buyer and supplier profiles' },
+{ label: 'Products Live Now', value: marketRows.value.length, note: 'Fresh listings on the board today' },
+{ label: 'Active Buyer Demand', value: formatInteger(batchListed.value.buyers ?? 0), note: 'Current buying activity' },
+];
+});
+
+const marketSession = computed(() => (marketRows.value.length > 0 ? 'Live Session' : 'Session Pending'));
+const partnerCoverage = computed(() => `${new Set(partners.map((partner) => partner.region)).size} trade zones`);
+
+const buyerFlow = [
+{ step: '1', title: 'Compare Offers', note: 'Review quality, lot size, and delivery timeline.' },
+{ step: '2', title: 'Confirm Terms', note: 'Lock price and quantity with a clear contract.' },
+{ step: '3', title: 'Settle and Receive', note: 'Track payment and delivery to completion.' },
+];
 
 
 
@@ -390,27 +475,7 @@ prices, and settle trades with full transparency.
 </div>
 </section>
 
-<section class="partners-section">
-<div class="container">
-<p class="partners-label">Trusted by cooperatives, exporters, and procurement teams</p>
-<div class="partners-grid">
-<span v-for="partner in partners" :key="partner" class="partner-pill">{{ partner }}</span>
-</div>
-</div>
-</section>
 
-<section class="metrics-section">
-<div class="container">
-<div class="row g-3">
-<div v-for="metric in metrics" :key="metric.label" class="col-6 col-lg-3">
-<div class="metric-card reveal">
-<p>{{ metric.label }}</p>
-<h3>{{ metric.value }}</h3>
-</div>
-</div>
-</div>
-</div>
-</section>
 
 <section id="markets" class="section-block">
 <div class="container">
@@ -444,34 +509,13 @@ prices, and settle trades with full transparency.
 </article>
 </div>
 
-<div class="market-toolbar reveal">
-<div class="toolbar-search-wrap">
-<i class="bi bi-search toolbar-icon" aria-hidden="true"></i>
-<input
-v-model="marketSearch"
-type="text"
-class="toolbar-search"
-placeholder="Search commodity, type, or grade"
-/>
-</div>
-<div class="toolbar-select-wrap">
-<i class="bi bi-funnel-fill toolbar-icon" aria-hidden="true"></i>
-<select v-model="selectedCommodity" class="toolbar-select">
-<option value="all">All Commodities</option>
-<option v-for="commodity in commodityOptions" :key="commodity" :value="commodity">
-{{ commodity }}
-</option>
-</select>
-</div>
-</div>
-
 <div class="card glass-card reveal delay-1">
 <div class="card-body p-0">
 <div class="table-responsive">
 <table class="table table-hover align-middle mb-0">
 <thead>
 <tr>
-<th>Instrument</th>
+<th>Commodity</th>
 <th>Quantity (Kgs)</th>
 <th>Low (UGX)</th>
 <th>High (UGX)</th>
@@ -674,12 +718,94 @@ class="faq-collapse-item"
 </section>
 
 <footer class="site-footer">
-<div class="container py-4 d-flex flex-column flex-lg-row justify-content-between gap-2">
-<p class="mb-0">© {{ currentYear }} Commodity Origin. All rights reserved.</p>
-<div class="d-flex gap-3">
-<a href="#">Privacy</a>
-<a href="#">Terms</a>
-<a href="#">Support</a>
+<div class="footer-shell">
+<div class="container">
+<div class="footer-contact-strip">
+<article class="footer-contact-card">
+<span class="footer-icon"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i></span>
+<div>
+<h6>Address</h6>
+<p>Kampala, Uganda</p>
+</div>
+</article>
+<article class="footer-contact-card">
+<span class="footer-icon"><i class="bi bi-envelope-fill" aria-hidden="true"></i></span>
+<div>
+<h6>Mail Us</h6>
+<p>support@commodityorigin.com</p>
+</div>
+</article>
+<article class="footer-contact-card">
+<span class="footer-icon"><i class="bi bi-telephone-fill" aria-hidden="true"></i></span>
+<div>
+<h6>Telephone</h6>
+<p>+256 700 000 000</p>
+</div>
+</article>
+<article class="footer-contact-card">
+<span class="footer-icon"><i class="bi bi-headset" aria-hidden="true"></i></span>
+<div>
+<h6>Support Desk</h6>
+<p>Mon - Sat, 8:00AM - 7:00PM</p>
+</div>
+</article>
+</div>
+
+<div class="footer-main-grid">
+<section class="footer-column">
+<h5>Newsletter</h5>
+<p class="footer-copy">
+Get market moves, buyer demand signals, and commodity briefings delivered weekly.
+</p>
+<div class="footer-signup">
+<input type="email" placeholder="Enter your email" aria-label="Email address" />
+<button type="button">Sign Up</button>
+</div>
+</section>
+
+<section class="footer-column">
+<h5>Customer Service</h5>
+<nav class="footer-link-list" aria-label="Customer service links">
+<Link href="/start-trading">How to Start Trading</Link>
+<Link href="/live-markets">Live Market Board</Link>
+<Link href="/register">Open Buyer Account</Link>
+<Link href="/login">Sign In</Link>
+<a href="#">Trade Support</a>
+<a href="#">Settlement Help</a>
+</nav>
+</section>
+
+<section class="footer-column">
+<h5>Information</h5>
+<nav class="footer-link-list" aria-label="Information links">
+<a href="#">About Commodity Origin</a>
+<a href="#">Delivery Information</a>
+<a href="#">Privacy Policy</a>
+<a href="#">Terms & Conditions</a>
+<a href="#">Quality Standards</a>
+<a href="#">FAQ</a>
+</nav>
+</section>
+
+<section class="footer-column">
+<h5>Explore</h5>
+<nav class="footer-link-list" aria-label="Explore links">
+<Link href="/live-markets">View Exchange Board</Link>
+<Link href="/start-trading">Buyer Onboarding</Link>
+<a href="#">Export Partnerships</a>
+<a href="#">Cooperative Supply</a>
+<a href="#">Track Your Order</a>
+<a href="#">Contact Team</a>
+</nav>
+</section>
+</div>
+
+<div class="footer-bottom">
+<small>© {{ currentYear }} Commodity Origin. All rights reserved.</small>
+<a href="#" class="footer-up" aria-label="Back to top">
+<i class="bi bi-arrow-up"></i>
+</a>
+</div>
 </div>
 </div>
 </footer>
@@ -889,32 +1015,300 @@ font-weight: 600;
 }
 
 .partners-section {
-padding: 0.3rem 0 1rem;
+padding: 1.35rem 0 2.35rem;
+}
+
+.partners-shell {
+border: 1px solid #d6e4ef;
+border-radius: 22px;
+background:
+radial-gradient(460px 200px at 0% 0%, rgba(217, 241, 232, 0.72), transparent 64%),
+radial-gradient(420px 180px at 100% 100%, rgba(230, 240, 255, 0.72), transparent 64%),
+#ffffff;
+padding: 24px;
+}
+
+.partners-head {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+gap: 18px;
+margin-bottom: 14px;
 }
 
 .partners-label {
-font-size: 0.82rem;
-color: #627d98;
-letter-spacing: 0.06em;
+font-size: 0.71rem;
+color: #4f728f;
+letter-spacing: 0.09em;
 text-transform: uppercase;
-margin-bottom: 0.7rem;
+margin-bottom: 0.45rem;
+font-weight: 800;
 }
 
-.partners-grid {
+.partners-title {
+margin: 0;
+font-size: 1.28rem;
+color: #1f3b55;
+line-height: 1.25;
+}
+
+.partners-subtitle {
+margin: 0.65rem 0 0;
+max-width: 62ch;
+font-size: 0.9rem;
+color: #5f7892;
+line-height: 1.58;
+}
+
+.partners-badges {
+display: flex;
+align-items: center;
+flex-wrap: wrap;
+gap: 9px;
+margin-top: 11px;
+}
+
+.session-pill {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+height: 31px;
+padding: 0 11px;
+border-radius: 999px;
+font-size: 0.72rem;
+font-weight: 800;
+background: #e8f7f1;
+color: #0b6b5f;
+border: 1px solid #bce6d8;
+}
+
+.session-dot {
+width: 7px;
+height: 7px;
+border-radius: 50%;
+background: #0b6b5f;
+box-shadow: 0 0 0 6px rgba(11, 107, 95, 0.12);
+}
+
+.coverage-pill {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+height: 31px;
+padding: 0 11px;
+border-radius: 999px;
+font-size: 0.72rem;
+font-weight: 800;
+background: #ecf5ff;
+border: 1px solid #c7dcf2;
+color: #1f507b;
+}
+
+.coverage-pill i {
+color: #2e77ad;
+}
+
+.partners-head-actions {
+display: flex;
+align-items: center;
+gap: 9px;
+}
+
+.partners-layout {
 display: grid;
-grid-template-columns: repeat(6, minmax(0, 1fr));
-gap: 10px;
+grid-template-columns: 1.45fr 1fr;
+gap: 14px;
+align-items: stretch;
 }
 
-.partner-pill {
-border: 1px solid var(--mx-border);
+.partners-left {
+display: grid;
+gap: 11px;
+}
+
+.partners-inline-stats {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 9px;
+}
+
+.inline-stat {
+border: 1px solid #dbe8f1;
 border-radius: 12px;
-background: rgba(255, 255, 255, 0.88);
-color: #334e68;
-font-size: 0.84rem;
+background: #fbfdff;
+padding: 11px 12px;
+display: grid;
+gap: 4px;
+}
+
+.inline-stat small {
+font-size: 0.67rem;
+letter-spacing: 0.04em;
+text-transform: uppercase;
+color: #607a94;
+}
+
+.inline-stat strong {
+font-size: 1.02rem;
+line-height: 1.2;
+color: #223c57;
+}
+
+.inline-stat span {
+font-size: 0.72rem;
+line-height: 1.35;
+color: #7289a0;
+}
+
+.partners-signals {
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+}
+
+.signal-pill {
+display: inline-flex;
+align-items: center;
+gap: 8px;
+min-height: 32px;
+padding: 0 11px;
+border: 1px solid #d8e6f1;
+border-radius: 999px;
+background: #f9fcff;
+font-size: 0.75rem;
 font-weight: 700;
-padding: 10px 12px;
-text-align: center;
+color: #335878;
+}
+
+.signal-pill i {
+color: #0b7d6f;
+}
+
+.partner-mini-grid {
+display: grid;
+grid-template-columns: repeat(3, minmax(0, 1fr));
+gap: 9px;
+}
+
+.partner-mini {
+border: 1px solid #dbe7f1;
+border-radius: 12px;
+background: #ffffff;
+padding: 11px 11px 10px;
+display: grid;
+gap: 4px;
+}
+
+.partner-mini-head {
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.partner-mini-head i {
+font-size: 0.92rem;
+color: #20689f;
+}
+
+.partner-mini strong {
+font-size: 0.79rem;
+line-height: 1.25;
+color: #274664;
+}
+
+.partner-mini p {
+margin: 0;
+font-size: 0.73rem;
+line-height: 1.35;
+color: #637d96;
+}
+
+.partner-mini small {
+font-size: 0.7rem;
+color: #7890a6;
+}
+
+.partners-right {
+border: 1px solid #dbe8f2;
+border-radius: 14px;
+background: linear-gradient(180deg, #ffffff 0%, #f6fbff 100%);
+padding: 13px;
+display: grid;
+gap: 10px;
+align-content: start;
+}
+
+.partners-right-title {
+margin: 0;
+font-size: 0.98rem;
+line-height: 1.25;
+color: #254867;
+}
+
+.partners-right-subtitle {
+margin: 0;
+font-size: 0.77rem;
+line-height: 1.45;
+color: #67839d;
+}
+
+.guidance-steps {
+display: grid;
+gap: 8px;
+}
+
+.guidance-step {
+display: grid;
+grid-template-columns: auto 1fr;
+align-items: start;
+gap: 9px;
+padding: 10px 10px;
+border: 1px solid #dce8f3;
+border-radius: 10px;
+background: #fcfeff;
+}
+
+.flow-step {
+width: 22px;
+height: 22px;
+display: inline-grid;
+place-items: center;
+border-radius: 50%;
+background: #e6f2ff;
+color: #1f65a2;
+font-size: 0.66rem;
+font-weight: 800;
+}
+
+.guidance-step strong {
+display: block;
+font-size: 0.79rem;
+line-height: 1.2;
+color: #244562;
+}
+
+.guidance-step small {
+display: block;
+margin-top: 2px;
+font-size: 0.72rem;
+line-height: 1.36;
+color: #64809b;
+}
+
+.guidance-actions {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 8px;
+}
+
+.guidance-actions .btn {
+display: inline-flex;
+justify-content: center;
+align-items: center;
+min-height: 36px;
+font-size: 0.79rem;
+font-weight: 800;
+white-space: nowrap;
 }
 
 .hero-copy h1 {
@@ -1523,14 +1917,183 @@ color: rgba(255, 255, 255, 0.88);
 }
 
 .site-footer {
-border-top: 1px solid #dbe7ee;
-background: #fff;
-color: #627d98;
+margin-top: 0.4rem;
+color: #e8f0f7;
 }
 
-.site-footer a {
-color: #486581;
+.footer-shell {
+border-top: 1px solid rgba(255, 255, 255, 0.09);
+background:
+radial-gradient(500px 220px at 0% 0%, rgba(14, 138, 125, 0.2), transparent 70%),
+radial-gradient(460px 220px at 100% 100%, rgba(242, 167, 75, 0.14), transparent 70%),
+linear-gradient(180deg, #1a334b 0%, #142e47 50%, #102a43 100%);
+}
+
+.footer-contact-strip {
+display: grid;
+grid-template-columns: repeat(4, minmax(0, 1fr));
+gap: 0.9rem;
+align-items: center;
+padding: 1.1rem 0;
+border-bottom: 1px solid rgba(214, 229, 241, 0.22);
+}
+
+.footer-contact-card {
+display: flex;
+align-items: center;
+gap: 0.72rem;
+border: 1px solid rgba(214, 229, 241, 0.18);
+border-radius: 14px;
+padding: 0.85rem 0.9rem;
+background: rgba(255, 255, 255, 0.04);
+min-height: 94px;
+}
+
+.footer-icon {
+width: 46px;
+height: 46px;
+border-radius: 50%;
+display: inline-grid;
+place-items: center;
+background: linear-gradient(135deg, var(--mx-brand), var(--mx-brand-dark));
+color: #ffffff;
+font-size: 1.07rem;
+flex-shrink: 0;
+}
+
+.footer-contact-card h6 {
+margin: 0;
+font-size: 0.82rem;
+font-weight: 800;
+color: #f4f8fc;
+}
+
+.footer-contact-card p {
+margin: 0;
+font-size: 0.76rem;
+line-height: 1.5;
+color: #b8cad9;
+}
+
+.footer-main-grid {
+display: grid;
+grid-template-columns: 1.2fr 1fr 1fr 1fr;
+gap: 1.15rem;
+padding: 1.15rem 0 1.05rem;
+}
+
+.footer-column h5 {
+margin: 0 0 0.55rem;
+font-size: 0.84rem;
+line-height: 1.2;
+color: var(--mx-accent);
+font-weight: 800;
+}
+
+.footer-copy {
+margin: 0;
+font-size: 0.78rem;
+line-height: 1.72;
+color: #b9c9d8;
+max-width: 34ch;
+}
+
+.footer-signup {
+margin-top: 0.75rem;
+display: grid;
+grid-template-columns: 1fr auto;
+align-items: center;
+gap: 0.45rem;
+padding: 0.3rem;
+background: rgba(255, 255, 255, 0.08);
+border: 1px solid rgba(214, 229, 241, 0.2);
+border-radius: 999px;
+}
+
+.footer-signup input {
+border: 0;
+outline: 0;
+background: transparent;
+min-width: 0;
+padding: 0 0.7rem;
+height: 36px;
+font-size: 0.82rem;
+color: #f4f9ff;
+}
+
+.footer-signup input::placeholder {
+color: #9eb2c5;
+}
+
+.footer-signup button {
+height: 36px;
+padding: 0 0.95rem;
+border-radius: 999px;
+border: 0;
+background: var(--mx-accent);
+color: #16354f;
+font-size: 0.8rem;
+font-weight: 700;
+}
+
+.footer-link-list {
+display: grid;
+gap: 0.42rem;
+}
+
+.footer-link-list a {
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+font-size: 0.79rem;
+line-height: 1.45;
+color: #c6d5e3;
 text-decoration: none;
+}
+
+.footer-link-list a::before {
+content: '›';
+font-size: 1.02rem;
+line-height: 1;
+color: #8fa8bd;
+}
+
+.footer-link-list a:hover {
+color: #ffffff;
+}
+
+.footer-bottom {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 0.8rem;
+padding: 0.95rem 0 1.05rem;
+border-top: 1px solid rgba(214, 229, 241, 0.2);
+}
+
+.footer-bottom small {
+margin: 0;
+font-size: 0.75rem;
+line-height: 1.4;
+color: #b8cad9;
+}
+
+.footer-up {
+width: 42px;
+height: 42px;
+border-radius: 50%;
+display: inline-grid;
+place-items: center;
+background: var(--mx-accent);
+color: #17354f;
+text-decoration: none;
+font-size: 1rem;
+font-weight: 800;
+}
+
+.footer-up:hover {
+color: #17354f;
+filter: brightness(0.97);
 }
 
 .reveal {
@@ -1572,8 +2135,29 @@ padding-top: 10px;
 margin-top: 10px;
 }
 
-.partners-grid {
-grid-template-columns: repeat(3, minmax(0, 1fr));
+.partners-inline-stats {
+grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.partners-layout {
+grid-template-columns: 1fr;
+}
+
+.partner-mini-grid {
+grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.partners-head {
+flex-direction: column;
+gap: 12px;
+}
+
+.partners-head-actions {
+width: 100%;
+}
+
+.partners-head-actions .btn {
+flex: 1;
 }
 
 .cta-box {
@@ -1588,8 +2172,52 @@ position: static;
 .market-insight-grid {
 grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+
+.footer-contact-strip {
+grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.footer-main-grid {
+grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+}
+
+@media (max-width: 767.98px) {
+.partners-inline-stats {
+grid-template-columns: 1fr;
+}
+
+.partner-mini-grid,
+.guidance-actions {
+grid-template-columns: 1fr;
+}
+
+.session-pill,
+.coverage-pill {
+width: 100%;
+justify-content: center;
+}
+
+.partners-badges,
+.partners-head-actions {
+flex-direction: column;
+align-items: stretch;
+}
+
+.footer-contact-strip,
+.footer-main-grid {
+grid-template-columns: 1fr;
+}
+
+.footer-contact-card {
+min-height: 0;
+}
+
+.footer-bottom {
+flex-direction: column;
+align-items: flex-start;
+}
+}
 @media (max-width: 575.98px) {
 .section-block {
 padding: 2.6rem 0;
@@ -1604,8 +2232,34 @@ gap: 16px;
 padding: 8px 14px;
 }
 
-.partners-grid {
-grid-template-columns: repeat(2, minmax(0, 1fr));
+.partners-inline-stats {
+grid-template-columns: 1fr;
+}
+
+.session-pill,
+.coverage-pill {
+width: 100%;
+justify-content: center;
+}
+
+.partners-badges,
+.partners-head-actions {
+flex-direction: column;
+align-items: stretch;
+}
+
+.partners-shell {
+padding: 18px 14px;
+}
+
+.footer-signup {
+grid-template-columns: 1fr;
+border-radius: 14px;
+}
+
+.footer-signup input,
+.footer-signup button {
+width: 100%;
 }
 
 .billing-toggle {
