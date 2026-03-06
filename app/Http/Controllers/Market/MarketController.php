@@ -7,11 +7,13 @@ use App\Models\Batch;
 use App\Models\BatchPurchaseRequest;
 use App\Models\Commodity;
 use App\Models\Cooperative;
+use App\Models\Purchase;
 use App\Models\ShoppingCart;
 use App\Models\UserProfile;
 use App\Services\Buy\BuyService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -433,7 +435,6 @@ throw ValidationException::withMessages([
 ]);
 }
 
-
 if($cartQtySum>$batchQty){
 throw ValidationException::withMessages([
 'quantity' => 'You have '.$cartQty.'/'.$batchQty. ' of this batch in your cart.',
@@ -546,9 +547,10 @@ private function mapCartItems(int $userId)
 /**
  * Validate checkout input and ensure the user still has active cart items.
  */
-public function storeCheckout(Request $request) : RedirectResponse
+public function storeCheckout(Request $request)
+// : RedirectResponse
 {
-  $request->validate([
+   $request->validate([
     'shipping_name' => ['required', 'string', 'max:255'],
     'shipping_phone' => ['required', 'string', 'max:50'],
     'shipping_email' => ['required', 'email', 'max:255'],
@@ -561,19 +563,84 @@ public function storeCheckout(Request $request) : RedirectResponse
     'payment_reference' => ['required', 'string', 'max:255'],
     ]);
 
-    // Prevent submission when cart has no active items.
-    $cartExists = ShoppingCart::query()
-    ->where('user_id', (int) $request->user()->id)
-    ->where('status', 'active')
-    ->exists();
+    $userId = (int) $request->user()->id;
 
-    if (!$cartExists) {
+    // Prevent submission when cart has no active items.
+    $cartItems = $this->mapCartItems($userId);
+
+    if ($cartItems->isEmpty()) {
     return back()->with('error', 'No active cart items found for checkout.');
     }
 
+    // Build a lightweight summary payload for the confirmation page.
+    $totalItems = (int) $cartItems->sum(fn (array $item) => (int) ($item['quantity'] ?? 0));
+    $totalWeight = (float) $cartItems->sum(fn (array $item) => ((float) ($item['weight'] ?? 0) * (float) ($item['quantity'] ?? 0)));
+    $totalAmount = (float) $cartItems->sum(fn (array $item) => (float) ($item['line_total'] ?? 0));
+    // Preload seller ownership by batch id to avoid querying inside the checkout loop.
+    $batchIds = $cartItems->pluck('batch_id')
+    ->filter()
+    ->map(fn ($id) => (int) $id)
+    ->unique()
+    ->values();
+    $batchOwnerMap = Batch::query()
+    ->whereIn('id', $batchIds)
+    ->pluck('owner_id', 'id');
+
+    // Persist all purchase records atomically for this checkout submission.
+    DB::transaction(function () use ($cartItems, $batchOwnerMap, $userId, $request) {
+    foreach ($cartItems as $item) {
+    $batchId = (int) ($item['batch_id'] ?? 0);
+    $sellerId = (int) ($batchOwnerMap[$batchId] ?? 0);
+
+    // Stop checkout if any cart line cannot be mapped to a valid seller/batch pair.
+    if ($batchId <= 0 || $sellerId <= 0) {
+    throw ValidationException::withMessages([
+    'payment_reference' => 'Unable to complete checkout for one or more cart items.',
+    ]);
+    }
+
+
+     // Create one purchase record for each checked-out cart line.
+     Purchase::create([
+    'batch_id' => $batchId,
+    'buyer_id' => $userId,
+    'seller_id' => $sellerId,
+    'quantity' => (float) ($item['quantity'] ?? 0),
+    'unit_price' => (float) ($item['unit_price'] ?? 0),
+    'total_price' => (float) ($item['line_total'] ?? 0),
+    'currency' => 'UGX',
+    'payment_method' => $request->string('payment_method')->toString(),
+    'transaction_reference' => $request->string('payment_reference')->toString(),
+    'status' => 'completed',
+    'notes' => $request->string('shipping_notes')->toString() ?: null,
+    ]);
+    }
+    });
+
+    //create payment session id
+
+
+
+
+
+
+
+
+
+
     return redirect()
-    ->route('market.checkout')
-    ->with('success', 'Checkout details submitted successfully.');
+    ->route('market.purchaseConfirmation')
+    ->with([
+    'success' => 'Checkout details submitted successfully.',
+    'checkout_summary' => [
+    'total_items' => $totalItems,
+    'total_weight' => $totalWeight,
+    'total_amount' => $totalAmount,
+    'payment_method' => $request->string('payment_method')->toString(),
+    'shipping_name' => $request->string('shipping_name')->toString(),
+    'shipping_email' => $request->string('shipping_email')->toString(),
+    ],
+    ]);
 }
 
 
@@ -595,8 +662,33 @@ public function destroyCartItem(Request $request, string $id): RedirectResponse
 
 
 
+/**
+ * Render purchase confirmation details after checkout submission.
+ * Falls back to recalculated cart totals when flash session data is missing.
+ */
+public function purchaseConfirmation(Request $request): Response
+{
+    $userId = (int) $request->user()->id;
+    $cartItems = $this->mapCartItems($userId);
+    // Read summary from flash session set during successful checkout submit.
+    $summary = $request->session()->get('checkout_summary', []);
 
+    if (!is_array($summary) || empty($summary)) {
+        $summary = [
+            'total_items' => (int) $cartItems->sum(fn (array $item) => (int) ($item['quantity'] ?? 0)),
+            'total_weight' => (float) $cartItems->sum(fn (array $item) => ((float) ($item['weight'] ?? 0) * (float) ($item['quantity'] ?? 0))),
+            'total_amount' => (float) $cartItems->sum(fn (array $item) => (float) ($item['line_total'] ?? 0)),
+            'payment_method' => null,
+            'shipping_name' => null,
+            'shipping_email' => null,
+        ];
+    }
 
+    return Inertia::render('PurchaseConfirmationPage', [
+        'title' => 'Purchase Confirmation',
+        'summary' => $summary,
+    ]);
+}
 
 
 
