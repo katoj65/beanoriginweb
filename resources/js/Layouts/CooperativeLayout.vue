@@ -1,6 +1,6 @@
 <script setup>
 import { Link, router, usePage } from '@inertiajs/vue3';
-import { Search, Bell, User, House, UserFilled, Tickets, ShoppingCart } from '@element-plus/icons-vue';
+import { Search, Bell, User, House, Tickets, ShoppingCart } from '@element-plus/icons-vue';
 import { onMounted, computed } from 'vue';
 
 const page = usePage();
@@ -89,11 +89,6 @@ return Number(page.props.shoppingCart ?? page.props.shopping_cart ?? 0) || 0;
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('cooperative.farmers')" class="nk-menu-link" title="Farmers">
-<span class="nk-menu-icon"><em class="icon ni ni-users"></em></span>
-</Link>
-</li>
-<li class="nk-menu-item">
 <Link :href="route('cooperative.notifications')" class="nk-menu-link" title="Notifications">
 <span class="nk-menu-icon"><em class="icon ni ni-bell"></em></span>
 </Link>
@@ -101,6 +96,11 @@ return Number(page.props.shoppingCart ?? page.props.shopping_cart ?? 0) || 0;
 <li class="nk-menu-item">
 <Link :href="route('cooperative.account.settings')" class="nk-menu-link" title="Compliance & Settings">
 <span class="nk-menu-icon"><em class="icon ni ni-shield-check"></em></span>
+</Link>
+</li>
+<li class="nk-menu-item">
+<Link :href="route('market.bidding')" class="nk-menu-link" title="Bidding">
+<span class="nk-menu-icon"><em class="icon ni ni-tranx"></em></span>
 </Link>
 </li>
 </ul>
@@ -186,11 +186,6 @@ Cooperative
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('cooperative.farmers')" class="nk-menu-link">
-<span class="nk-menu-text"><el-icon class="mr-1"><UserFilled /></el-icon>Farmers</span>
-</Link>
-</li>
-<li class="nk-menu-item">
 <Link :href="route('cooperative.produce')" class="nk-menu-link">
 <span class="nk-menu-text"><el-icon class="mr-1"><Tickets /></el-icon>Commodity</span>
 </Link>
@@ -198,6 +193,11 @@ Cooperative
 <li class="nk-menu-item">
 <Link :href="route('market.index')" class="nk-menu-link">
 <span class="nk-menu-text"><el-icon class="mr-1"><ShoppingCart /></el-icon>Marketplace</span>
+</Link>
+</li><!-- .nk-menu-item -->
+<li class="nk-menu-item">
+<Link :href="route('market.bidding')" class="nk-menu-link">
+<span class="nk-menu-text"><em class="icon ni ni-tranx mr-1"></em>Bidding</span>
 </Link>
 </li><!-- .nk-menu-item -->
 </ul>
@@ -325,16 +325,6 @@ Sign Out
 <h6 class="overline-title text-primary-alt">Cooperative Services</h6>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('cooperative.farmers')" class="nk-menu-link">
-<span class="nk-menu-text">Farmer Directory</span>
-</Link>
-</li>
-<li class="nk-menu-item">
-<Link :href="route('cooperative.farmers.create')" class="nk-menu-link">
-<span class="nk-menu-text">Farmer Onboarding</span>
-</Link>
-</li>
-<li class="nk-menu-item">
 <Link :href="route('cooperative.farms.create')" class="nk-menu-link">
 <span class="nk-menu-text">Farm Registration</span>
 </Link>
@@ -356,6 +346,11 @@ Sign Out
 <li class="nk-menu-item">
 <Link :href="route('cooperative.help')" class="nk-menu-link">
 <span class="nk-menu-text">Help Center</span>
+</Link>
+</li>
+<li class="nk-menu-item">
+<Link :href="route('market.bidding')" class="nk-menu-link">
+<span class="nk-menu-text">Bidding</span>
 </Link>
 </li>
 </ul>

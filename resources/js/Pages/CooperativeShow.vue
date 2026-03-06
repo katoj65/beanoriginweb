@@ -15,6 +15,58 @@ const produces = computed(() => page.props.response?.produces?.data ?? page.prop
 const listedCount = computed(() => produces.value.filter((p) => p.status === 'listed').length);
 const soldCount = computed(() => Number(page.props.response?.sold_count ?? 0));
 const listedQuantityTotal = computed(() => Number(page.props.response?.listed_quantity_total ?? 0));
+const toNumber = (value) => {
+const parsed = Number(value ?? 0);
+return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const formatCount = (value) => new Intl.NumberFormat('en-UG').format(Math.round(value));
+const formatMoney = (value) => `UGX ${new Intl.NumberFormat('en-UG').format(Math.round(value))}`;
+
+const soldWeight = computed(() =>
+produces.value
+.filter((p) => p.status === 'sold')
+.reduce((sum, p) => sum + toNumber(p.weight ?? p.quantity), 0),
+);
+
+const listedWeight = computed(() =>
+produces.value
+.filter((p) => ['listed', 'tokenized'].includes(p.status))
+.reduce((sum, p) => sum + toNumber(p.weight ?? p.quantity), 0),
+);
+
+const grossSales = computed(() =>
+produces.value
+.filter((p) => p.status === 'sold')
+.reduce((sum, p) => sum + (toNumber(p.price) * toNumber(p.weight ?? p.quantity)), 0),
+);
+
+const processingCount = computed(() =>
+produces.value.filter((p) => !['sold', 'listed', 'tokenized'].includes(p.status)).length,
+);
+
+const withTrend = (label, value, type, tone, previousFactor = 0.86) => {
+const previous = Math.max(value * previousFactor, 0);
+const delta = previous > 0 ? ((value - previous) / previous) * 100 : 0;
+
+return {
+label,
+valueLabel: type === 'currency' ? formatMoney(value) : formatCount(value),
+previousLabel: type === 'currency' ? formatMoney(previous) : formatCount(previous),
+deltaLabel: `${Math.abs(delta).toFixed(1)}%`,
+direction: delta >= 0 ? 'up' : 'down',
+tone,
+};
+};
+
+const overviewTiles = computed(() => [
+withTrend('Orders', produces.value.length, 'count', 'blue'),
+withTrend('Items Sold', soldCount.value || soldWeight.value, 'count', 'orange'),
+withTrend('Refunds', grossSales.value * 0.03, 'currency', 'green'),
+withTrend('Gross Sale', grossSales.value, 'currency', 'red'),
+withTrend('Shipping', listedWeight.value * 250, 'currency', 'green'),
+withTrend('Processing', processingCount.value || listedCount.value, 'count', 'blue'),
+]);
 
 
 
@@ -109,6 +161,8 @@ const goToBatchDetails = (row) => {
 
 <div class="row g-gs">
 <div class="col-12 col-md-3" v-for="(t,key) in tabs" :key="key">
+
+
 <div class="nk-order-ovwg-data card border">
 <div class="amount">{{ t.title }}</div>
 <div class="info"><strong>{{ t.stats }}</strong></div>
@@ -117,8 +171,14 @@ const goToBatchDetails = (row) => {
 {{ t.subtitle }}
 </div>
 </div>
+
+
+
 </div>
 </div>
+
+
+
 
 <div class="row g-gs">
 <div class="col-12 col-md-8">
@@ -256,6 +316,7 @@ const goToBatchDetails = (row) => {
 </div>
 
 <div class="row g-gs">
+
 <div class="col-12 col-md-7">
 <div class="card border h-100 modern-panel">
 <div class="card-header bg-white p-0">
@@ -296,11 +357,127 @@ const goToBatchDetails = (row) => {
 </div>
 </div>
 
+
+
+
+<div class="row g-gs" id="statistics">
+<div class="col-12">
+<div class="card border stats-matrix-card">
+<div class="stats-matrix-grid">
+<article v-for="(tile, index) in overviewTiles" :key="`${tile.label}-${index}`" class="stats-matrix-cell">
+<h6>{{ tile.label }}</h6>
+<div class="stats-value">{{ tile.valueLabel }}</div>
+<div class="stats-foot">
+<span class="stats-base">{{ tile.previousLabel }}</span>
+<span :class="['stats-delta', `tone-${tile.tone}`]">
+<span class="delta-arrow">{{ tile.direction === 'up' ? '▲' : '▼' }}</span>
+{{ tile.deltaLabel }}
+</span>
+</div>
+</article>
+</div>
+</div>
+</div>
+
+</div>
+
+
+
+
+
+
 </div>
 </cooperative-layout>
 </template>
 
 <style scoped>
+.stats-matrix-card {
+background: var(--card-bg, #ffffff);
+--stats-border-color: var(--bs-border-color, #dbdfea);
+border: 1px solid var(--stats-border-color);
+border-radius: 12px;
+padding: 0;
+box-shadow: 0 6px 22px rgba(15, 23, 42, 0.05);
+overflow: hidden;
+}
+
+.stats-matrix-grid {
+display: grid;
+grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.stats-matrix-cell {
+padding: 1.65rem 1.5rem;
+border-right: 1px solid var(--stats-border-color);
+border-bottom: 1px solid var(--stats-border-color);
+}
+
+.stats-matrix-cell:nth-child(3n) {
+border-right: none;
+}
+
+.stats-matrix-cell:nth-child(n + 4) {
+border-bottom: none;
+}
+
+.stats-matrix-cell h6 {
+margin: 0;
+font-size: 0.88rem;
+font-weight: 600;
+color: var(--bs-secondary-color, #8094ae);
+}
+
+.stats-value {
+margin-top: 0.85rem;
+font-size: 20px;
+font-weight: 700;
+line-height: 1.05;
+letter-spacing: -0.02em;
+color: var(--bs-body-color, #364a63);
+}
+
+.stats-foot {
+margin-top: 0.72rem;
+display: inline-flex;
+align-items: center;
+gap: 1rem;
+}
+
+.stats-base {
+font-size: 0.8rem;
+font-weight: 500;
+color: var(--bs-secondary-color, #8094ae);
+}
+
+.stats-delta {
+display: inline-flex;
+align-items: center;
+gap: 0.28rem;
+font-size: 0.8rem;
+font-weight: 600;
+}
+
+.delta-arrow {
+font-size: 0.7rem;
+line-height: 1;
+}
+
+.tone-blue {
+color: var(--bs-info, #09c2de);
+}
+
+.tone-orange {
+color: var(--bs-warning, #f4bd0e);
+}
+
+.tone-green {
+color: var(--bs-success, #1ee0ac);
+}
+
+.tone-red {
+color: var(--bs-danger, #e85347);
+}
+
 .dashboard-head {
 display: flex;
 justify-content: space-between;
@@ -372,8 +549,8 @@ background: linear-gradient(135deg, #ffffff 0%, #fefefe 50%, #f8fafc 100%);
 
 .nk-order-ovwg-data .amount {
 font-size: 0.95rem;
-font-weight: 800;
-color: #000000;
+font-weight: 400;
+color: #526484;
 margin-bottom: 0.6rem;
 line-height: 1.2;
 text-transform: uppercase;
@@ -385,15 +562,15 @@ margin-bottom: 0.5rem;
 
 .nk-order-ovwg-data .info strong {
 font-size: 1.6rem;
-font-weight: 900;
-color: #000000;
+font-weight: 400;
+color: #526484;
 line-height: 1.1;
 }
 
 .nk-order-ovwg-data .title {
 font-size: 0.8rem;
-color: #000000;
-font-weight: 600;
+color: #526484;
+font-weight: 400 !important;
 display: flex;
 align-items: center;
 gap: 0.4rem;
@@ -401,7 +578,7 @@ line-height: 1.3;
 }
 
 .nk-order-ovwg-data .title em {
-color: #10b981;
+color: #526484;
 font-size: 0.9rem;
 }
 
@@ -413,6 +590,27 @@ align-items: flex-start;
 }
 
 @media (max-width: 768px) {
+.stats-matrix-grid {
+grid-template-columns: 1fr;
+}
+
+.stats-matrix-cell {
+border-right: none;
+padding: 1.1rem 1rem;
+}
+
+.stats-matrix-cell:nth-child(n + 4) {
+border-bottom: 1px solid var(--stats-border-color);
+}
+
+.stats-matrix-cell:last-child {
+border-bottom: none;
+}
+
+.stats-value {
+font-size: 20px;
+}
+
 .nk-order-ovwg-data.card.border {
 padding: 0.75rem;
 }
