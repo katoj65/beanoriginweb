@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ShoppingCart extends Model
 {
@@ -28,5 +29,10 @@ class ShoppingCart extends Model
     public function batch(): BelongsTo
     {
         return $this->belongsTo(Batch::class, 'batch_id');
+    }
+
+    public function logs(): HasMany
+    {
+        return $this->hasMany(ShoppingCartLog::class, 'shopping_cart_id');
     }
 }

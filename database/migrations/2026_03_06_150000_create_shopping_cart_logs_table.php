@@ -11,11 +11,12 @@ return new class extends Migration
  */
 public function up(): void
 {
-Schema::create('purchases', function (Blueprint $table) {
+Schema::create('shopping_cart_logs', function (Blueprint $table) {
 $table->id();
-$table->foreignId('batch_id')->constrained('batches')->cascadeOnDelete();
-$table->foreignId('buyer_id')->constrained('users')->cascadeOnDelete();
-$table->foreignId('seller_id')->constrained('users')->cascadeOnDelete();
+$table->foreignId('shopping_cart_id')->nullable()->constrained('shopping_carts')->nullOnDelete();
+$table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+$table->foreignId('batch_id')->nullable()->constrained('batches')->nullOnDelete();
+$table->string('shopping_session', 255)->nullable();
 $table->decimal('quantity', 12, 2)->default(0);
 $table->decimal('unit_price', 12, 2);
 $table->decimal('total_price', 14, 2);
@@ -25,16 +26,14 @@ $table->string('transaction_reference', 255)->nullable();
 $table->string('status', 50)->default('pending');
 $table->text('notes')->nullable();
 $table->timestamps();
-$table->index(['batch_id', 'status']);
-$table->index(['buyer_id', 'status']);
 });
 }
 
-/**
- * Reverse the migrations.
- */
-public function down(): void
-{
-Schema::dropIfExists('purchases');
-}
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('shopping_cart_logs');
+    }
 };

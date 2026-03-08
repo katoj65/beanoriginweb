@@ -7,8 +7,10 @@ use App\Models\Batch;
 use App\Models\BatchPurchaseRequest;
 use App\Models\Commodity;
 use App\Models\Cooperative;
+use App\Models\Payment;
 use App\Models\Purchase;
 use App\Models\ShoppingCart;
+use App\Models\User;
 use App\Models\UserProfile;
 use App\Services\Buy\BuyService;
 use Illuminate\Http\RedirectResponse;
@@ -18,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+
 
 class MarketController extends Controller
 {
@@ -428,7 +431,6 @@ $batchQty = (int) $batch->quantity;
 $cartQty = (int) $cartItem->quantity;
 $cartQtySum = $cartQty + $quantity;
 
-
 if($quantity==0){
 throw ValidationException::withMessages([
 'quantity' => 'Quantity cannot be 0'
@@ -444,26 +446,12 @@ throw ValidationException::withMessages([
 
 $cartItem->quantity = ((int) $cartItem->quantity) + $quantity;
 
-
-
-
-
-
-
-
-
 } else {
 $cartItem->quantity = $quantity;
 $cartItem->status = 'active';
 }
 
-
-
-
-
-
 $cartItem->save();
-
 return back()->with('success', 'Batch added to cart successfully.');
 }
 
@@ -547,101 +535,106 @@ private function mapCartItems(int $userId)
 /**
  * Validate checkout input and ensure the user still has active cart items.
  */
-public function storeCheckout(Request $request)
-// : RedirectResponse
+public function storeCheckout(Request $request) : RedirectResponse
 {
-   $request->validate([
-    'shipping_name' => ['required', 'string', 'max:255'],
-    'shipping_phone' => ['required', 'string', 'max:50'],
-    'shipping_email' => ['required', 'email', 'max:255'],
-    'shipping_country' => ['required', 'string', 'max:120'],
-    'shipping_city' => ['required', 'string', 'max:120'],
-    'shipping_address' => ['required', 'string', 'max:1000'],
-    'shipping_notes' => ['nullable', 'string', 'max:1000'],
-    'payment_method' => ['required', 'string', 'in:mobile_money,bank_transfer,card'],
-    'payer_name' => ['required', 'string', 'max:255'],
-    'payment_reference' => ['required', 'string', 'max:255'],
-    ]);
-
-    $userId = (int) $request->user()->id;
-
-    // Prevent submission when cart has no active items.
-    $cartItems = $this->mapCartItems($userId);
-
-    if ($cartItems->isEmpty()) {
-    return back()->with('error', 'No active cart items found for checkout.');
-    }
-
-    // Build a lightweight summary payload for the confirmation page.
-    $totalItems = (int) $cartItems->sum(fn (array $item) => (int) ($item['quantity'] ?? 0));
-    $totalWeight = (float) $cartItems->sum(fn (array $item) => ((float) ($item['weight'] ?? 0) * (float) ($item['quantity'] ?? 0)));
-    $totalAmount = (float) $cartItems->sum(fn (array $item) => (float) ($item['line_total'] ?? 0));
-    // Preload seller ownership by batch id to avoid querying inside the checkout loop.
-    $batchIds = $cartItems->pluck('batch_id')
-    ->filter()
-    ->map(fn ($id) => (int) $id)
-    ->unique()
-    ->values();
-    $batchOwnerMap = Batch::query()
-    ->whereIn('id', $batchIds)
-    ->pluck('owner_id', 'id');
-
-    // Persist all purchase records atomically for this checkout submission.
-    DB::transaction(function () use ($cartItems, $batchOwnerMap, $userId, $request) {
-    foreach ($cartItems as $item) {
-    $batchId = (int) ($item['batch_id'] ?? 0);
-    $sellerId = (int) ($batchOwnerMap[$batchId] ?? 0);
-
-    // Stop checkout if any cart line cannot be mapped to a valid seller/batch pair.
-    if ($batchId <= 0 || $sellerId <= 0) {
-    throw ValidationException::withMessages([
-    'payment_reference' => 'Unable to complete checkout for one or more cart items.',
-    ]);
-    }
-
-
-     // Create one purchase record for each checked-out cart line.
-     Purchase::create([
-    'batch_id' => $batchId,
-    'buyer_id' => $userId,
-    'seller_id' => $sellerId,
-    'quantity' => (float) ($item['quantity'] ?? 0),
-    'unit_price' => (float) ($item['unit_price'] ?? 0),
-    'total_price' => (float) ($item['line_total'] ?? 0),
-    'currency' => 'UGX',
-    'payment_method' => $request->string('payment_method')->toString(),
-    'transaction_reference' => $request->string('payment_reference')->toString(),
-    'status' => 'completed',
-    'notes' => $request->string('shipping_notes')->toString() ?: null,
-    ]);
-    }
-    });
-
-    //create payment session id
+$validated=$request->validate([
+'shipping_name' => ['required', 'string', 'max:255'],
+'shipping_phone' => ['required', 'string', 'max:50'],
+'shipping_email' => ['required', 'email', 'max:255'],
+'shipping_country' => ['required', 'string', 'max:120'],
+'shipping_city' => ['required', 'string', 'max:120'],
+'shipping_address' => ['required', 'string', 'max:1000'],
+'shipping_notes' => ['nullable', 'string', 'max:1000'],
+'payment_method' => ['required', 'string', 'in:mobile_money,bank_transfer,card'],
+'payer_name' => ['required', 'string', 'max:255'],
+'payment_reference' => ['required', 'string', 'max:255'],
+]);
 
 
 
 
-
-
-
-
-
-
-    return redirect()
-    ->route('market.purchaseConfirmation')
-    ->with([
-    'success' => 'Checkout details submitted successfully.',
-    'checkout_summary' => [
-    'total_items' => $totalItems,
-    'total_weight' => $totalWeight,
-    'total_amount' => $totalAmount,
-    'payment_method' => $request->string('payment_method')->toString(),
-    'shipping_name' => $request->string('shipping_name')->toString(),
-    'shipping_email' => $request->string('shipping_email')->toString(),
-    ],
-    ]);
+$userId = (int) $request->user()->id;
+//get cart data
+$cart = ShoppingCart::query()->where(['user_id'=>$userId,'status'=>'active'])->get();
+//if the cart is empty redirect back to the cart page
+if(count($cart)==0){
+return back()->with('error', 'No active cart items found for checkout.');
 }
+
+
+
+//group transaction
+DB::transaction(function() use($cart, $userId, $validated){
+//crate a checkout code
+$checkoutCode = hash('sha256',$userId.'-'.now()->format('YmdHis'));
+// Aggregate session-level payment totals across all cart rows.
+$numberOfItems = (int) $cart->count();
+$totalQuantity = 0;
+$totalAmount = 0;
+foreach($cart as $item){
+// Resolve seller and unit price from the source batch.
+$ownerId = (int) (Batch::query()->where('id', $item->batch_id)->value('owner_id') ?? 0);
+$unitPrice = (float) (Batch::query()->where('id', $item->batch_id)->value('price') ?? 0);
+$lineTotal = ((float) ($item['quantity'] ?? 0)) * $unitPrice;
+// Update running checkout totals for the Payment record.
+$totalQuantity += (float) ($item['quantity'] ?? 0);
+$totalAmount += $lineTotal;
+Purchase::create([
+'batch_id' => $item->batch_id,
+'buyer_id' => $userId,
+'shopping_cart_session'=>$checkoutCode,
+'seller_id' => $ownerId,
+'quantity' => (float) ($item['quantity'] ?? 0),
+'unit_price' => $unitPrice,
+'total_price' => $lineTotal,
+'currency' => 'UGX',
+'payment_method' =>$validated['payment_method'],
+'transaction_reference' =>$validated['payment_reference'],
+'status' => 'completed',
+'notes' =>$validated['shipping_notes'] ?: null,
+]);
+
+}
+
+// Store one Payment row for the whole shopping cart session.
+Payment::create([
+'user_id' => $userId,
+'shopping_cart_session' => $checkoutCode,
+'transaction_reference' => $validated['payment_reference'],
+'number_of_items' => $numberOfItems,
+'quantity' => (float) $totalQuantity,
+'currency' => 'UGX',
+'total_amount' => (float) $totalAmount,
+'status' => 'complete',
+]);
+
+// Clear all active cart rows for this user after successful checkout.
+ShoppingCart::query()->where(['user_id' => $userId, 'status' => 'active'])->delete();
+
+});
+
+
+return redirect()
+->route('market.purchaseConfirmation')
+->with([
+'success' => 'Checkout details submitted successfully.']);
+
+}
+
+
+
+
+
+
+
+//get batch by batch ID
+public function getBatchDetails($id)
+{
+return Batch::where('id',$id)->first()->id;
+}
+
+
+
 
 
 
@@ -649,7 +642,7 @@ public function storeCheckout(Request $request)
 /**
  * Delete one active cart item owned by the logged-in user.
  */
-public function destroyCartItem(Request $request, string $id): RedirectResponse
+public function destroyCartItem(Request $request, string $id) : RedirectResponse
 {
     ShoppingCart::query()
     ->where('id', (int) $id)
@@ -661,33 +654,57 @@ public function destroyCartItem(Request $request, string $id): RedirectResponse
 }
 
 
-
 /**
  * Render purchase confirmation details after checkout submission.
  * Falls back to recalculated cart totals when flash session data is missing.
  */
-public function purchaseConfirmation(Request $request): Response
+
+
+
+public function purchaseConfirmation(Request $request) : Response
 {
-    $userId = (int) $request->user()->id;
-    $cartItems = $this->mapCartItems($userId);
-    // Read summary from flash session set during successful checkout submit.
-    $summary = $request->session()->get('checkout_summary', []);
+$user = $request->user();
+$userId = (int) $user->id;
+$buyer = User::query()->select(['id', 'fname', 'lname', 'email'])->find($userId);
+$payment = Payment::where('user_id',$userId)->latest('id')->first();
+$cartSession = (string) ($payment?->shopping_cart_session ?? '');
+$purchasesQuery = Purchase::with('buyer:id,fname,lname,email')
+->where('buyer_id', $userId);
+if ($cartSession !== '') {
+$purchasesQuery->where('shopping_cart_session', $cartSession);
+}
+$purchases = $purchasesQuery->latest('id')->get();
+if ($purchases->isEmpty()) {
+$purchases = Purchase::with('buyer:id,fname,lname,email')
+->where('buyer_id', $userId)
+->latest('id')
+->get();
+if ($cartSession === '') {
+$cartSession = (string) ($purchases->first()?->shopping_cart_session ?? '');
+}
+}
+$profile = UserProfile::query()
+->where('user_id', $userId)
+->first(['tel', 'address']);
+$shippingInfo = [
+'name' => trim(($buyer?->fname ?? '').' '.($buyer?->lname ?? '')) ?: null,
+'email' => $buyer?->email ?? null,
+'phone' => $profile?->tel,
+'address' => $profile?->address,
+'notes' => $purchases->first()?->notes,
+];
 
-    if (!is_array($summary) || empty($summary)) {
-        $summary = [
-            'total_items' => (int) $cartItems->sum(fn (array $item) => (int) ($item['quantity'] ?? 0)),
-            'total_weight' => (float) $cartItems->sum(fn (array $item) => ((float) ($item['weight'] ?? 0) * (float) ($item['quantity'] ?? 0))),
-            'total_amount' => (float) $cartItems->sum(fn (array $item) => (float) ($item['line_total'] ?? 0)),
-            'payment_method' => null,
-            'shipping_name' => null,
-            'shipping_email' => null,
-        ];
-    }
 
-    return Inertia::render('PurchaseConfirmationPage', [
-        'title' => 'Purchase Confirmation',
-        'summary' => $summary,
-    ]);
+
+
+
+return Inertia::render('PurchaseConfirmationPage', [
+'title' => 'Purchase Confirmation',
+'purchases' => $purchases,
+'shipping_info' => $shippingInfo,
+'buyer' => $buyer,
+
+]);
 }
 
 

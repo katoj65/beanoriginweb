@@ -13,6 +13,7 @@ class Purchase extends Model
         'batch_id',
         'buyer_id',
         'seller_id',
+        'shopping_cart_session',
         'quantity',
         'unit_price',
         'total_price',

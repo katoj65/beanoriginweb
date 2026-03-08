@@ -71,10 +71,10 @@ const formatMoney = (value) => {
           </div>
         </div>
 
-        <div class="card-inner checkout-table-body">
+        <div class="card-inner checkout-table-body border-0">
           <div v-if="cartItems.length" class="checkout-table-wrap">
             <div class="table-responsive">
-              <table class="table table-sm table-middle mb-0 checkout-table">
+              <table class="table table-sm table-middle mb-0 checkout-table border-0">
                 <thead>
                   <tr>
                     <th><span class="table-head-label"><em class="icon ni ni-hash"></em>Batch</span></th>
@@ -120,7 +120,7 @@ const formatMoney = (value) => {
 
 
 
-            
+
 
 
 <form @submit.prevent="submitCheckout">
@@ -229,7 +229,7 @@ const formatMoney = (value) => {
                     native-type="submit"
                     :disabled="!cartItems.length || checkoutForm.processing"
                   >
-                    Confirm Checkout
+                    Complete Checkout
                   </el-button>
                 </div>
               </div>

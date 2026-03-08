@@ -11,6 +11,7 @@ Route::get('/bought', [MarketController::class, 'boughtMarket'])->name('bought')
 Route::get('/cart', [MarketController::class, 'shoppingCart'])->name('cart.index');
 Route::get('/checkout', [MarketController::class, 'checkout'])->name('checkout');
 Route::post('/checkout/store', [MarketController::class, 'storeCheckout'])->name('checkout.store');
+Route::get('/purchase-confirmation', [MarketController::class, 'purchaseConfirmation'])->name('purchaseConfirmation');
 Route::get('/batch/{id}', [MarketController::class, 'show'])->whereNumber('id')->name('show');
 Route::post('/cart/store', [MarketController::class, 'storeNewCart'])->name('cart.store');
 Route::delete('/cart/{id}', [MarketController::class, 'destroyCartItem'])->whereNumber('id')->name('cart.destroy');
