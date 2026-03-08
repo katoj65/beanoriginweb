@@ -23,6 +23,7 @@ class Purchase extends Model
         'status',
         'purchased_at',
         'notes',
+        'address',
     ];
 
     protected $casts = [

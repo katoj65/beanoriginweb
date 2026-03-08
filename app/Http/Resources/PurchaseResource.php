@@ -28,6 +28,7 @@ class PurchaseResource extends JsonResource
             'transaction_reference' => $this->transaction_reference,
             'status' => $this->status,
             'notes' => $this->notes,
+            'address' => $this->address,
             'created_at' => optional($this->created_at)->toDateTimeString(),
             'updated_at' => optional($this->updated_at)->toDateTimeString(),
         ];

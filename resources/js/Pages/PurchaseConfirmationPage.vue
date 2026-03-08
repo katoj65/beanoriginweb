@@ -36,6 +36,7 @@ const statusClass = computed(() => {
 const shoppingSession = computed(() => String(firstPurchase.value?.shopping_cart_session ?? 'N/A'));
 const transactionReference = computed(() => String(firstPurchase.value?.transaction_reference ?? 'N/A'));
 const currency = computed(() => String(firstPurchase.value?.currency ?? 'UGX').trim() || 'UGX');
+const shippingAddress = computed(() => String(shippingInfo.value?.address ?? firstPurchase.value?.address ?? 'N/A'));
 const buyerName = computed(() => {
   const first = firstPurchase.value?.buyer;
   const full = `${first?.fname ?? ''} ${first?.lname ?? ''}`.trim();
@@ -135,6 +136,10 @@ const printReceipt = () => window.print();
               <p class="label label-row mb-1"><em class="icon ni ni-wallet"></em><span>Transaction Ref</span></p>
               <p class="value mb-0">{{ transactionReference }}</p>
             </div>
+            <div class="meta-card meta-card-wide">
+              <p class="label label-row mb-1"><em class="icon ni ni-map-pin"></em><span>Address</span></p>
+              <p class="value mb-0 address-value">{{ shippingAddress }}</p>
+            </div>
           </div>
 
           <div class="shipping-box">
@@ -164,43 +169,42 @@ const printReceipt = () => window.print();
               <p class="shipping-label shipping-label-row mb-1"><em class="icon ni ni-file-text"></em><span>Delivery Notes</span></p>
               <p class="shipping-value mb-0">{{ shippingInfo.notes || 'N/A' }}</p>
             </div>
-          </div>
-
-          <div class="table-responsive details-table-wrap">
-            <table class="table table-sm details-table mb-0">
-              <thead>
-                <tr>
-                  <th><span class="th-label"><em class="icon ni ni-hash"></em>#</span></th>
-                  <th><span class="th-label"><em class="icon ni ni-package"></em>Batch</span></th>
-                  <th class="text-right"><span class="th-label th-label-right"><em class="icon ni ni-layers"></em>Quantity</span></th>
-                  <th class="text-right"><span class="th-label th-label-right"><em class="icon ni ni-coins"></em>Unit Price</span></th>
-                  <th class="text-right"><span class="th-label th-label-right"><em class="icon ni ni-wallet"></em>Line Total</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(item, index) in purchases" :key="item.id ?? index">
-                  <td>{{ index + 1 }}</td>
-                  <td>{{ item.batch_id ?? 'N/A' }}</td>
-                  <td class="text-right">{{ formatNumber(item.quantity) }}</td>
-                  <td class="text-right">{{ formatAmount(item.unit_price) }}</td>
-                  <td class="text-right">{{ formatAmount(item.total_price) }}</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td colspan="4" class="text-right fw-600">Items</td>
-                  <td class="text-right">{{ numberOfItems }}</td>
-                </tr>
-                <tr>
-                  <td colspan="4" class="text-right fw-600">Total Quantity</td>
-                  <td class="text-right">{{ formatNumber(totalQuantity) }}</td>
-                </tr>
-                <tr class="grand-total-row">
-                  <td colspan="4" class="text-right">Total Amount Paid</td>
-                  <td class="text-right">{{ formatAmount(totalAmount) }}</td>
-                </tr>
-              </tfoot>
-            </table>
+            <div class="table-responsive details-table-wrap">
+              <table class="table table-sm details-table mb-0">
+                <thead>
+                  <tr>
+                    <th><span class="th-label"><em class="icon ni ni-hash"></em>#</span></th>
+                    <th><span class="th-label"><em class="icon ni ni-package"></em>Batch</span></th>
+                    <th class="text-right"><span class="th-label th-label-right"><em class="icon ni ni-layers"></em>Quantity</span></th>
+                    <th class="text-right"><span class="th-label th-label-right"><em class="icon ni ni-coins"></em>Unit Price</span></th>
+                    <th class="text-right"><span class="th-label th-label-right"><em class="icon ni ni-wallet"></em>Total</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, index) in purchases" :key="item.id ?? index">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ item.batch_id ?? 'N/A' }}</td>
+                    <td class="text-right">{{ formatNumber(item.quantity) }}</td>
+                    <td class="text-right">{{ formatAmount(item.unit_price) }}</td>
+                    <td class="text-right">{{ formatAmount(item.total_price) }}</td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="4" class="text-right fw-600">Items</td>
+                    <td class="text-right">{{ numberOfItems }}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="4" class="text-right fw-600">Total Quantity</td>
+                    <td class="text-right">{{ formatNumber(totalQuantity) }}</td>
+                  </tr>
+                  <tr class="grand-total-row">
+                    <td colspan="4" class="text-right">Total Amount Paid</td>
+                    <td class="text-right">{{ formatAmount(totalAmount) }}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
           </div>
 
           <div class="bottom-row">
@@ -302,6 +306,10 @@ const printReceipt = () => window.print();
   padding: 11px 12px;
 }
 
+.meta-card-wide {
+  grid-column: 1 / -1;
+}
+
 .label {
   font-size: 0.72rem;
   text-transform: uppercase;
@@ -325,16 +333,23 @@ const printReceipt = () => window.print();
   font-weight: 600;
 }
 
+.address-value {
+  line-height: 1.35;
+  word-break: break-word;
+}
+
 .receipt-code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
   font-size: 0.82rem;
 }
 
 .details-table-wrap {
-  border: 1px solid #e1eaf5;
+  border: 1px solid #d7e5f4;
   border-radius: 12px;
   overflow: hidden;
   width: 100%;
+  margin-top: 12px;
+  background: #ffffff;
 }
 
 .shipping-box {
@@ -344,6 +359,7 @@ const printReceipt = () => window.print();
   padding: 14px;
   margin-bottom: 14px;
   color: #47586f;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .shipping-head {

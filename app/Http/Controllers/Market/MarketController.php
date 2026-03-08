@@ -592,6 +592,7 @@ Purchase::create([
 'transaction_reference' =>$validated['payment_reference'],
 'status' => 'completed',
 'notes' =>$validated['shipping_notes'] ?: null,
+'address' => $validated['shipping_address'],
 ]);
 
 }
@@ -690,7 +691,7 @@ $shippingInfo = [
 'name' => trim(($buyer?->fname ?? '').' '.($buyer?->lname ?? '')) ?: null,
 'email' => $buyer?->email ?? null,
 'phone' => $profile?->tel,
-'address' => $profile?->address,
+'address' => $purchases->first()?->address ?: $profile?->address,
 'notes' => $purchases->first()?->notes,
 ];
 
