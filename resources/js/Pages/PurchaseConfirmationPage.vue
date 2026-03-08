@@ -115,6 +115,11 @@ const printReceipt = () => window.print();
           <h3 class="mb-1">Purchase Confirmation</h3>
           <p class="sub-text mb-0">Your payment was received successfully. Keep this receipt as proof of payment.</p>
           <span class="status-pill" :class="statusClass">{{ statusLabel }}</span>
+          <div class="top-metrics">
+            <span class="metric-chip"><em class="icon ni ni-layers"></em><span>{{ numberOfItems }} Items</span></span>
+            <span class="metric-chip"><em class="icon ni ni-package"></em><span>{{ formatNumber(totalQuantity) }} Qty</span></span>
+            <span class="metric-chip"><em class="icon ni ni-wallet"></em><span>{{ formatAmount(totalAmount) }}</span></span>
+          </div>
         </div>
 
         <div v-if="firstPurchase" class="receipt-content">
@@ -182,8 +187,8 @@ const printReceipt = () => window.print();
                 </thead>
                 <tbody>
                   <tr v-for="(item, index) in purchases" :key="item.id ?? index">
-                    <td>{{ index + 1 }}</td>
-                    <td>{{ item.batch_id ?? 'N/A' }}</td>
+                    <td><span class="row-index">{{ index + 1 }}</span></td>
+                    <td><span class="batch-pill">B-{{ item.batch_id ?? 'N/A' }}</span></td>
                     <td class="text-right">{{ formatNumber(item.quantity) }}</td>
                     <td class="text-right">{{ formatAmount(item.unit_price) }}</td>
                     <td class="text-right">{{ formatAmount(item.total_price) }}</td>
@@ -274,6 +279,31 @@ const printReceipt = () => window.print();
   font-size: 0.74rem;
   font-weight: 700;
   border: 1px solid transparent;
+}
+
+.top-metrics {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.metric-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #dbe8f7;
+  border-radius: 999px;
+  background: #ffffff;
+  padding: 5px 10px;
+  color: #314861;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.metric-chip .icon {
+  color: #3b6db1;
 }
 
 .status-complete {
@@ -460,8 +490,35 @@ const printReceipt = () => window.print();
   font-size: 0.84rem;
 }
 
+.row-index {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #f0f6ff;
+  color: #355a8d;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.batch-pill {
+  display: inline-block;
+  border: 1px solid #d7e5f4;
+  background: #f8fbff;
+  border-radius: 999px;
+  padding: 2px 9px;
+  color: #304864;
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+
 .details-table tbody tr:nth-child(even) td {
   background: #fcfdff;
+}
+
+.details-table tbody tr:hover td {
+  background: #f3f9ff;
 }
 
 .details-table tfoot td {
@@ -529,6 +586,10 @@ const printReceipt = () => window.print();
     width: 84px;
     height: 84px;
     font-size: 50px;
+  }
+
+  .top-metrics {
+    justify-content: flex-start;
   }
 }
 </style>

@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             BatchStatusListSeeder::class,
             BatchActionListSeeder::class,
             BatchPurchaseActionSeeder::class,
+            MarketTypeSeeder::class,
             CommodityLifecycleSeeder::class,
             SystemSeeder::class,
             SystemActivitySeeder::class,

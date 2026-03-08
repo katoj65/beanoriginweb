@@ -23,6 +23,7 @@ class Batch extends Model
         'is_on_chain',
         'price',
         'status',
+        'market_type',
     ];
 
     protected $casts = [

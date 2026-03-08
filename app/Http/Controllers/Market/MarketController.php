@@ -31,6 +31,7 @@ public function index(): Response
 {
 $user = auth()->user();
 $batches = Batch::query()
+->where('market_type','marketplace')
 ->latest('id')
 ->get()
 ->map(fn (Batch $batch) => $this->mapTokenizedBatch($batch))
@@ -561,24 +562,37 @@ if(count($cart)==0){
 return back()->with('error', 'No active cart items found for checkout.');
 }
 
-
-
 //group transaction
 DB::transaction(function() use($cart, $userId, $validated){
 //crate a checkout code
+
 $checkoutCode = hash('sha256',$userId.'-'.now()->format('YmdHis'));
+
 // Aggregate session-level payment totals across all cart rows.
 $numberOfItems = (int) $cart->count();
 $totalQuantity = 0;
 $totalAmount = 0;
+
 foreach($cart as $item){
 // Resolve seller and unit price from the source batch.
 $ownerId = (int) (Batch::query()->where('id', $item->batch_id)->value('owner_id') ?? 0);
 $unitPrice = (float) (Batch::query()->where('id', $item->batch_id)->value('price') ?? 0);
 $lineTotal = ((float) ($item['quantity'] ?? 0)) * $unitPrice;
-// Update running checkout totals for the Payment record.
+
+// Step 1: reduce this batch stock before recording purchase/payment.
+$reduced = self::reduceBatchQuantity((int) $item->batch_id, (float) ($item['quantity'] ?? 0));
+
+// Step 2: stop and rollback if batch stock is not enough.
+if (! $reduced) {
+throw ValidationException::withMessages([
+'quantity' => 'Batch quantity is not enough to complete this purchase.',
+]);
+}
+
+// Step 3: update running checkout totals for the Payment record.
 $totalQuantity += (float) ($item['quantity'] ?? 0);
 $totalAmount += $lineTotal;
+// Step 4: store purchase after successful stock deduction.
 Purchase::create([
 'batch_id' => $item->batch_id,
 'buyer_id' => $userId,
@@ -586,14 +600,15 @@ Purchase::create([
 'seller_id' => $ownerId,
 'quantity' => (float) ($item['quantity'] ?? 0),
 'unit_price' => $unitPrice,
-'total_price' => $lineTotal,
-'currency' => 'UGX',
-'payment_method' =>$validated['payment_method'],
-'transaction_reference' =>$validated['payment_reference'],
-'status' => 'completed',
-'notes' =>$validated['shipping_notes'] ?: null,
-'address' => $validated['shipping_address'],
-]);
+	'total_price' => $lineTotal,
+	'currency' => 'UGX',
+	'payment_method' =>$validated['payment_method'],
+	'transaction_reference' =>$validated['payment_reference'],
+	'status' => 'completed',
+	'notes' =>$validated['shipping_notes'] ?: null,
+	'address' => $validated['shipping_address'],
+	]);
+
 
 }
 
@@ -611,6 +626,7 @@ Payment::create([
 
 // Clear all active cart rows for this user after successful checkout.
 ShoppingCart::query()->where(['user_id' => $userId, 'status' => 'active'])->delete();
+
 
 });
 
@@ -684,6 +700,7 @@ if ($cartSession === '') {
 $cartSession = (string) ($purchases->first()?->shopping_cart_session ?? '');
 }
 }
+
 $profile = UserProfile::query()
 ->where('user_id', $userId)
 ->first(['tel', 'address']);
@@ -694,10 +711,6 @@ $shippingInfo = [
 'address' => $purchases->first()?->address ?: $profile?->address,
 'notes' => $purchases->first()?->notes,
 ];
-
-
-
-
 
 return Inertia::render('PurchaseConfirmationPage', [
 'title' => 'Purchase Confirmation',
@@ -710,6 +723,29 @@ return Inertia::render('PurchaseConfirmationPage', [
 
 
 
+
+
+
+
+//Function to reduce the quantity of the item
+static function reduceBatchQuantity($id, $count) : bool
+{
+// Step 1: find the batch row by id.
+$batch = Batch::where('id',$id)->first();
+if (! $batch) {
+return false;
+}
+// Step 2: subtract bought quantity from current quantity.
+$qtty = (float) $batch->quantity;
+$new = (float) $qtty - (float) $count;
+if($new < 0){
+return false;
+}
+// Step 3: save the new quantity.
+$batch->quantity=$new;
+$batch->save();
+return true;
+}
 
 
 
