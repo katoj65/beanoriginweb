@@ -6,6 +6,8 @@ use App\Http\Controllers\Market\MarketController;
 
 Route::get('/', [MarketController::class, 'index'])->name('index');
 Route::get('/bidding', [BiddingController::class, 'index'])->name('bidding');
+Route::get('/batch-bidding/{id}', [BiddingController::class, 'showBatchBidding'])->whereNumber('id')->name('batchBidding');
+Route::post('/batch-bidding/{id}/store', [BiddingController::class, 'storeBatchBidding'])->whereNumber('id')->name('batchBidding.store');
 Route::get('/reserved', [MarketController::class, 'reservedMarket'])->name('reserved');
 Route::get('/bought', [MarketController::class, 'boughtMarket'])->name('bought');
 Route::get('/cart', [MarketController::class, 'shoppingCart'])->name('cart.index');

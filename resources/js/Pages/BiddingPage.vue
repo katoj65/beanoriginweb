@@ -46,7 +46,7 @@ const formatWeight = (value) => `${Number(value ?? 0).toLocaleString()} kg`;
 const openBatchDetails = (id) => {
   const batchId = Number(id ?? 0);
   if (!batchId) return;
-  router.get(route('market.show', { id: batchId }));
+  router.get(`/market/batch-bidding/${batchId}`);
 };
 
 </script>
