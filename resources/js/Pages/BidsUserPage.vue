@@ -78,16 +78,22 @@ const goBackToBidding = () => {
         <div class="card-inner p-0">
           <el-table :data="bids" stripe class="bids-table" @row-click="(row) => openBatch(row.batch_id)">
             <el-table-column prop="batch_code" min-width="130" label="Batch" />
-            <el-table-column prop="commodity_name" min-width="180" label="Commodity" />
-            <el-table-column prop="grade" width="110" label="Grade" />
+            <el-table-column min-width="220" label="Commodity / Grade">
+              <template #default="{ row }">
+                <span class="text-capitalize">{{ row.commodity_name ?? 'N/A' }}</span>
+                <span class="text-muted"> / {{ row.grade ?? 'N/A' }}</span>
+              </template>
+            </el-table-column>
             <el-table-column prop="available_quantity" width="140" label="Available Qty">
               <template #default="{ row }">{{ formatNumber(row.available_quantity) }}</template>
             </el-table-column>
-            <el-table-column prop="ask_price" width="140" label="Ask Price">
-              <template #default="{ row }">{{ formatMoney(row.ask_price, row.currency) }}</template>
-            </el-table-column>
-            <el-table-column prop="bid_price" width="140" label="Bid Price">
-              <template #default="{ row }">{{ formatMoney(row.bid_price, row.currency) }}</template>
+            <el-table-column width="220" label="Ask / Bid Price">
+              <template #default="{ row }">
+                <div class="price-pair">
+                  <span class="ask-price">Ask: {{ formatMoney(row.ask_price, row.currency) }}</span>
+                  <span class="bid-price"><em class="icon ni ni-coins mr-1"></em>Bid: {{ formatMoney(row.bid_price, row.currency) }}</span>
+                </div>
+              </template>
             </el-table-column>
             <el-table-column prop="bid_quantity" width="130" label="Bid Qty">
               <template #default="{ row }">{{ formatNumber(row.bid_quantity) }}</template>
@@ -101,7 +107,6 @@ const goBackToBidding = () => {
             <el-table-column prop="created_at" min-width="180" label="Placed On">
               <template #default="{ row }">{{ formatDate(row.created_at) }}</template>
             </el-table-column>
-            <el-table-column prop="bid_notes" min-width="220" label="Notes" show-overflow-tooltip />
           </el-table>
           <div v-if="!bids.length" class="empty-row">No bids found.</div>
         </div>
@@ -131,6 +136,25 @@ const goBackToBidding = () => {
 
 .bids-table :deep(.el-table__row) {
   cursor: pointer;
+}
+
+.price-pair {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ask-price {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.bid-price {
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .empty-row {
