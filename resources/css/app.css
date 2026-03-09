@@ -749,3 +749,9 @@ textarea.form-control {
   border-color: #fcd34d;
   background: #fffbeb;
 }
+
+/* Compact success notification variant used on bidding pages */
+.small-success-notification.el-notification .el-notification__title {
+  font-size: 13px !important;
+  line-height: 1.2;
+}

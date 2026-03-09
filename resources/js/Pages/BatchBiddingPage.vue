@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
+import { ElNotification } from 'element-plus';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 
 const page = usePage();
@@ -64,6 +65,12 @@ if (!batchId) return;
 bidForm.post(route('market.batchBidding.store', { id: batchId }), {
 preserveScroll: true,
 onSuccess: () => {
+ElNotification({
+title: 'Success',
+message: hasBidOnBatch.value ? 'Counter offer submitted successfully.' : 'Bidding request submitted successfully.',
+type: 'success',
+customClass: 'small-success-notification',
+});
 bidForm.reset('bid_price', 'bid_notes');
 bidForm.bid_quantity = 1;
 },
@@ -703,6 +710,10 @@ vertical-align: top;
 display: inline-flex;
 align-items: center;
 gap: 6px;
+}
+
+:deep(.small-success-notification .el-notification__title) {
+font-size: 13px;
 }
 
 @media (max-width: 768px) {
