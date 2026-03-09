@@ -68,6 +68,7 @@ $validated = $request->validate([
 'weight' => ['required', 'numeric', 'min:0.01'],
 'quantity' => ['required', 'numeric', 'min:0.01'],
 'price' => ['required', 'numeric', 'min:0.01'],
+'market_type' => ['required', 'string', 'in:marketplace,bidding'],
 'grade' => ['required', 'string', 'max:100', 'exists:crop_grades,name'],
 'moisture' => ['nullable', 'numeric', 'min:0', 'max:100'],
 'warehouse' => ['required', 'string', 'max:255'],
@@ -90,6 +91,7 @@ $batch = Batch::create([
 'is_on_chain' => false,
 'status' => 'created',
 'price' => $validated['price'],
+'market_type' => $validated['market_type'] ?? 'marketplace',
 
 ]);
 

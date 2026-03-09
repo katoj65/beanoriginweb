@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Market;
 
 use App\Http\Controllers\Controller;
 use App\Models\Batch;
-use App\Models\BatchPurchaseRequest;
 use App\Models\Commodity;
 use App\Models\Cooperative;
 use App\Models\Payment;
@@ -156,6 +155,7 @@ public function show(Request $request, string $id): Response
 $batchId = (int) $request->segment(3, $id);
 $batch = Batch::query()
 ->with('owner:id,fname,lname,email')
+->where('market_type','marketplace')
 ->findOrFail($batchId);
 
 // Query owner user profile by batch owner id.
@@ -257,12 +257,8 @@ return [
 
 
 
-// Check whether logged-in user already reserved this batch.
-$isReservedByUser = BatchPurchaseRequest::query()
-->where('batch_id', $batchId)
-->where('user_id', (int) $request->user()->id)
-->where('activity', 'request')
-->exists();
+// Reservation lookup removed with batch_purchase_requests table deprecation.
+$isReservedByUser = false;
 
 // Check if the logged-in user owns this batch.
 $batchOwner = $batch->owner_id;
@@ -417,12 +413,8 @@ return [
 
 
 
-// Check whether logged-in user already reserved this batch.
-$isReservedByUser = BatchPurchaseRequest::query()
-->where('batch_id', $batchId)
-->where('user_id', (int) $request->user()->id)
-->where('activity', 'request')
-->exists();
+// Reservation lookup removed with batch_purchase_requests table deprecation.
+$isReservedByUser = false;
 
 // Check if the logged-in user owns this batch.
 $batchOwner = $batch->owner_id;

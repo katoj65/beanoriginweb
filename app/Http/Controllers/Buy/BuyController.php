@@ -9,7 +9,6 @@ use App\Services\Buy\BuyService;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Models\BatchPurchaseRequest;
 use App\Models\Commodity;
 use App\Models\UserProfile;
 use App\Models\Cooperative;
@@ -178,12 +177,8 @@ return [
 ->values();
 
 
-// Check whether logged-in user already reserved this batch.
-$isReservedByUser = BatchPurchaseRequest::query()
-->where('batch_id', $batchId)
-->where('user_id', (int) $request->user()->id)
-->where('activity', 'request')
-->exists();
+// Reservation lookup removed with batch_purchase_requests table deprecation.
+$isReservedByUser = false;
 
 
 // Check if the logged-in user owns this batch.

@@ -9,6 +9,17 @@ const page = usePage();
 const batch = computed(() => page.props.batch ?? {});
 const isReservedByUser = computed(() => Boolean(page.props.is_reserved_by_user ?? false));
 const ownerProfile = computed(() => page.props.owner_profile ?? {});
+
+const toTitleCase = (value) => {
+const text = String(value ?? '').trim().toLowerCase();
+if (!text) return 'N/A';
+return text.replace(/\b([a-z])/g, (match, letter) => letter.toUpperCase());
+};
+
+const ownerAddressDisplay = computed(() => {
+const value = ownerProfile.value?.address;
+return toTitleCase(value);
+});
 const batchCommodities = computed(() => page.props.batch_commodities ?? []);
 const commodityFarmMap = computed(() => page.props.commodity_farm_map ?? []);
 const commodityRows = computed(() => {
@@ -124,9 +135,9 @@ return 'warning';
 <span class="sub-text"><em class="icon ni ni-call mr-1"></em>Owner Phone</span>
 <strong>{{ ownerProfile.tel ?? 'N/A' }}</strong>
 </div>
-<div class="detail-item detail-item">
+<div class="detail-item detail-item-double">
 <span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Owner Address</span>
-<strong>{{ ownerProfile.address ?? 'N/A' }}</strong>
+<strong class="text-capitalize">{{ ownerAddressDisplay }}</strong>
 </div>
 </div>
 
@@ -204,7 +215,7 @@ flex-wrap: wrap;
 
 .details-grid {
 display: grid;
-grid-template-columns: repeat(2, minmax(0, 1fr));
+grid-template-columns: repeat(3, minmax(0, 1fr));
 gap: 12px;
 }
 
@@ -219,6 +230,10 @@ gap: 4px;
 
 .detail-item-full {
 grid-column: 1 / -1;
+}
+
+.detail-item-double {
+grid-column: span 2;
 }
 
 .commodities-section {
@@ -264,6 +279,10 @@ gap: 6px;
 @media (max-width: 768px) {
 .details-grid {
 grid-template-columns: 1fr;
+}
+
+.detail-item-double {
+grid-column: span 1;
 }
 }
 </style>

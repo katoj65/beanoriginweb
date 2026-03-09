@@ -1,11 +1,12 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
-import { InfoFilled, Search, Tickets } from '@element-plus/icons-vue';
+import { Search, Tickets } from '@element-plus/icons-vue';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 
 const page = usePage();
 const searchQuery = ref('');
+const activeGroup = ref('bids');
 
 const batches = computed(() => {
   const source = page.props.batches ?? [];
@@ -13,6 +14,8 @@ const batches = computed(() => {
 });
 
 const filteredBatches = computed(() => {
+  if (activeGroup.value === 'bids') return batches.value;
+
   const query = searchQuery.value.trim().toLowerCase();
   if (!query) return batches.value;
 
@@ -49,6 +52,11 @@ const openBatchDetails = (id) => {
   router.get(`/market/batch-bidding/${batchId}`);
 };
 
+// Open the logged-in user's bids page from the Bids button.
+const openMyBids = () => {
+  router.get(route('market.bids.user'));
+};
+
 </script>
 
 <template>
@@ -62,17 +70,37 @@ const openBatchDetails = (id) => {
               <h6 class="mb-0">Bidding Batches</h6>
             </div>
             <p class="subtitle mb-0">
-             
+
               Click any row to open batch details.
             </p>
           </div>
-          <el-input
-            v-model="searchQuery"
-            class="search-input"
-            placeholder="Search..."
-            :prefix-icon="Search"
-            clearable
-          />
+          <div class="table-actions">
+            <el-button-group class="batch-group">
+              <el-button
+              
+                :icon="Tickets"
+                :type="activeGroup === 'bids' ? 'primary' : 'default'"
+                @click="openMyBids"
+              >
+                Bids
+              </el-button>
+              <el-button
+
+                :icon="Search"
+                :type="activeGroup === 'search' ? 'primary' : 'default'"
+                @click="activeGroup = 'search'"
+              >
+                Search
+              </el-button>
+            </el-button-group>
+            <!-- <el-input
+              v-model="searchQuery"
+              class="search-input"
+              placeholder="Search..."
+              :prefix-icon="Search"
+              clearable
+            /> -->
+          </div>
         </div>
 
         <div class="table-responsive">
@@ -156,7 +184,6 @@ const openBatchDetails = (id) => {
 }
 
 .search-input {
-  margin-left: auto;
   width: 250px;
   --el-input-height: 35px;
 }
@@ -202,10 +229,24 @@ const openBatchDetails = (id) => {
   padding: 1rem 0.75rem !important;
 }
 
+.table-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 @media (max-width: 768px) {
   .table-top {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .table-actions {
+    width: 100%;
+    margin-left: 0;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .search-input {

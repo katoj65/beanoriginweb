@@ -5,14 +5,21 @@ import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 
 const page = usePage();
 const batch = computed(() => page.props.batch ?? {});
-const isReservedByUser = computed(() => Boolean(page.props.is_reserved_by_user ?? false));
 const ownerProfile = computed(() => page.props.owner_profile ?? {});
 const batchCommodities = computed(() => page.props.batch_commodities ?? []);
 const commodityFarmMap = computed(() => page.props.commodity_farm_map ?? []);
+const hasBidOnBatch = computed(() => Boolean(page.props.has_bid_on_batch ?? false));
+const myBidOffer = computed(() => page.props.my_bid_offer ?? null);
+// Read bidder offers from backend and keep descending price order for table rank.
+const bidOffers = computed(() => {
+const source = page.props.bid_offers ?? [];
+const offers = Array.isArray(source) ? source : [];
+return [...offers].sort((a, b) => Number(b.bid_price ?? 0) - Number(a.bid_price ?? 0));
+});
 const bidForm = useForm({
-bid_quantity: 1,
-bid_price: null,
-bid_notes: '',
+bid_quantity: Number(page.props.my_bid_offer?.bid_quantity ?? 1),
+bid_price: page.props.my_bid_offer?.bid_price ?? null,
+bid_notes: page.props.my_bid_offer?.bid_notes ?? '',
 });
 const commodityRows = computed(() => {
 const farmsByCommodity = new Map(
@@ -50,14 +57,6 @@ if (Number.isNaN(date.getTime())) return String(value);
 return date.toLocaleDateString();
 };
 
-const statusTagType = (value) => {
-const status = String(value ?? '').trim().toLowerCase();
-if (status === 'listed' || status === 'tokenized' || status === 'tokenised') return 'success';
-if (status === 'verified') return 'info';
-if (status === 'sold' || status === 'closed') return 'danger';
-return 'warning';
-};
-
 const submitBid = () => {
 const batchId = Number(batch.value?.id ?? 0);
 if (!batchId) return;
@@ -74,6 +73,7 @@ bidForm.bid_quantity = 1;
 
 <template>
 <CooperativeLayout>
+
 <div class="container py-0">
 <div class="card card-bordered buy-batch-card">
 <div class="card-inner border-bottom page-head">
@@ -84,105 +84,59 @@ bidForm.bid_quantity = 1;
 </div>
 
 <div class="card-inner">
-<div class="details-table-wrap">
-<table class="table table-sm table-middle mb-0 details-table">
-<tbody>
-<tr>
-<th><em class="icon ni ni-tag mr-1"></em>Batch Code</th>
-<td>{{ batch.batch_code ?? 'N/A' }}</td>
-<th><em class="icon ni ni-growth mr-1"></em>Commodity</th>
-<td>{{ batch.commodity_name ?? 'N/A' }}</td>
-</tr>
-<tr>
-<th><em class="icon ni ni-box-view mr-1"></em>Type</th>
-<td>{{ batch.commodity_type ?? 'N/A' }}</td>
-<th><em class="icon ni ni-award mr-1"></em>Grade</th>
-<td>{{ batch.grade ?? 'N/A' }}</td>
-</tr>
-<tr>
-<th><em class="icon ni ni-package mr-1"></em>Weight</th>
-<td>{{ batch.weight ?? 'N/A' }} kg</td>
-<th><em class="icon ni ni-layers mr-1"></em>Quantity</th>
-<td>{{ batch.quantity ?? 'N/A' }}</td>
-</tr>
-<tr>
-<th><em class="icon ni ni-coins mr-1"></em>Price</th>
-<td>UGX {{ formatPrice(batch.price) }}</td>
-<th><em class="icon ni ni-drop mr-1"></em>Moisture</th>
-<td>{{ batch.moisture ?? 'N/A' }}%</td>
-</tr>
-<tr>
-<th><em class="icon ni ni-home-fill mr-1"></em>Warehouse</th>
-<td>{{ batch.warehouse ?? 'N/A' }}</td>
-<th><em class="icon ni ni-flag mr-1"></em>Status</th>
-<td><el-tag size="small" :type="statusTagType(batch.status)" class="text-capitalize">{{ batch.status ?? 'N/A' }}</el-tag></td>
-</tr>
-<tr>
-<th><em class="icon ni ni-calendar mr-1"></em>Created At</th>
-<td>{{ formatDateTime(batch.created_at) }}</td>
-<th><em class="icon ni ni-user mr-1"></em>Owner</th>
-<td>{{ batch.owner?.name || 'N/A' }}</td>
-</tr>
-<tr>
-<th><em class="icon ni ni-call mr-1"></em>Owner Phone</th>
-<td>{{ ownerProfile.tel ?? 'N/A' }}</td>
-<th><em class="icon ni ni-map-pin mr-1"></em>Owner Address</th>
-<td>{{ ownerProfile.address ?? 'N/A' }}</td>
-</tr>
-<tr>
-<th><em class="icon ni ni-check-circle mr-1"></em>Requested By You</th>
-<td colspan="3">
-<el-tag size="small" :type="isReservedByUser ? 'success' : 'info'">{{ isReservedByUser ? 'Yes' : 'No' }}</el-tag>
-</td>
-</tr>
-</tbody>
-</table>
+<div class="details-grid">
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-tag mr-1"></em>Batch Code</span>
+<strong>{{ batch.batch_code ?? 'N/A' }}</strong>
 </div>
-
-<div class="bidding-form-section mt-3">
-<div class="section-head mb-2">
-<h6 class="title mb-0"><em class="icon ni ni-coin-alt mr-1"></em>Place Your Bid</h6>
-<span class="sub-text">Submit your bid request for this batch.</span>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-growth mr-1"></em>Commodity</span>
+<strong>{{ batch.commodity_name ?? 'N/A' }}</strong>
 </div>
-<form class="bidding-form" @submit.prevent="submitBid">
-<table class="table table-sm table-middle mb-0 bidding-form-table">
-<tbody>
-<tr>
-<th>Ask Price</th>
-<td>UGX {{ formatPrice(batch.price) }}</td>
-</tr>
-<tr>
-<th>Bid Quantity</th>
-<td>
-<el-input-number v-model="bidForm.bid_quantity" :min="1" :step="1" class="w-100" />
-<small v-if="bidForm.errors.bid_quantity" class="text-danger d-block mt-1">{{ bidForm.errors.bid_quantity }}</small>
-</td>
-</tr>
-<tr>
-<th>Bid Price (UGX)</th>
-<td>
-<el-input-number v-model="bidForm.bid_price" :min="0" :step="1" class="w-100" />
-<small v-if="bidForm.errors.bid_price" class="text-danger d-block mt-1">{{ bidForm.errors.bid_price }}</small>
-</td>
-</tr>
-<tr>
-<th>Notes</th>
-<td>
-<el-input v-model="bidForm.bid_notes" type="textarea" :rows="3" placeholder="Any note for your bid..." />
-<small v-if="bidForm.errors.bid_notes" class="text-danger d-block mt-1">{{ bidForm.errors.bid_notes }}</small>
-</td>
-</tr>
-<tr>
-<th>Action</th>
-<td>
-<el-button type="primary" native-type="submit" :loading="bidForm.processing">
-Submit Bid
-</el-button>
-</td>
-</tr>
-</tbody>
-</table>
-</form>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-box-view mr-1"></em>Type</span>
+<strong>{{ batch.commodity_type ?? 'N/A' }}</strong>
+</div>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-award mr-1"></em>Grade</span>
+<strong>{{ batch.grade ?? 'N/A' }}</strong>
+</div>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-package mr-1"></em>Weight</span>
+<strong>{{ batch.weight ?? 'N/A' }} kg</strong>
+</div>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-layers mr-1"></em>Quantity</span>
+<strong>{{ batch.quantity ?? 'N/A' }}</strong>
+</div>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-coins mr-1"></em>Ask Price</span>
+<strong>UGX {{ formatPrice(batch.price) }}</strong>
+</div>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-drop mr-1"></em>Moisture</span>
+<strong>{{ batch.moisture ?? 'N/A' }}%</strong>
+</div>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-home-fill mr-1"></em>Warehouse</span>
+<strong>{{ batch.warehouse ?? 'N/A' }}</strong>
+</div>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-calendar mr-1"></em>Created At</span>
+<strong>{{ formatDateTime(batch.created_at) }}</strong>
+</div>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-user mr-1"></em>Owner</span>
+<strong>{{ batch.owner?.name || 'N/A' }}</strong>
+</div>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-call mr-1"></em>Owner Phone</span>
+<strong>{{ ownerProfile.tel ?? 'N/A' }}</strong>
+</div>
+<div class="detail-item detail-item-double">
+<span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Owner Address</span>
+<strong>{{ ownerProfile.address ?? 'N/A' }}</strong>
+</div>
 </div>
 
 <div class="commodities-section mt-3">
@@ -235,6 +189,142 @@ Submit Bid
 <div v-else class="sub-text">No commodities linked to this batch.</div>
 </div>
 
+
+
+
+
+
+
+
+<div class="bidding-form-section mt-3">
+<div class="section-head mb-2">
+<h6 class="title mb-0">{{ hasBidOnBatch ? 'Counter Offer' : 'Place Your Bid' }}</h6>
+<span class="sub-text">
+<em v-if="hasBidOnBatch" class="icon ni ni-check-circle mr-1 text-success"></em>
+{{ hasBidOnBatch ? 'You already have a bid on this batch. Submit a counter offer below.' : 'Submit your bid request for this batch.' }}
+</span>
+</div>
+
+<div class="offer-summary-grid mb-3">
+<div class="offer-summary-card bids-table-card">
+<div class="offer-card-head mb-2">
+<p class="offer-summary-title mb-0"><em class="icon ni ni-users mr-1"></em>Bidder Offers</p>
+<span class="sub-text"><em class="icon ni ni-sort-down mr-1"></em>Ordered by Offer Price (Desc)</span>
+</div>
+<!-- Plain Element table for all bidder offers (no vertical lines, full width). -->
+<el-table
+:data="bidOffers"
+size="small"
+fit
+empty-text="No bidder offers yet."
+class="offer-table plain-offer-table"
+>
+<el-table-column width="86" label="Rank" align="center">
+<template #header>
+<span class="table-head-label"><em class="icon ni ni-hash"></em>Rank</span>
+</template>
+<template #default="{ $index }">#{{ $index + 1 }}</template>
+</el-table-column>
+<el-table-column prop="buyer_name" min-width="180" label="Bidder">
+<template #header>
+<span class="table-head-label"><em class="icon ni ni-user"></em>Bidder</span>
+</template>
+<template #default="{ row }">
+<span class="buyer-name"><em class="icon ni ni-user-circle mr-1"></em>{{ row.is_my_offer ? 'You' : (row.buyer_name || 'Buyer') }}</span>
+</template>
+</el-table-column>
+<el-table-column prop="bid_quantity" width="120" label="Qty" align="right">
+<template #header>
+<span class="table-head-label"><em class="icon ni ni-layers"></em>Qty</span>
+</template>
+<template #default="{ row }">{{ Number(row.bid_quantity ?? 0).toLocaleString() }}</template>
+</el-table-column>
+<el-table-column prop="bid_price" width="170" label="Offer Price" align="right">
+<template #header>
+<span class="table-head-label"><em class="icon ni ni-coins"></em>Offer Price</span>
+</template>
+<template #default="{ row }">UGX {{ formatPrice(row.bid_price) }}</template>
+</el-table-column>
+<el-table-column prop="status" width="130" label="Status" align="center">
+<template #header>
+<span class="table-head-label"><em class="icon ni ni-flag"></em>Status</span>
+</template>
+<template #default="{ row }"><span class="text-capitalize">{{ row.status ?? 'pending' }}</span></template>
+</el-table-column>
+<el-table-column prop="created_at" min-width="180" label="Placed On">
+<template #header>
+<span class="table-head-label"><em class="icon ni ni-calendar"></em>Placed On</span>
+</template>
+<template #default="{ row }">{{ formatDateTime(row.created_at) }}</template>
+</el-table-column>
+</el-table>
+</div>
+</div>
+
+<div>
+<form class="bidding-form bidding-form-modern" @submit.prevent="submitBid">
+<div class="bid-layout-twocol">
+<div class="bid-form-col">
+<div class="bid-grid-form">
+<div class="bid-control">
+<label class="bid-control-label">{{ hasBidOnBatch ? 'Counter Quantity' : 'Bid Quantity' }}</label>
+<el-input-number v-model="bidForm.bid_quantity" :min="1" :step="1" class="w-100" />
+<small v-if="bidForm.errors.bid_quantity" class="text-danger d-block mt-1">{{ bidForm.errors.bid_quantity }}</small>
+</div>
+<div class="bid-control">
+<label class="bid-control-label">{{ hasBidOnBatch ? 'Counter Price (UGX)' : 'Bid Price (UGX)' }}</label>
+<el-input-number v-model="bidForm.bid_price" :min="0" :step="1" class="w-100" />
+<small v-if="bidForm.errors.bid_price" class="text-danger d-block mt-1">{{ bidForm.errors.bid_price }}</small>
+</div>
+<div class="bid-control bid-control-full mt-1">
+<label class="bid-control-label">Notes</label>
+<el-input
+v-model="bidForm.bid_notes"
+type="textarea"
+:autosize="{ minRows: 3, maxRows: 6 }"
+placeholder="Add terms for your bid or counter offer..."
+/>
+<small v-if="bidForm.errors.bid_notes" class="text-danger d-block mt-1">{{ bidForm.errors.bid_notes }}</small>
+</div>
+</div>
+<div class="bid-submit-row-modern">
+<el-button type="primary" native-type="submit" :loading="bidForm.processing" class="w-100 w-sm-auto">
+{{ hasBidOnBatch ? 'Submit Counter Offer' : 'Submit Bid' }}
+</el-button>
+</div>
+</div>
+
+<aside class="bid-side-col">
+<div class="ask-box">
+<div class="ask-box-head">
+<span class="ask-box-label"><em class="icon ni ni-coin-alt"></em>Current Ask Price</span>
+<em class="icon ni ni-trend-up ask-box-trend"></em>
+</div>
+<strong class="ask-box-price"><em class="icon ni ni-coins"></em>UGX {{ formatPrice(batch.price) }}</strong>
+</div>
+<div class="instruction-box">
+<p class="instruction-title mb-2"><em class="icon ni ni-info-fill"></em>Bidding Instructions</p>
+<ul class="instruction-list mb-0">
+<li><em class="icon ni ni-arrow-right-circle"></em><span>Enter the quantity you want to bid for.</span></li>
+<li><em class="icon ni ni-arrow-right-circle"></em><span>Provide your price per unit in UGX.</span></li>
+<li><em class="icon ni ni-arrow-right-circle"></em><span>Review existing offers before sending your counter offer.</span></li>
+<li><em class="icon ni ni-arrow-right-circle"></em><span>Submit only after confirming all values.</span></li>
+</ul>
+</div>
+</aside>
+</div>
+</form>
+</div>
+
+</div>
+
+
+
+
+
+
+
+
 </div>
 </div>
 </div>
@@ -257,23 +347,23 @@ gap: 12px;
 flex-wrap: wrap;
 }
 
-.details-table-wrap {
-border: 1px solid #d6e0ec;
-border-radius: 10px;
-overflow: hidden;
+.details-grid {
+display: grid;
+grid-template-columns: repeat(3, minmax(0, 1fr));
+gap: 12px;
 }
 
-.details-table th {
-width: 18%;
+.detail-item {
 background: #f8fafc;
-font-weight: 600;
-color: #364a63;
-white-space: nowrap;
+border-radius: 10px;
+padding: 10px 12px;
+display: flex;
+flex-direction: column;
+gap: 4px;
 }
 
-.details-table td {
-width: 32%;
-color: #526484;
+.detail-item-double {
+grid-column: span 3;
 }
 
 .commodities-section {
@@ -287,22 +377,185 @@ padding-top: 12px;
 }
 
 .bidding-form {
-background: #f8fafc;
-border: 1px solid #d6e0ec;
+background: transparent;
+border: 0;
 border-radius: 10px;
-padding: 12px;
+padding: 0;
 }
 
-.bidding-form-table th {
-width: 25%;
-background: #f8fafc;
+.bidding-form-modern {
+background: #fcfdff;
+border: 1px solid #dbe5f2;
+border-radius: 14px;
+padding: 16px;
+box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+}
+
+.bid-layout-twocol {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 18px;
+}
+
+.bid-form-col,
+.bid-side-col {
+display: flex;
+flex-direction: column;
+gap: 14px;
+}
+
+.bid-side-col {
+border-left: 1px solid #e5ecf6;
+padding-left: 18px;
+}
+
+.bid-grid-form {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 12px;
+}
+
+.bid-control {
+background: transparent;
+border: 0;
+padding: 0;
+}
+
+.bid-control-label {
+display: block;
+margin-bottom: 4px;
+font-size: 11px;
 font-weight: 600;
-color: #364a63;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+color: #7187a6;
 }
 
-.bidding-form-table td {
-width: 75%;
+.bid-control-full {
+grid-column: 1 / -1;
+}
+
+:deep(.bid-control .el-input-number) {
+width: 100%;
+border-radius: 0;
+overflow: hidden;
+}
+
+:deep(.bid-control .el-input-number .el-input__wrapper) {
+border: 0;
+box-shadow: none;
+background: #f3f6fb;
+border-radius: 0;
+padding-inline: 10px;
+}
+
+:deep(.bid-control .el-input-number__decrease),
+:deep(.bid-control .el-input-number__increase) {
+background: #eef3fa;
+border-color: transparent;
+}
+
+:deep(.bid-control .el-textarea__inner) {
+border: 1px solid #d6e2f1;
+border-radius: 0;
+box-shadow: none;
+background: #ffffff;
+padding: 10px 12px;
+}
+
+.bid-submit-row-modern {
+display: flex;
+justify-content: flex-start;
+padding-top: 2px;
+}
+
+.bidding-form-section .text-danger {
+font-size: 13px;
+font-weight: 500;
+}
+
+.bid-submit-row-modern .el-button {
+min-width: 140px;
+}
+
+.ask-box,
+.instruction-box {
+border: 1px solid #dfe8f4;
+border-radius: 12px;
+padding: 12px;
 background: #fff;
+}
+
+.ask-box {
+background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+}
+
+.ask-box-head {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 10px;
+margin-bottom: 4px;
+}
+
+.ask-box-label {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+color: #8094ae;
+margin-bottom: 0;
+}
+
+.ask-box-price {
+display: inline-flex;
+align-items: center;
+gap: 8px;
+font-size: 18px;
+line-height: 1.2;
+color: #1f2b3a;
+font-weight: 700;
+}
+
+.ask-box-trend {
+color: #7187a6;
+font-size: 15px;
+}
+
+.instruction-title {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+font-size: 12px;
+font-weight: 700;
+letter-spacing: 0.04em;
+text-transform: uppercase;
+color: #526484;
+}
+
+.instruction-list {
+padding-left: 16px;
+color: #6b7f99;
+line-height: 1.45;
+}
+
+.instruction-list li {
+display: flex;
+align-items: flex-start;
+gap: 6px;
+}
+
+.instruction-list li .icon {
+margin-top: 2px;
+font-size: 12px;
+color: #7187a6;
+}
+
+.instruction-list li + li {
+margin-top: 6px;
 }
 
 .section-head {
@@ -310,6 +563,118 @@ display: flex;
 align-items: center;
 justify-content: space-between;
 gap: 12px;
+}
+
+.offer-summary-grid {
+display: grid;
+grid-template-columns: 1fr;
+gap: 12px;
+}
+
+.offer-summary-card {
+border: 1px solid #e5e7eb;
+border-radius: 12px;
+background: #fff;
+padding: 0;
+box-shadow: none;
+}
+
+.offer-summary-title {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+font-size: 12px;
+font-weight: 700;
+letter-spacing: 0.04em;
+text-transform: uppercase;
+color: #526484;
+}
+
+.offer-kpi-grid {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 10px;
+}
+
+.offer-kpi {
+display: flex;
+flex-direction: column;
+gap: 5px;
+padding: 10px;
+border: 1px solid #e6edf6;
+border-radius: 10px;
+background: #f9fbfe;
+}
+
+.offer-table {
+width: 100%;
+}
+
+.bids-table-card {
+padding: 0;
+overflow: hidden;
+}
+
+.offer-card-head {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 10px;
+padding: 12px 14px;
+border-bottom: 1px solid #e5e7eb;
+}
+
+.offer-note {
+padding: 8px 10px;
+border-radius: 8px;
+background: #f8fafd;
+color: #5b7089;
+font-size: 12px;
+}
+
+.offer-empty {
+padding: 12px;
+border-radius: 10px;
+border: 1px dashed #d8e2ef;
+background: #fbfdff;
+color: #6b7f99;
+font-size: 12px;
+}
+
+.buyer-name {
+display: inline-flex;
+align-items: center;
+font-weight: 600;
+color: inherit;
+}
+
+:deep(.plain-offer-table .el-table__header th.el-table__cell) {
+background: #fff;
+color: #374151;
+font-weight: 600;
+font-size: 13px;
+border-right: 0;
+border-bottom: 1px solid #e5e7eb;
+}
+
+:deep(.plain-offer-table .el-table__row td.el-table__cell) {
+font-size: 14px;
+padding-top: 10px;
+padding-bottom: 10px;
+border-right: 0;
+border-bottom: 1px solid #f0f2f5;
+}
+
+:deep(.plain-offer-table .el-table__row:hover td.el-table__cell) {
+background: #fff !important;
+}
+
+:deep(.plain-offer-table .el-table__inner-wrapper::before) {
+height: 0;
+}
+
+:deep(.plain-offer-table .el-table__empty-block) {
+min-height: 120px;
 }
 
 .commodity-table-wrap {
@@ -341,12 +706,26 @@ gap: 6px;
 }
 
 @media (max-width: 768px) {
-.details-table th,
-.details-table td,
-.bidding-form-table th,
-.bidding-form-table td {
-display: block;
+.details-grid,
+.bid-layout-twocol,
+.bid-grid-form,
+.offer-summary-grid,
+.offer-kpi-grid {
+grid-template-columns: 1fr;
+}
+
+.detail-item-double,
+.bid-control-full {
+grid-column: span 1;
+}
+
+.bid-submit-row-modern .el-button {
 width: 100%;
+}
+
+.bid-side-col {
+border-left: 0;
+padding-left: 0;
 }
 }
 </style>

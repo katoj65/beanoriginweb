@@ -41,6 +41,7 @@ commodity_type: '',
 weight: '',
 quantity: 1,
 price: '',
+market_type: 'marketplace',
 grade: '',
 moisture: '',
 warehouse: '',
@@ -147,6 +148,8 @@ class="text-capitalize"
 <InputError :message="form.errors.price" class="mt-2" />
 </div>
 
+
+
 <div class="col-12 col-md-6 field-block">
 <label class="form-label">Grade</label>
 <el-select
@@ -173,10 +176,23 @@ class="text-capitalize"
 <InputError :message="form.errors.moisture" class="mt-2" />
 </div>
 
-<div class="col-12 field-block">
+<div class="col-12 col-md-6 field-block">
 <label class="form-label">Warehouse</label>
 <el-input v-model="form.warehouse" size="large" placeholder="Enter warehouse location or code" />
 <InputError :message="form.errors.warehouse" class="mt-2" />
+</div>
+<div class="col-12 col-md-6 field-block">
+<label class="form-label">Publish To</label>
+<el-select
+v-model="form.market_type"
+class="w-100 theme-no-highlight-select text-capitalize"
+size="large"
+placeholder="Select platform"
+>
+<el-option label="Marketplace" value="marketplace" />
+<el-option label="Bidding Platform" value="bidding" />
+</el-select>
+<InputError :message="form.errors.market_type" class="mt-2" />
 </div>
 
 <div class="col-12 action-row">
