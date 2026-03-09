@@ -15,6 +15,8 @@ use Inertia\Response;
 
 class BiddingController extends Controller
 {
+
+
 public function index(): Response
 {
 // List only bidding batches for the bidding index page.
@@ -35,6 +37,42 @@ $batches = Batch::query()
 ])
 ->latest('id')
 ->get();
+
+$userId = (int) (auth()->id() ?? 0);
+
+$batchIds = $batches
+->pluck('id')
+->map(fn ($id) => (int) $id)
+->all();
+
+// Query bid users for each batch in the bidding list.
+$batchBidUsers = BatchBid::query()
+->with('user:id,fname,lname,email')
+->whereIn('batch_id', $batchIds)
+->get(['batch_id', 'user_id', 'bid_price', 'status', 'created_at'])
+->groupBy('batch_id');
+
+$batches = $batches->map(function ($batch) use ($batchBidUsers, $userId) {
+$bidRows = $batchBidUsers->get((int) $batch->id, collect());
+
+$batch->has_bid_on_batch = $userId > 0
+? $bidRows->contains(fn ($bid) => (int) $bid->user_id === $userId)
+: false;
+
+$batch->bid_users = $bidRows
+->map(fn ($bid) => [
+'id' => $bid->user?->id,
+'fname' => $bid->user?->fname,
+'lname' => $bid->user?->lname,
+'email' => $bid->user?->email,
+'bid_price' => (float) ($bid->bid_price ?? 0),
+'status' => $bid->status,
+'submitted_at' => $bid->created_at,
+])
+->values();
+
+return $batch;
+});
 
 return Inertia::render('BiddingPage', [
 'batches' => $batches,

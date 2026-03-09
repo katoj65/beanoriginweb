@@ -32,6 +32,10 @@ const cartCount = computed(() => {
 return Number(page.props.shoppingCart ?? page.props.shopping_cart ?? 0) || 0;
 });
 
+const bidNotification = computed(() => {
+return Number(page.props.bidNotification ?? 0) || 0;
+});
+
 
 
 
@@ -45,9 +49,6 @@ return Number(page.props.shoppingCart ?? page.props.shopping_cart ?? 0) || 0;
 
 <div class="nk-body npc-default has-apps-sidebar has-sidebar ">
 <div class="nk-app-root">
-
-
-
 
 <div class="nk-apps-sidebar is-silver">
 <div class="nk-apps-brand">
@@ -89,8 +90,7 @@ return Number(page.props.shoppingCart ?? page.props.shopping_cart ?? 0) || 0;
 </Link>
 </li>
 <li class="nk-menu-item">
-<Link :href="route('cooperative.notifications')" class="nk-menu-link" title="Notifications">
-<span class="nk-menu-icon"><em class="icon ni ni-bell"></em></span>
+<Link :href="route('cooperative.notifications')" class="nk-menu-link" title="Notifications"><span class="nk-menu-icon"><em class="icon ni ni-bell"></em></span>
 </Link>
 </li>
 <li class="nk-menu-item">
@@ -197,7 +197,7 @@ Cooperative
 </li><!-- .nk-menu-item -->
 <li class="nk-menu-item">
 <Link :href="route('market.bidding')" class="nk-menu-link">
-<span class="nk-menu-text"><em class="icon ni ni-tranx mr-1"></em>Bidding</span>
+<span class="nk-menu-text"><em class="icon ni ni-tranx mr-1"></em>Bidding<span class="header-bidding-badge">{{ bidNotification }}</span></span>
 </Link>
 </li><!-- .nk-menu-item -->
 </ul>
@@ -512,6 +512,21 @@ Sign Out
 
 :deep(.nk-sidebar .nk-menu .nk-menu-link .nk-menu-text) {
   font-weight: 400 !important;
+}
+
+.header-bidding-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.4rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: #e8fff0;
+  color: #0f7a36;
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.3;
+  vertical-align: middle;
 }
 
 :deep(.user-dropdown-popper.el-popper) {

@@ -6,6 +6,7 @@ use App\Models\Cooperative;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use App\Models\ShoppingCart;
+use App\Models\BatchBid;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -46,12 +47,17 @@ return [
 'success' => $request->session()->get('success'),
 'error' => $request->session()->get('error'),
 ],
+
 'shoppingCart' => fn () => $request->user()
 ? (int) ShoppingCart::query()
 ->where('user_id', $request->user()->id)
 ->where('status', 'active')
 ->count()
 : 0,
+
+'bidNotification' => fn () => $request->user() ? (int) BatchBid::query()->where('user_id',$request->user()->id)->where('status','pending')
+->count() : 0,
+
 
 
 

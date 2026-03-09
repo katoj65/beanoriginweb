@@ -46,6 +46,29 @@ const formatQuantity = (value) => Number(value ?? 0).toLocaleString();
 
 const formatWeight = (value) => `${Number(value ?? 0).toLocaleString()} kg`;
 
+const getBidUsers = (item) => {
+  const users = Array.isArray(item?.bid_users) ? item.bid_users : [];
+  const seen = new Set();
+
+  return users.filter((user) => {
+    const key = user?.id ?? user?.email ?? '';
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+};
+
+const formatBidderName = (user) => {
+  const fullName = [user?.fname, user?.lname].filter(Boolean).join(' ').trim();
+  return fullName || user?.email || `User #${user?.id ?? ''}`;
+};
+
+const visibleBidderNames = (item) => getBidUsers(item).slice(0, 2).map(formatBidderName);
+
+const hiddenBidderCount = (item) => Math.max(getBidUsers(item).length - 2, 0);
+
+const hasBidders = (item) => getBidUsers(item).length > 0;
+
 const openBatchDetails = (id) => {
   const batchId = Number(id ?? 0);
   if (!batchId) return;
@@ -114,6 +137,7 @@ const openMyBids = () => {
                 <th><span class="table-head-label"><em class="icon ni ni-layers"></em>Quantity</span></th>
                 <th><span class="table-head-label"><em class="icon ni ni-coins"></em>Price</span></th>
                 <th><span class="table-head-label"><em class="icon ni ni-building"></em>Warehouse</span></th>
+                <th><span class="table-head-label"><em class="icon ni ni-users"></em>Bidders</span></th>
               </tr>
             </thead>
             <tbody>
@@ -125,9 +149,20 @@ const openMyBids = () => {
                 <td>{{ formatQuantity(item.quantity) }}</td>
                 <td>{{ formatMoney(item.price) }}</td>
                 <td>{{ item.warehouse ?? 'N/A' }}</td>
+                <td>
+                  <div class="bidders-cell">
+                    <template v-if="hasBidders(item)">
+                      <span v-for="name in visibleBidderNames(item)" :key="name" class="bidder-chip text-capitalize">
+                        {{ name }}
+                      </span>
+                      <span v-if="hiddenBidderCount(item)" class="bidders-more">+{{ hiddenBidderCount(item) }} more</span>
+                    </template>
+                    <span v-else class="bidders-empty">No bids</span>
+                  </div>
+                </td>
               </tr>
               <tr v-if="!filteredBatches.length">
-                <td colspan="7" class="empty-cell">No bidding batches found.</td>
+                <td colspan="8" class="empty-cell">No bidding batches found.</td>
               </tr>
             </tbody>
           </table>
@@ -217,6 +252,39 @@ const openMyBids = () => {
 
 .bidding-table tbody td {
   vertical-align: middle;
+}
+
+.bidders-cell {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.bidder-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 155px;
+  padding: 0.14rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid #dbe3ef;
+  color: #334155;
+  background: #ffffff;
+  font-size: 0.71rem;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bidders-more {
+  font-size: 0.7rem;
+  color: #64748b;
+}
+
+.bidders-empty {
+  font-size: 0.72rem;
+  color: #94a3b8;
 }
 
 .clickable-row {

@@ -17,6 +17,10 @@ const source = page.props.bid_offers ?? [];
 const offers = Array.isArray(source) ? source : [];
 return [...offers].sort((a, b) => Number(b.bid_price ?? 0) - Number(a.bid_price ?? 0));
 });
+const topBidPrice = computed(() => {
+if (!bidOffers.value.length) return null;
+return Number(bidOffers.value[0]?.bid_price ?? 0);
+});
 const bidForm = useForm({
 bid_quantity: Number(page.props.my_bid_offer?.bid_quantity ?? 1),
 bid_price: page.props.my_bid_offer?.bid_price ?? null,
@@ -56,6 +60,20 @@ if (!value) return 'N/A';
 const date = new Date(value);
 if (Number.isNaN(date.getTime())) return String(value);
 return date.toLocaleDateString();
+};
+
+const statusIcon = (status) => {
+const key = String(status ?? '').toLowerCase();
+if (key === 'complete' || key === 'completed' || key === 'approved') return 'ni-check-circle-fill';
+if (key === 'failed' || key === 'rejected' || key === 'banned') return 'ni-cross-circle-fill';
+return 'ni-clock-fill';
+};
+
+const statusPillClass = (status) => {
+const key = String(status ?? '').toLowerCase();
+if (key === 'complete' || key === 'completed' || key === 'approved') return 'status-pill is-complete';
+if (key === 'failed' || key === 'rejected' || key === 'banned') return 'status-pill is-failed';
+return 'status-pill is-pending';
 };
 
 const submitBid = () => {
@@ -214,15 +232,20 @@ bidForm.bid_quantity = 1;
 
 <div class="offer-summary-grid mb-3">
 <div class="offer-summary-card bids-table-card">
-<div class="offer-card-head mb-2">
+<div class="offer-card-head">
 <p class="offer-summary-title mb-0"><em class="icon ni ni-users mr-1"></em>Bidder Offers</p>
-<span class="sub-text"><em class="icon ni ni-sort-down mr-1"></em>Ordered by Offer Price (Desc)</span>
+<div class="offer-head-meta">
+<span class="sub-text"><em class="icon ni ni-sort-down mr-1"></em>Price Desc</span>
+<span class="sub-text"><em class="icon ni ni-layers mr-1"></em>{{ bidOffers.length }} Offers</span>
+<span v-if="topBidPrice !== null" class="sub-text"><em class="icon ni ni-coins mr-1"></em>Top: UGX {{ formatPrice(topBidPrice) }}</span>
+</div>
 </div>
 <!-- Plain Element table for all bidder offers (no vertical lines, full width). -->
 <el-table
 :data="bidOffers"
 size="small"
 fit
+table-layout="auto"
 empty-text="No bidder offers yet."
 class="offer-table plain-offer-table"
 >
@@ -230,14 +253,15 @@ class="offer-table plain-offer-table"
 <template #header>
 <span class="table-head-label"><em class="icon ni ni-hash"></em>Rank</span>
 </template>
-<template #default="{ $index }">#{{ $index + 1 }}</template>
+<template #default="{ $index }"><span class="rank-text">#{{ $index + 1 }}<small v-if="$index === 0">Top</small></span></template>
 </el-table-column>
 <el-table-column prop="buyer_name" min-width="180" label="Bidder">
 <template #header>
 <span class="table-head-label"><em class="icon ni ni-user"></em>Bidder</span>
 </template>
 <template #default="{ row }">
-<span class="buyer-name"><em class="icon ni ni-user-circle mr-1"></em>{{ row.is_my_offer ? 'You' : (row.buyer_name || 'Buyer') }}</span>
+<span class="buyer-name"><em class="icon ni ni-user-circle mr-1"></em>{{ row.buyer_name || 'Buyer' }}</span>
+<span v-if="row.is_my_offer" class="you-tag">You</span>
 </template>
 </el-table-column>
 <el-table-column prop="bid_quantity" width="120" label="Qty" align="right">
@@ -250,19 +274,21 @@ class="offer-table plain-offer-table"
 <template #header>
 <span class="table-head-label"><em class="icon ni ni-coins"></em>Offer Price</span>
 </template>
-<template #default="{ row }">UGX {{ formatPrice(row.bid_price) }}</template>
+<template #default="{ row }"><span class="offer-price-text">UGX {{ formatPrice(row.bid_price) }}</span></template>
 </el-table-column>
 <el-table-column prop="status" width="130" label="Status" align="center">
 <template #header>
 <span class="table-head-label"><em class="icon ni ni-flag"></em>Status</span>
 </template>
-<template #default="{ row }"><span class="text-capitalize">{{ row.status ?? 'pending' }}</span></template>
+<template #default="{ row }">
+<span :class="statusPillClass(row.status)" class="text-capitalize"><em class="icon ni mr-1" :class="statusIcon(row.status)"></em>{{ row.status ?? 'pending' }}</span>
+</template>
 </el-table-column>
 <el-table-column prop="created_at" min-width="180" label="Placed On">
 <template #header>
 <span class="table-head-label"><em class="icon ni ni-calendar"></em>Placed On</span>
 </template>
-<template #default="{ row }">{{ formatDateTime(row.created_at) }}</template>
+<template #default="{ row }"><span class="placed-on-text">{{ formatDateTime(row.created_at) }}</span></template>
 </el-table-column>
 </el-table>
 </div>
@@ -631,6 +657,13 @@ padding: 12px 14px;
 border-bottom: 1px solid #e5e7eb;
 }
 
+.offer-head-meta {
+display: inline-flex;
+align-items: center;
+gap: 12px;
+flex-wrap: wrap;
+}
+
 .offer-note {
 padding: 8px 10px;
 border-radius: 8px;
@@ -653,6 +686,71 @@ display: inline-flex;
 align-items: center;
 font-weight: 600;
 color: inherit;
+}
+
+.you-tag {
+display: inline-flex;
+align-items: center;
+margin-left: 8px;
+padding: 1px 7px;
+border: 1px solid #d1d5db;
+border-radius: 999px;
+font-size: 10px;
+font-weight: 600;
+line-height: 1.4;
+}
+
+.status-pill {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+padding: 2px 8px;
+border: 1px solid #d1d5db;
+border-radius: 999px;
+font-size: 11px;
+font-weight: 600;
+line-height: 1.4;
+background: #fff;
+}
+
+.status-pill .icon {
+font-size: 11px;
+}
+
+.status-pill.is-complete {
+border-color: #cbd5e1;
+}
+
+.status-pill.is-failed {
+border-color: #d1d5db;
+}
+
+.status-pill.is-pending {
+border-color: #d1d5db;
+line-height: 1.4;
+}
+
+.rank-text {
+display: inline-flex;
+align-items: baseline;
+gap: 4px;
+font-weight: 600;
+}
+
+.rank-text small {
+font-size: 10px;
+color: #6b7280;
+text-transform: uppercase;
+}
+
+.offer-price-text {
+font-variant-numeric: tabular-nums;
+font-weight: 600;
+}
+
+.placed-on-text {
+font-size: 13px;
+white-space: nowrap;
 }
 
 :deep(.plain-offer-table .el-table__header th.el-table__cell) {
