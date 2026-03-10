@@ -28,7 +28,7 @@ class Batch extends Model
 
     protected $casts = [
         'weight' => 'decimal:2',
-        'quantity' => 'decimal:2',
+        'quantity' => 'integer',
         'moisture' => 'decimal:2',
         'is_on_chain' => 'boolean',
     ];

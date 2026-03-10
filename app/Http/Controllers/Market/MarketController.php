@@ -762,6 +762,10 @@ Purchase::create([
 	]);
 
 
+// Update batch status when selected quantity depletes stock.
+self::changeStatusOfDepletedBatchQuantity((int) $item->batch_id, (int) ($item['quantity'] ?? 0));
+
+
 }
 
 // Store one Payment row for the whole shopping cart session.
@@ -938,6 +942,21 @@ return redirect()
 
 
 
+//change status of selected depleted quantity
+static function changeStatusOfDepletedBatchQuantity($batchID){
+$batch = Batch::where('id', $batchID)->first();
+if (! $batch) {
+return false;
+}
+
+if ((int) $batch->quantity > 0) {
+return false;
+}
+
+$batch->status = 'bought';
+$batch->save();
+return true;
+}
 
 
 
