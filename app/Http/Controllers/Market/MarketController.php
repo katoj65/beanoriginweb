@@ -32,6 +32,7 @@ public function index(): Response
 $user = auth()->user();
 $batches = Batch::query()
 ->where('market_type','marketplace')
+->where('quantity','>',0)
 ->latest('id')
 ->get()
 ->map(fn (Batch $batch) => $this->mapTokenizedBatch($batch))
@@ -774,6 +775,13 @@ Payment::create([
 'total_amount' => (float) $totalAmount,
 'status' => 'complete',
 ]);
+
+
+
+
+
+
+
 
 // Clear all active cart rows for this user after successful checkout.
 ShoppingCart::query()->where(['user_id' => $userId, 'status' => 'active'])->delete();
