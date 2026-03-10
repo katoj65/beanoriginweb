@@ -15,6 +15,13 @@ Route::get('/{commodity}/farms/{farm}', [CommodityController::class, 'showOrigin
 ->whereNumber('farm')
 ->name('origin-farms.show');
 Route::get('/{id}', [CommodityController::class, 'show'])->whereNumber('id')->name('show');
+Route::post('/{id}/quality-data', [CommodityController::class, 'storeCommodityQualityData'])
+->whereNumber('id')
+->name('quality-data.store');
+Route::delete('/{id}/quality-data/{qualityId}', [CommodityController::class, 'destroyCommodityQualityData'])
+->whereNumber('id')
+->whereNumber('qualityId')
+->name('quality-data.destroy');
 Route::get('/batch/create', [BatchController::class, 'create'])->name('batches.create');
 Route::post('/batch/store', [CommodityController::class, 'storeBatch'])->name('batch.store');
 Route::get('/batch/{id}/edit', [BatchController::class, 'edit'])

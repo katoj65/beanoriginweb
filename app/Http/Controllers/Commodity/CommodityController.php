@@ -26,6 +26,8 @@ use Illuminate\Validation\ValidationException;
 use App\Http\Resources\CommodityResource;
 use App\Http\Resources\BatchResource;
 use App\Models\CommodityBatch;
+use App\Models\CommodityQualityData;
+use App\Models\QualityMetadata;
 use Inertia\Inertia;
 
 class CommodityController extends Controller
@@ -144,6 +146,7 @@ return redirect()
 public function show(Request $request, string $id)
 {
 
+// Scope commodity visibility to the logged-in user's cooperative.
 $cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
 $commodity = Commodity::with('farms:id,cooperative_farmer_id,farm_name,location,area_acres,primary_crop,soil_type,water_source_type')
 ->where('id', $id)
@@ -167,6 +170,23 @@ return Inertia::render('CommodityShow', [
 'farmer_last_name' => $farm->farmer_last_name,
 'farmer_telephone' => $farm->farmer_telephone,
 
+])
+->values(),
+// Provide selectable quality activity metadata for the quality form.
+'quality_metadata' => QualityMetadata::query()
+->orderBy('activity')
+->pluck('activity')
+->values(),
+// Provide saved commodity quality rows for on-page quality table.
+'commodity_quality_data' => CommodityQualityData::query()
+->where('commodity_id', (int) $id)
+->latest('id')
+->get(['id', 'activity', 'value', 'created_at'])
+->map(fn ($item) => [
+'id' => $item->id,
+'activity' => $item->activity,
+'value' => $item->value,
+'created_at' => $item->created_at?->toDateTimeString(),
 ])
 ->values(),
 ]);
@@ -479,6 +499,67 @@ return redirect()
 
 
 
+
+
+
+
+public function storeCommodityQualityData(Request $request, string $id){
+// Validate quality activity/value submitted from CommodityShow page.
+$validated = $request->validate([
+'activity' => ['required', 'string', 'max:255'],
+'value' => ['required', 'string', 'max:255'],
+]);
+
+// Ensure the commodity belongs to the logged-in cooperative user.
+$cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
+$commodity = Commodity::query()
+->where('id', (int) $id)
+->where('cooperative_id', $cooperativeId)
+->firstOrFail();
+
+// Block duplicate quality metric activity for this commodity.
+$activity = trim((string) $validated['activity']);
+$activityExists = CommodityQualityData::query()
+->where('commodity_id', (int) $commodity->id)
+->whereRaw('LOWER(activity) = ?', [strtolower($activity)])
+->exists();
+
+if ($activityExists) {
+throw ValidationException::withMessages([
+'activity' => 'This quality metric already exists for this commodity.',
+]);
+}
+
+// Persist one quality data record for the selected commodity.
+CommodityQualityData::create([
+'commodity_id' => (int) $commodity->id,
+'activity' => $activity,
+'value' => $validated['value'],
+]);
+
+return redirect()
+->route('commodity.show', ['id' => $commodity->id])
+->with('success', 'Commodity quality data saved successfully.');
+}
+
+
+
+public function destroyCommodityQualityData(Request $request, string $id, string $qualityId){
+$cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
+$commodity = Commodity::query()
+->where('id', (int) $id)
+->where('cooperative_id', $cooperativeId)
+->firstOrFail();
+
+CommodityQualityData::query()
+->where('id', (int) $qualityId)
+->where('commodity_id', (int) $commodity->id)
+->delete();
+
+return redirect()
+->route('commodity.show', ['id' => $commodity->id])
+->with('success', 'Commodity quality data deleted successfully.');
+}
 
 
 
