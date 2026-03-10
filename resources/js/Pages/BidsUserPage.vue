@@ -1,26 +1,9 @@
 <script setup>
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
-import { ElNotification } from 'element-plus';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 
 const page = usePage();
-const flashSuccess = computed(() => {
-  const success = page.props.flash?.success;
-  if (typeof success === 'string') return success;
-  if (success && typeof success === 'object') return success.message ?? '';
-  return '';
-});
-onMounted(() => {
-  if (!flashSuccess.value) return;
-  ElNotification({
-    title: 'Success',
-    message: flashSuccess.value,
-    type: 'success',
-    customClass: 'small-success-notification',
-  });
-});
-
 const bids = computed(() => {
   const source = page.props.bids ?? [];
   return Array.isArray(source) ? source : [];
@@ -163,7 +146,4 @@ const goBackToBidding = () => {
   border-top: 1px solid #e2e8f0;
 }
 
-:deep(.small-success-notification .el-notification__title) {
-  font-size: 13px;
-}
 </style>

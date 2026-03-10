@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Market;
 
 use App\Http\Controllers\Controller;
 use App\Models\Batch;
+use App\Models\BatchBid;
 use App\Models\Commodity;
 use App\Models\Cooperative;
 use App\Models\Payment;
@@ -628,9 +629,12 @@ public function shoppingCart(Request $request): Response{
 /**
  * Render checkout page with active cart items and totals.
  */
-public function checkout(Request $request): Response{
+public function checkout(Request $request): Response|RedirectResponse{
     $userId = (int) $request->user()->id;
     $cartItems = $this->mapCartItems($userId);
+    if ($cartItems->isEmpty()) {
+    return redirect()->route('market.cart.index')->with('error', 'No items available for checkout.');
+    }
     $cartTotal = $cartItems->sum('line_total');
 
     return Inertia::render('CheckoutPage', [
@@ -701,14 +705,12 @@ $validated=$request->validate([
 ]);
 
 
-
-
 $userId = (int) $request->user()->id;
 //get cart data
 $cart = ShoppingCart::query()->where(['user_id'=>$userId,'status'=>'active'])->get();
 //if the cart is empty redirect back to the cart page
 if(count($cart)==0){
-return back()->with('error', 'No active cart items found for checkout.');
+return redirect()->route('market.cart.index')->with('error', 'No active cart items found for checkout.');
 }
 
 //group transaction
@@ -874,8 +876,6 @@ return Inertia::render('PurchaseConfirmationPage', [
 
 
 
-
-
 //Function to reduce the quantity of the item
 static function reduceBatchQuantity($id, $count) : bool
 {
@@ -884,17 +884,55 @@ $batch = Batch::where('id',$id)->first();
 if (! $batch) {
 return false;
 }
+
 // Step 2: subtract bought quantity from current quantity.
 $qtty = (float) $batch->quantity;
 $new = (float) $qtty - (float) $count;
 if($new < 0){
 return false;
 }
+
 // Step 3: save the new quantity.
 $batch->quantity=$new;
 $batch->save();
 return true;
 }
+
+
+
+
+
+// Delete logged-in user's bid for a specific bidding batch.
+public function destroyUserBid(Request $request, string $id): RedirectResponse
+{
+$userId = (int) $request->user()->id;
+$batchId = (int) $id;
+
+Batch::query()
+->where('id', $batchId)
+->where('market_type', 'bidding')
+->firstOrFail();
+
+$deletedRows = BatchBid::query()
+->where('batch_id', $batchId)
+->where('user_id', $userId)
+->delete();
+
+if ($deletedRows < 1) {
+return redirect()
+->route('market.batchBidding', ['id' => $batchId])
+->withErrors(['bid_offer' => 'No active bid found to withdraw.']);
+}
+
+return redirect()
+->route('market.batchBidding', ['id' => $batchId]);
+}
+
+
+
+
+
+
 
 
 

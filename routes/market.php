@@ -8,6 +8,7 @@ Route::get('/', [MarketController::class, 'index'])->name('index');
 Route::get('/bidding', [BiddingController::class, 'index'])->name('bidding');
 Route::get('/batch-bidding/{id}', [BiddingController::class, 'showBatchBidding'])->whereNumber('id')->name('batchBidding');
 Route::post('/batch-bidding/{id}/store', [BiddingController::class, 'storeBatchBidding'])->whereNumber('id')->name('batchBidding.store');
+Route::delete('/batch-bidding/{id}/withdraw', [MarketController::class, 'destroyUserBid'])->whereNumber('id')->name('batchBidding.withdraw');
 Route::get('/bids/user', [BiddingController::class, 'userBids'])->name('bids.user');
 Route::get('/reserved', [MarketController::class, 'reservedMarket'])->name('reserved');
 Route::get('/bought', [MarketController::class, 'boughtMarket'])->name('bought');

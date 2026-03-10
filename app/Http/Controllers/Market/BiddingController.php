@@ -395,12 +395,11 @@ BatchBid::updateOrCreate(
 
 if ($isCounterOffer) {
 return redirect()
-->route('market.batchBidding', ['id' => $batch->id])
-->with('success', 'Counter offer submitted successfully.');
+->route('market.batchBidding', ['id' => $batch->id]);
 }
 
 
 // Redirect to "My Bids" after successful submission.
-return redirect()->route('market.bids.user')->with('success', 'Bidding request submitted successfully.');
+return redirect()->route('market.bids.user');
 }
 }

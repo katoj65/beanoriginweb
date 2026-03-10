@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { useForm, usePage } from '@inertiajs/vue3';
+import { router, useForm, usePage } from '@inertiajs/vue3';
 import { ElNotification } from 'element-plus';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 
@@ -91,6 +91,32 @@ customClass: 'small-success-notification',
 });
 bidForm.reset('bid_price', 'bid_notes');
 bidForm.bid_quantity = 1;
+},
+});
+};
+
+const handleBidAction = (command) => {
+if (command !== 'withdraw') return;
+
+const batchId = Number(batch.value?.id ?? 0);
+if (!batchId || !hasBidOnBatch.value) return;
+
+router.delete(route('market.batchBidding.withdraw', { id: batchId }), {
+preserveScroll: true,
+onSuccess: () => {
+ElNotification({
+title: 'Success',
+message: 'Your bid was withdrawn successfully.',
+type: 'success',
+customClass: 'small-success-notification',
+});
+},
+onError: (errors) => {
+ElNotification({
+title: 'Error',
+message: errors?.bid_offer || 'Unable to withdraw bid at the moment.',
+type: 'error',
+});
 },
 });
 };
@@ -238,6 +264,21 @@ bidForm.bid_quantity = 1;
 <span class="sub-text"><em class="icon ni ni-sort-down mr-1"></em>Price Desc</span>
 <span class="sub-text"><em class="icon ni ni-layers mr-1"></em>{{ bidOffers.length }} Offers</span>
 <span v-if="topBidPrice !== null" class="sub-text"><em class="icon ni ni-coins mr-1"></em>Top: UGX {{ formatPrice(topBidPrice) }}</span>
+<div v-if="hasBidOnBatch" class="offer-head-actions">
+<el-dropdown trigger="click" @command="handleBidAction">
+<el-button plain size="small" class="offer-action-btn">
+<em class="icon ni ni-more-v mr-1"></em>Bid Actions
+<em class="icon ni ni-chevron-down ml-1"></em>
+</el-button>
+<template #dropdown>
+<el-dropdown-menu>
+<el-dropdown-item command="withdraw">
+<em class="icon ni ni-cross-circle mr-1"></em>Withdraw from bidding
+</el-dropdown-item>
+</el-dropdown-menu>
+</template>
+</el-dropdown>
+</div>
 </div>
 </div>
 <!-- Plain Element table for all bidder offers (no vertical lines, full width). -->
@@ -662,6 +703,15 @@ display: inline-flex;
 align-items: center;
 gap: 12px;
 flex-wrap: wrap;
+}
+
+.offer-head-actions {
+display: inline-flex;
+align-items: center;
+}
+
+.offer-action-btn {
+min-height: 30px;
 }
 
 .offer-note {
