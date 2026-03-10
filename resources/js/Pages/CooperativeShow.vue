@@ -155,6 +155,14 @@ const goCreateBatch = () => {
 router.get(route('cooperative.batches.create'));
 };
 
+const goRegisterFarm = () => {
+router.get(route('cooperative.farms.create'));
+};
+
+const goCreateFarmer = () => {
+router.get(route('cooperative.farmers.create'));
+};
+
 
 
 
@@ -399,8 +407,10 @@ router.get(route('cooperative.batches.create'));
 <el-button class="cooperative-fab" type="success" circle :icon="Plus" />
 <template #dropdown>
 <el-dropdown-menu class="cooperative-fab-menu">
-<el-dropdown-item @click="goCreateCommodity"><em class="icon ni ni-growth mr-1"></em>Create Commodity</el-dropdown-item>
 <el-dropdown-item @click="goCreateBatch"><em class="icon ni ni-package mr-1"></em>Create Batch</el-dropdown-item>
+<el-dropdown-item @click="goCreateCommodity"><em class="icon ni ni-growth mr-1"></em>Create Commodity</el-dropdown-item>
+<el-dropdown-item @click="goRegisterFarm"><em class="icon ni ni-home mr-1"></em>Register Farm</el-dropdown-item>
+<el-dropdown-item @click="goCreateFarmer"><em class="icon ni ni-user-add mr-1"></em>Add Farmer</el-dropdown-item>
 </el-dropdown-menu>
 </template>
 </el-dropdown>
