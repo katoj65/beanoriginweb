@@ -1,10 +1,11 @@
 
 
 <script setup>
-import { useForm, Link } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import SubmitButton from '@/Components/SubmitButton.vue';
+import { Back } from '@element-plus/icons-vue';
 
 const form = useForm({
 first_name: '',
@@ -23,6 +24,10 @@ primary_crop: '',
 const submit = () => {
 form.post(route('cooperative.farmers.store'));
 };
+
+const goBack = () => {
+router.get(route('cooperative.farmers'));
+};
 </script>
 
 <template>
@@ -36,9 +41,7 @@ form.post(route('cooperative.farmers.store'));
 <h6 class="title mb-1">Add Farmer</h6>
 <p class="sub-text mb-0">Register a farmer under your cooperative.</p>
 </div>
-<Link :href="route('cooperative.farmers')" class="btn btn-light btn-sm">
-Back to Farmers
-</Link>
+<el-button :icon="Back" @click="goBack">Back</el-button>
 </div>
 
 <div class="card-inner">

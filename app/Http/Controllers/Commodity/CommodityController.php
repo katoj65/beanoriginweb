@@ -37,7 +37,7 @@ class CommodityController extends Controller
  */
 public function index()
 {
-//
+// Intentionally left blank. Listing is handled by dedicated pages/controllers.
 }
 
 
@@ -50,6 +50,7 @@ public function index()
  */
 public function store(Request $request)
 {
+// Validate commodity harvest input from create form.
 $validated = $request->validate([
 'crop_name' => ['required', 'string', 'max:255'],
 'crop_type' => ['required', 'string', 'max:255'],
@@ -60,6 +61,7 @@ $validated = $request->validate([
 'phone_number' => ['required', 'string', 'regex:/^[0-9+()\\-\\s]{7,20}$/'],
 ]);
 
+// Resolve logged-in cooperative and locate farmer by submitted phone number.
 $cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
 $farmer = CooperativeFarmer::query()
 ->where('cooperative_id', $cooperativeId)
@@ -72,6 +74,7 @@ throw ValidationException::withMessages([
 ]);
 }
 
+// Create commodity row owned by this cooperative.
 $commodity = Commodity::create([
 'cooperative_id' => $cooperativeId,
 'commodity_name' => $validated['crop_name'],
@@ -93,9 +96,10 @@ return redirect()
 
 
 
-//store Batch details
+// Store a new batch record from commodity batch form.
 public function storeBatch(Request $request)
 {
+// Validate required batch fields and publish destination.
 $validated = $request->validate([
 'batch_code' => ['required', 'string', 'max:255', 'unique:batches,batch_code'],
 'commodity_name' => ['required', 'string', 'max:255', 'exists:crops,name'],
@@ -110,6 +114,7 @@ $validated = $request->validate([
 
 ]);
 
+// Persist batch atomically to keep data consistent.
 $batch = DB::transaction(function () use ($validated, $request) {
 $batch = Batch::create([
 'owner_id' => $request->user()->id,
@@ -153,6 +158,7 @@ $commodity = Commodity::with('farms:id,cooperative_farmer_id,farm_name,location,
 ->where('cooperative_id', $cooperativeId)
 ->firstOrFail();
 
+// Return commodity details, linked farms, and quality data for the page.
 return Inertia::render('CommodityShow', [
 'commodity' => new CommodityResource($commodity),
 'origin_farms' => $commodity->farms
@@ -216,6 +222,7 @@ $query->where('cooperative_id', $cooperativeId);
 ->orderBy('farm_name')
 ->get();
 
+// Render farm linking form with current linked farm ids.
 return Inertia::render('CommodityAddFarms', [
 'title'=>'Add Origin Farms',
 'commodity' => new CommodityResource($commodity),
@@ -235,7 +242,7 @@ return Inertia::render('CommodityAddFarms', [
  */
 public function update(Request $request, string $id)
 {
-//
+// Intentionally left blank. Dedicated update endpoint is updateCommodityData().
 }
 
 /**
@@ -243,7 +250,7 @@ public function update(Request $request, string $id)
  */
 public function destroy(string $id)
 {
-//
+// Intentionally left blank. Commodity deletion is not enabled from this controller.
 }
 
 
@@ -253,6 +260,7 @@ public function destroy(string $id)
 
 public function create(Request $request)
 {
+// Load cooperative-scoped farms and supporting metadata for create form.
 $cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
 $farmerIds = CooperativeFarmer::query()
 ->where('cooperative_id', $cooperativeId)
@@ -288,6 +296,7 @@ return Inertia::render('CommodityCreate', [
  */
 private function addOriginFarmsToCommodity(Commodity $commodity, CooperativeFarmer $farmer): void
 {
+// Attach all farms registered under the matched farmer.
 $farmIds = Farm::query()
 ->where('cooperative_farmer_id', $farmer->id)
 ->pluck('id')
@@ -297,6 +306,7 @@ throw ValidationException::withMessages([
 'phone_number' => 'The matched farmer has no registered farm.',
 ]);
 }
+// Avoid duplicates if some farms were already linked.
 $commodity->farms()->syncWithoutDetaching($farmIds);
 }
 
@@ -304,9 +314,10 @@ $commodity->farms()->syncWithoutDetaching($farmIds);
 
 
 
-// submit farm ids for a commodity
+// Submit selected farm ids for a commodity.
 public function storeOriginFarms(Request $request, string $id)
 {
+// Validate selected farm ids.
 $validated = $request->validate([
 'farm_ids' => ['required', 'array', 'min:1'],
 'farm_ids.*' => ['integer', 'distinct'],
@@ -318,6 +329,7 @@ $commodity = Commodity::query()
 ->where('cooperative_id', $cooperativeId)
 ->firstOrFail();
 
+// Keep only farms that belong to this cooperative.
 $farmIds = Farm::query()
 ->whereIn('id', $validated['farm_ids'])
 ->whereHas('farmer', function ($query) use ($cooperativeId) {
@@ -332,6 +344,7 @@ throw ValidationException::withMessages([
 ]);
 }
 
+// Link farms, then mark commodity as pending review.
 $commodity->farms()->syncWithoutDetaching($farmIds->all());
 $model=$commodity;
 $model->status='pending';
@@ -349,9 +362,10 @@ return redirect()
 
 
 
-//Commodity farm details
+// Commodity farm details.
 public function showOriginFarmDetails(Request $request, string $commodity, string $farm)
 {
+// Ensure commodity belongs to logged-in cooperative.
 $cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
 
 $commodityModel = Commodity::query()
@@ -364,6 +378,7 @@ $farmModel = $commodityModel->farms()
 ->where('farms.id', $farm)
 ->firstOrFail();
 
+// Render single farm details linked to this commodity.
 return Inertia::render('CommodityFarm', [
 'title' => 'Origin Farm Details',
 'commodity' => new CommodityResource($commodityModel),
@@ -379,6 +394,7 @@ return Inertia::render('CommodityFarm', [
 
 public function editCommodityData(Request $request, string $id)
 {
+// Load commodity scoped to cooperative for edit page.
 $cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
 $commodity = Commodity::query()
 ->where('id', (int) $id)
@@ -389,6 +405,7 @@ $crops = Crops::query()->orderBy('name')->get();
 $cropType = CropType::query()->orderBy('name')->get();
 $grade = CropGrade::query()->orderBy('name')->get();
 
+// Provide editable commodity payload plus select options.
 return Inertia::render('CommodityUpdatePage', [
 'title' => 'Update Commodity',
 'commodity' => [
@@ -407,9 +424,10 @@ return Inertia::render('CommodityUpdatePage', [
 }
 
 
-//batch create form
+// Batch create form.
 public function createBatch(Request $request)
 {
+// Load select options for batch creation.
 $cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
 $crops = Crops::query()->orderBy('name')->get(['id', 'name']);
 $cropTypes = CropType::query()->orderBy('name')->get(['id', 'name']);
@@ -437,9 +455,10 @@ return Inertia::render('BatchCreate', [
 
 
 
-//Batch commodity verification
+// Batch commodity verification.
 public function verifyBatchCommodities(Request $request, string $id)
 {
+// Fetch batch owned by current user.
 $batch = Batch::query()
 ->where('id', $id)
 ->where('owner_id', $request->user()->id)
@@ -451,6 +470,7 @@ $commodityIds = CommodityBatch::query()
 ->filter()
 ->values();
 
+// Build attached commodity and activity timelines for verification page.
 $attachedCommodities = Commodity::query()
 ->whereIn('id', $commodityIds)
 ->get(['id', 'commodity_name', 'commodity_type', 'grade', 'weight', 'status'])
@@ -485,6 +505,7 @@ return Inertia::render('BatchCommodityVerification', [
 
 public function attachCommodityToBatch(Request $request, string $id)
 {
+// Validate selected commodity id.
 $validated = $request->validate([
 'commodity_id' => ['required', 'integer', 'exists:commodities,id'],
 ]);
@@ -494,6 +515,7 @@ $batch = Batch::query()
 ->where('owner_id', $request->user()->id)
 ->firstOrFail();
 
+// Ensure selected commodity belongs to same cooperative.
 $cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
 $commodity = Commodity::query()
 ->where('id', $validated['commodity_id'])
@@ -506,6 +528,7 @@ throw ValidationException::withMessages([
 ]);
 }
 
+// Prevent duplicate commodity-to-batch links.
 $alreadyAttached = CommodityBatch::query()
 ->where('batch_id', $batch->id)
 ->where('commodity_id', $commodity->id)
@@ -517,6 +540,7 @@ throw ValidationException::withMessages([
 ]);
 }
 
+// Save commodity link to batch.
 CommodityBatch::query()->create([
 'batch_id' => $batch->id,
 'commodity_id' => $commodity->id,
@@ -575,12 +599,14 @@ return redirect()
 
 
 public function destroyCommodityQualityData(Request $request, string $id, string $qualityId){
+// Ensure commodity belongs to current cooperative.
 $cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
 $commodity = Commodity::query()
 ->where('id', (int) $id)
 ->where('cooperative_id', $cooperativeId)
 ->firstOrFail();
 
+// Delete only quality row that belongs to this commodity.
 CommodityQualityData::query()
 ->where('id', (int) $qualityId)
 ->where('commodity_id', (int) $commodity->id)
@@ -595,6 +621,7 @@ return redirect()
 
 
 public function updateCommodityData(Request $request, string $id){
+// Validate editable commodity fields.
 $validated = $request->validate([
 'commodity_name' => ['required', 'string', 'max:255', 'exists:crops,name'],
 'commodity_type' => ['required', 'string', 'max:255'],
@@ -604,12 +631,14 @@ $validated = $request->validate([
 'harvest_date' => ['required', 'date'],
 ]);
 
+// Scope update to commodity owned by logged-in cooperative.
 $cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
 $commodity = Commodity::query()
 ->where('id', (int) $id)
 ->where('cooperative_id', $cooperativeId)
 ->firstOrFail();
 
+// Persist the updated commodity attributes.
 $commodity->update([
 'commodity_name' => $validated['commodity_name'],
 'commodity_type' => $validated['commodity_type'],
