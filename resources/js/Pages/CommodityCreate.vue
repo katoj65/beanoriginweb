@@ -1,6 +1,7 @@
 <script setup>
 import { computed, watchEffect } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
+import { ElNotification } from 'element-plus';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import SubmitButton from '@/Components/SubmitButton.vue';
@@ -23,7 +24,11 @@ const submit = () => {
 form.post(route('commodity.store'), {
 preserveScroll: true,
 onSuccess: () => {
-// form.reset();
+ElNotification({
+title: 'Success',
+message: 'Commodity harvest submitted successfully.',
+type: 'success',
+});
 
 },
 });

@@ -719,6 +719,11 @@ textarea.form-control {
 }
 
 /* Theme utility: Element Plus notifications */
+.el-notification .el-notification__title {
+  font-size: 15px !important;
+  line-height: 1.3;
+}
+
 .theme-notification-success.el-notification,
 .theme-notification-error.el-notification,
 .theme-notification-warning.el-notification {
@@ -731,8 +736,8 @@ textarea.form-control {
 .theme-notification-success.el-notification .el-notification__title,
 .theme-notification-error.el-notification .el-notification__title,
 .theme-notification-warning.el-notification .el-notification__title {
-  font-size: 18px !important;
-  line-height: 1.2;
+  font-size: 15px !important;
+  line-height: 1.3;
 }
 
 .theme-notification-success.el-notification {

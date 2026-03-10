@@ -5,7 +5,17 @@ import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import { Plus, Search } from '@element-plus/icons-vue'
 
 const page = usePage();
-const produces = computed(() => page.props.produces?.data ?? page.props.produces ?? []);
+const produces = computed(() => {
+const source = page.props.produces?.data ?? page.props.produces ?? [];
+const rows = Array.isArray(source) ? [...source] : [];
+
+return rows.sort((a, b) => {
+const aTime = new Date(a?.created_at ?? 0).getTime();
+const bTime = new Date(b?.created_at ?? 0).getTime();
+if (aTime !== bTime) return bTime - aTime;
+return Number(b?.id ?? 0) - Number(a?.id ?? 0);
+});
+});
 
 const totalBatches = computed(() => produces.value.length);
 const listedCount = computed(() => Number(page.props.listed_count ?? produces.value.filter((b) => b.status === 'listed').length));

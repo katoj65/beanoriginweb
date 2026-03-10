@@ -1,6 +1,7 @@
 <script setup>
 import { computed, watch } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
+import { ElNotification } from 'element-plus';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import InputError from '@/Components/InputError.vue';
 
@@ -33,6 +34,18 @@ const submit = () => {
 if (!commodity.value?.id) return;
 form.post(route('commodity.origin-farms.store', { id: commodity.value.id }), {
 preserveScroll: true,
+onSuccess: (inertiaPage) => {
+const success = inertiaPage?.props?.flash?.success;
+const message = typeof success === 'string'
+? success
+: (success && typeof success === 'object' ? success.message : '') || 'Origin farms saved successfully.';
+
+ElNotification({
+title: 'Success',
+message,
+type: 'success',
+});
+},
 });
 };
 </script>
