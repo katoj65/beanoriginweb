@@ -106,16 +106,16 @@ placeholder="Search saved batches..."
 <table class="table table-sm table-middle mb-0 batch-table">
 <thead>
 <tr>
-<th>Batch No.</th>
-<th>Commodity</th>
-<th>Grade</th>
-<th>Weight</th>
-<th>Quantity</th>
-<th>Price</th>
-<th>Warehouse</th>
-<th>Status</th>
-<th>Created Date</th>
-<th class="text-end">Action</th>
+<th><span class="table-head-label"><em class="icon ni ni-hash"></em>Batch No.</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-growth"></em>Commodity</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-award"></em>Grade</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-package"></em>Weight</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-layers"></em>Quantity</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-coins"></em>Price</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-home-fill"></em>Warehouse</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-flag"></em>Status</span></th>
+<th><span class="table-head-label"><em class="icon ni ni-calendar"></em>Date</span></th>
+<th class="text-end"><span class="table-head-label"><em class="icon ni ni-eye"></em>Action</span></th>
 </tr>
 </thead>
 <tbody>
@@ -192,6 +192,12 @@ font-size: 12px;
 text-transform: uppercase;
 letter-spacing: 0.04em;
 color: #64748b;
+}
+
+.table-head-label {
+display: inline-flex;
+align-items: center;
+gap: 0.35rem;
 }
 
 .batch-row {
