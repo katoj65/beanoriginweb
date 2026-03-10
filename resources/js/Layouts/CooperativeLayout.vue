@@ -290,8 +290,8 @@ Sign Out
 
 
 <li class="nk-menu-item">
-<Link :href="route('cooperative.batches.unlisted')" class="nk-menu-link">
-<span class="nk-menu-text">Batch Unlisted</span>
+<Link :href="route('market.batchSaved')" class="nk-menu-link">
+<span class="nk-menu-text">Saved Batches</span>
 </Link>
 </li>
 

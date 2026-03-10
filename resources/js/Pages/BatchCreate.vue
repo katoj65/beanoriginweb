@@ -41,7 +41,7 @@ commodity_type: '',
 weight: '',
 quantity: 1,
 price: '',
-market_type: 'marketplace',
+market_type: 'save',
 grade: '',
 moisture: '',
 warehouse: '',
@@ -189,6 +189,7 @@ class="w-100 theme-no-highlight-select text-capitalize"
 size="large"
 placeholder="Select platform"
 >
+<el-option label="Save" value="save" />
 <el-option label="Marketplace" value="marketplace" />
 <el-option label="Bidding Platform" value="bidding" />
 </el-select>

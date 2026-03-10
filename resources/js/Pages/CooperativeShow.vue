@@ -2,6 +2,7 @@
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { ref, onMounted, computed } from 'vue';
+import { Plus } from '@element-plus/icons-vue';
 
 
 const props=defineProps({
@@ -144,6 +145,14 @@ const goToBatchDetails = (row) => {
   }
 
   router.get(route('cooperative.batches.show', { id: batchId }));
+};
+
+const goCreateCommodity = () => {
+router.get(route('cooperative.produce.create'));
+};
+
+const goCreateBatch = () => {
+router.get(route('cooperative.batches.create'));
 };
 
 
@@ -386,11 +395,56 @@ const goToBatchDetails = (row) => {
 
 
 
+<el-dropdown trigger="click" placement="top-end" class="cooperative-fab-dropdown">
+<el-button class="cooperative-fab" type="success" circle :icon="Plus" />
+<template #dropdown>
+<el-dropdown-menu class="cooperative-fab-menu">
+<el-dropdown-item @click="goCreateCommodity"><em class="icon ni ni-growth mr-1"></em>Create Commodity</el-dropdown-item>
+<el-dropdown-item @click="goCreateBatch"><em class="icon ni ni-package mr-1"></em>Create Batch</el-dropdown-item>
+</el-dropdown-menu>
+</template>
+</el-dropdown>
+
 </div>
 </cooperative-layout>
 </template>
 
 <style scoped>
+.cooperative-fab-dropdown {
+position: fixed;
+right: 24px;
+bottom: 28px;
+z-index: 1100;
+}
+
+:deep(.cooperative-fab.el-button) {
+width: 56px;
+height: 56px;
+background-color: #111111 !important;
+border-color: #111111 !important;
+color: #ffffff !important;
+box-shadow: 0 14px 28px rgba(17, 17, 17, 0.4);
+}
+
+:deep(.cooperative-fab.el-button:hover),
+:deep(.cooperative-fab.el-button:focus) {
+background-color: #000000 !important;
+border-color: #000000 !important;
+color: #ffffff !important;
+}
+
+:deep(.cooperative-fab .el-icon) {
+font-size: 24px;
+font-weight: 700;
+}
+
+:deep(.cooperative-fab-menu .el-dropdown-menu__item) {
+display: inline-flex;
+align-items: center;
+gap: 0.35rem;
+font-size: 0.86rem;
+}
+
 .stats-matrix-card {
 background: var(--card-bg, #ffffff);
 --stats-border-color: var(--bs-border-color, #dbdfea);
@@ -590,6 +644,11 @@ align-items: flex-start;
 }
 
 @media (max-width: 768px) {
+.cooperative-fab-dropdown {
+right: 12px;
+bottom: 16px;
+}
+
 .stats-matrix-grid {
 grid-template-columns: 1fr;
 }

@@ -13,6 +13,7 @@ class MarketTypeSeeder extends Seeder
     public function run(): void
     {
         $types = [
+            'save',
             'marketplace',
             'bidding',
         ];
@@ -24,4 +25,3 @@ class MarketTypeSeeder extends Seeder
         }
     }
 }
-

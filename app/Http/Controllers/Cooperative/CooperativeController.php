@@ -39,6 +39,7 @@ $totalQuantity = Produce::where('cooperative_id', $cooperative->id)->sum('quanti
 $soldCount = $user ? Batch::where('owner_id', $user->id)->where('status', 'sold')->count() : 0;
 $listedBatchWeightTotal = $user ? Batch::where('owner_id', $user->id)->where('status', 'tokenized')->sum('weight') : 0;
 
+
 return Inertia::render('CooperativeShow', [
 'title' => 'Cooperative',
 'response' => [

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Batch\BatchController;
 use App\Http\Controllers\Market\BiddingController;
 use App\Http\Controllers\Market\MarketController;
 
@@ -10,6 +11,8 @@ Route::post('/batch-bidding/{id}/store', [BiddingController::class, 'storeBatchB
 Route::get('/bids/user', [BiddingController::class, 'userBids'])->name('bids.user');
 Route::get('/reserved', [MarketController::class, 'reservedMarket'])->name('reserved');
 Route::get('/bought', [MarketController::class, 'boughtMarket'])->name('bought');
+Route::get('/batch/saved', [BatchController::class, 'batchSaved'])->name('batchSaved');
+Route::get('/batch/{id}/saved', [BatchController::class, 'showBatchSaved'])->whereNumber('id')->name('batchSaved.show');
 Route::get('/cart', [MarketController::class, 'shoppingCart'])->name('cart.index');
 Route::get('/checkout', [MarketController::class, 'checkout'])->name('checkout');
 Route::post('/checkout/store', [MarketController::class, 'storeCheckout'])->name('checkout.store');

@@ -68,7 +68,7 @@ $validated = $request->validate([
 'weight' => ['required', 'numeric', 'min:0.01'],
 'quantity' => ['required', 'numeric', 'min:0.01'],
 'price' => ['required', 'numeric', 'min:0.01'],
-'market_type' => ['required', 'string', 'in:marketplace,bidding'],
+'market_type' => ['required', 'string', 'in:save,marketplace,bidding'],
 'grade' => ['required', 'string', 'max:100', 'exists:crop_grades,name'],
 'moisture' => ['nullable', 'numeric', 'min:0', 'max:100'],
 'warehouse' => ['required', 'string', 'max:255'],
@@ -91,7 +91,7 @@ $batch = Batch::create([
 'is_on_chain' => false,
 'status' => 'created',
 'price' => $validated['price'],
-'market_type' => $validated['market_type'] ?? 'marketplace',
+'market_type' => $validated['market_type'] ?? 'save',
 
 ]);
 
@@ -354,16 +354,31 @@ return redirect()
 ->with('success', 'Batch listed on chain successfully.');
 
 }
-public function batchUnlisted(Request $request)
-{
+
+
+
+
+
+
+public function batchSaved(Request $request){
 $user = $request->user();
 
 $batches = Batch::query()
 ->where('owner_id', $user->id)
-->where('status', 'created')
-->where(function ($query) {
-$query->where('is_on_chain', 0);
-})
+->where('market_type', 'save')
+->select([
+'id',
+'batch_code',
+'status',
+'grade',
+'weight',
+'quantity',
+'commodity_name',
+'warehouse',
+'price',
+'market_type',
+'created_at',
+])
 ->latest()
 ->get()
 ->map(function (Batch $batch) use ($user) {
@@ -373,22 +388,59 @@ return [
 'status' => $batch->status,
 'grade' => $batch->grade,
 'weight' => $batch->weight,
+'quantity' => $batch->quantity,
 'commodity_name' => $batch->commodity_name,
 'warehouse' => $batch->warehouse,
 'price' => $batch->price,
+'market_type' => $batch->market_type,
 'created_at' => $batch->created_at?->toDateTimeString(),
 'seller_name' => trim(($user?->fname ?? '') . ' ' . ($user?->lname ?? '')),
 ];
 })
 ->values();
 
-return Inertia::render('BatchUnlistedPage', [
+return Inertia::render('BatchSaved', [
 'batches' => $batches,
 ]);
 }
 
 
 
+
+public function showBatchSaved(Request $request, string $id){
+$batch = Batch::query()
+->where('id', $id)
+->where('owner_id', $request->user()->id)
+->where('market_type', 'save')
+->firstOrFail();
+
+$ownerProfile = UserProfile::query()
+->where('user_id', $batch->owner_id)
+->first(['user_id', 'tel', 'address']);
+
+return Inertia::render('BachSavedShow', [
+'batch' => [
+'id' => $batch->id,
+'batch_code' => $batch->batch_code,
+'commodity_name' => $batch->commodity_name,
+'commodity_type' => $batch->commodity_type,
+'grade' => $batch->grade,
+'weight' => $batch->weight,
+'quantity' => $batch->quantity,
+'price' => $batch->price,
+'warehouse' => $batch->warehouse,
+'status' => $batch->status,
+'market_type' => $batch->market_type,
+'created_at' => $batch->created_at?->toDateTimeString(),
+],
+'owner' => [
+'name' => trim(($request->user()?->fname ?? '').' '.($request->user()?->lname ?? '')),
+'email' => $request->user()?->email,
+'tel' => $ownerProfile?->tel,
+'address' => $ownerProfile?->address,
+],
+]);
+}
 
 
 
