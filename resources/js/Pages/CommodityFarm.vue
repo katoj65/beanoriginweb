@@ -62,34 +62,34 @@ const goBack = () => {
           <h6 class="title mb-3"><em class="icon ni ni-bag mr-1"></em>Harvest Summary</h6>
           <div class="details-grid">
             <div class="detail-item">
-              <span class="sub-text">Commodity Name</span>
-              <strong>{{ commodity.commodity_name ?? 'N/A' }}</strong>
-            </div>
-            <div class="detail-item">
-              <span class="sub-text">Commodity Type</span>
-              <strong>{{ commodity.commodity_type ?? 'N/A' }}</strong>
-            </div>
-            <div class="detail-item">
-              <span class="sub-text">Grade</span>
-              <strong>{{ commodity.grade ?? 'N/A' }}</strong>
-            </div>
-            <div class="detail-item">
-              <span class="sub-text">Weight</span>
-              <strong>{{ commodity.weight ?? 'N/A' }} kg</strong>
-            </div>
-            <div class="detail-item">
-              <span class="sub-text">Price</span>
-              <strong>UGX {{ formatMoney(commodity.price) }}</strong>
-            </div>
-            <div class="detail-item">
-              <span class="sub-text">Date of Harvest</span>
-              <strong>{{ commodity.harvest_date ?? 'N/A' }}</strong>
-            </div>
-            <div class="detail-item detail-item-full">
-              <span class="sub-text">Status</span>
-              <strong><span :class="statusClass">{{ commodity.status ?? 'created' }}</span></strong>
-            </div>
-          </div>
+                  <span class="sub-text detail-label"><em class="icon ni ni-growth mr-1"></em>Commodity Name</span>
+                  <strong>{{ commodity.commodity_name ?? 'N/A' }}</strong>
+                </div>
+                <div class="detail-item">
+                  <span class="sub-text detail-label"><em class="icon ni ni-box-view mr-1"></em>Commodity Type</span>
+                  <strong>{{ commodity.commodity_type ?? 'N/A' }}</strong>
+                </div>
+                <div class="detail-item">
+                  <span class="sub-text detail-label"><em class="icon ni ni-award mr-1"></em>Grade</span>
+                  <strong>{{ commodity.grade ?? 'N/A' }}</strong>
+                </div>
+                <div class="detail-item">
+                  <span class="sub-text detail-label"><em class="icon ni ni-package mr-1"></em>Weight</span>
+                  <strong>{{ commodity.weight ?? 'N/A' }} kg</strong>
+                </div>
+                <div class="detail-item">
+                  <span class="sub-text detail-label"><em class="icon ni ni-coins mr-1"></em>Price</span>
+                  <strong>UGX {{ formatMoney(commodity.price) }}</strong>
+                </div>
+                <div class="detail-item">
+                  <span class="sub-text detail-label"><em class="icon ni ni-calendar mr-1"></em>Date of Harvest</span>
+                  <strong>{{ commodity.harvest_date ?? 'N/A' }}</strong>
+                </div>
+                <div class="detail-item detail-item-full">
+                  <span class="sub-text detail-label"><em class="icon ni ni-flag mr-1"></em>Status</span>
+                  <strong><span :class="statusClass">{{ commodity.status ?? 'created' }}</span></strong>
+                </div>
+              </div>
         </div>
 
         <div class="card-inner">
@@ -99,35 +99,35 @@ const goBack = () => {
                 <h6 class="title mb-3"><em class="icon ni ni-home mr-1"></em>Farm Information</h6>
                 <div class="details-grid">
                   <div class="detail-item detail-item-full">
-                    <span class="sub-text">Farm Name</span>
+                    <span class="sub-text detail-label"><em class="icon ni ni-home-fill mr-1"></em>Farm Name</span>
                     <strong>{{ farm.farm_name ?? 'N/A' }}</strong>
                   </div>
                   <div class="detail-item detail-item-full">
-                    <span class="sub-text">Location</span>
+                    <span class="sub-text detail-label"><em class="icon ni ni-map-pin mr-1"></em>Location</span>
                     <strong>{{ farm.location ?? 'N/A' }}</strong>
                   </div>
                   <div class="detail-item">
-                    <span class="sub-text">Area (Acres)</span>
+                    <span class="sub-text detail-label"><em class="icon ni ni-layers mr-1"></em>Area (Acres)</span>
                     <strong>{{ farm.area_acres ?? 'N/A' }}</strong>
                   </div>
                   <div class="detail-item">
-                    <span class="sub-text">Primary Crop</span>
+                    <span class="sub-text detail-label"><em class="icon ni ni-growth mr-1"></em>Primary Crop</span>
                     <strong>{{ farm.primary_crop ?? 'N/A' }}</strong>
                   </div>
                   <div class="detail-item">
-                    <span class="sub-text">Soil Type</span>
+                    <span class="sub-text detail-label"><em class="icon ni ni-drop mr-1"></em>Soil Type</span>
                     <strong>{{ farm.soil_type ?? 'N/A' }}</strong>
                   </div>
                   <div class="detail-item">
-                    <span class="sub-text">Water Source Type</span>
+                    <span class="sub-text detail-label"><em class="icon ni ni-sun mr-1"></em>Water Source Type</span>
                     <strong>{{ farm.water_source_type ?? 'N/A' }}</strong>
                   </div>
                   <div class="detail-item">
-                    <span class="sub-text">Latitude</span>
+                    <span class="sub-text detail-label"><em class="icon ni ni-link-alt mr-1"></em>Latitude</span>
                     <strong>{{ farm.latitude ?? 'N/A' }}</strong>
                   </div>
                   <div class="detail-item">
-                    <span class="sub-text">Longitude</span>
+                    <span class="sub-text detail-label"><em class="icon ni ni-link-alt mr-1"></em>Longitude</span>
                     <strong>{{ farm.longitude ?? 'N/A' }}</strong>
                   </div>
                 </div>
@@ -149,27 +149,27 @@ const goBack = () => {
 
                 <div class="details-grid details-grid-single">
                   <div class="detail-item">
-                    <span class="sub-text">Phone Number</span>
+                    <span class="sub-text detail-label"><em class="icon ni ni-call mr-1"></em>Phone Number</span>
                     <strong>{{ owner.phone_number || 'N/A' }}</strong>
                   </div>
                   <div class="detail-item">
-                    <span class="sub-text">Email</span>
+                    <span class="sub-text detail-label"><em class="icon ni ni-mail mr-1"></em>Email</span>
                     <strong>{{ owner.email || 'N/A' }}</strong>
                   </div>
                   <div class="detail-item">
-                    <span class="sub-text">National ID</span>
+                    <span class="sub-text detail-label"><em class="icon ni ni-card-view mr-1"></em>National ID</span>
                     <strong>{{ owner.national_id || 'N/A' }}</strong>
                   </div>
                   <div class="detail-item">
-                    <span class="sub-text">Gender</span>
+                    <span class="sub-text detail-label"><em class="icon ni ni-user mr-1"></em>Gender</span>
                     <strong>{{ owner.gender || 'N/A' }}</strong>
                   </div>
                   <div class="detail-item">
-                    <span class="sub-text">Date of Birth</span>
+                    <span class="sub-text detail-label"><em class="icon ni ni-calendar mr-1"></em>Date of Birth</span>
                     <strong>{{ owner.date_of_birth || 'N/A' }}</strong>
                   </div>
                   <div class="detail-item">
-                    <span class="sub-text">Address</span>
+                    <span class="sub-text detail-label"><em class="icon ni ni-map-pin mr-1"></em>Address</span>
                     <strong>{{ ownerLocation }}</strong>
                   </div>
                 </div>
@@ -197,7 +197,7 @@ const goBack = () => {
 
 .details-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -214,8 +214,13 @@ const goBack = () => {
   gap: 4px;
 }
 
+.detail-label {
+  display: inline-flex;
+  align-items: center;
+}
+
 .detail-item-full {
-  grid-column: span 2;
+  grid-column: span 3;
 }
 
 .panel-box {
