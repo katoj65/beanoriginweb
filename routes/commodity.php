@@ -14,6 +14,12 @@ Route::get('/{commodity}/farms/{farm}', [CommodityController::class, 'showOrigin
 ->whereNumber('commodity')
 ->whereNumber('farm')
 ->name('origin-farms.show');
+Route::get('/{id}/edit', [CommodityController::class, 'editCommodityData'])
+->whereNumber('id')
+->name('edit');
+Route::put('/{id}/update-data', [CommodityController::class, 'updateCommodityData'])
+->whereNumber('id')
+->name('update-data');
 Route::get('/{id}', [CommodityController::class, 'show'])->whereNumber('id')->name('show');
 Route::post('/{id}/quality-data', [CommodityController::class, 'storeCommodityQualityData'])
 ->whereNumber('id')

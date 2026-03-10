@@ -377,6 +377,36 @@ return Inertia::render('CommodityFarm', [
 
 
 
+public function editCommodityData(Request $request, string $id)
+{
+$cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
+$commodity = Commodity::query()
+->where('id', (int) $id)
+->where('cooperative_id', $cooperativeId)
+->firstOrFail();
+
+$crops = Crops::query()->orderBy('name')->get();
+$cropType = CropType::query()->orderBy('name')->get();
+$grade = CropGrade::query()->orderBy('name')->get();
+
+return Inertia::render('CommodityUpdatePage', [
+'title' => 'Update Commodity',
+'commodity' => [
+'id' => $commodity->id,
+'commodity_name' => $commodity->commodity_name,
+'commodity_type' => $commodity->commodity_type,
+'grade' => $commodity->grade,
+'weight' => $commodity->weight,
+'price' => $commodity->price,
+'harvest_date' => $commodity->harvest_date ? $commodity->harvest_date->format('Y-m-d') : null,
+],
+'crops' => CropResource::collection($crops),
+'crop_type' => CropTypeResource::collection($cropType),
+'crop_grade' => CropGradeResource::collection($grade),
+]);
+}
+
+
 //batch create form
 public function createBatch(Request $request)
 {
@@ -561,6 +591,38 @@ return redirect()
 ->with('success', 'Commodity quality data deleted successfully.');
 }
 
+
+
+
+public function updateCommodityData(Request $request, string $id){
+$validated = $request->validate([
+'commodity_name' => ['required', 'string', 'max:255', 'exists:crops,name'],
+'commodity_type' => ['required', 'string', 'max:255'],
+'grade' => ['required', 'string', 'max:255', 'exists:crop_grades,name'],
+'weight' => ['required', 'numeric', 'min:0'],
+'price' => ['required', 'numeric', 'min:0'],
+'harvest_date' => ['required', 'date'],
+]);
+
+$cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
+$commodity = Commodity::query()
+->where('id', (int) $id)
+->where('cooperative_id', $cooperativeId)
+->firstOrFail();
+
+$commodity->update([
+'commodity_name' => $validated['commodity_name'],
+'commodity_type' => $validated['commodity_type'],
+'grade' => $validated['grade'],
+'weight' => $validated['weight'],
+'price' => $validated['price'],
+'harvest_date' => $validated['harvest_date'],
+]);
+
+return redirect()
+->route('commodity.show', ['id' => $commodity->id])
+->with('success', 'Commodity updated successfully.');
+}
 
 
 

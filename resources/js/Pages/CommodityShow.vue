@@ -44,6 +44,11 @@ const goBack = () => {
   router.get(route('cooperative.produce'));
 };
 
+const goToCommodityEdit = () => {
+  if (!commodity.value?.id) return;
+  router.get(route('commodity.edit', { id: commodity.value.id }));
+};
+
 const goToOriginFarms = () => {
   if (!commodity.value?.id) return;
   router.get(route('commodity.origin-farms.create', { id: commodity.value.id }));
@@ -121,6 +126,7 @@ const destroyCommodityQualityData = (row) => {
 
             <el-button-group>
               <el-button :icon="Back" @click="goBack">Back</el-button>
+              <el-button @click="goToCommodityEdit"><em class="icon ni ni-edit-alt mr-1"></em>Edit Commodity</el-button>
               <el-button  @click="goToOriginFarms" v-if="originFarms.length==0"> Manage Origin Farms</el-button>
             </el-button-group>
           </div>
