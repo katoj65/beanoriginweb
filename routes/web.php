@@ -181,6 +181,8 @@ include_once('market.php');
 Route::middleware(['auth'])->prefix('farmer')->name('farmer.')->group(function () {
 Route::get('/{id}/update', [FarmerController::class, 'farmerUpdatePage'])->whereNumber('id')->name('update.page');
 Route::put('/{id}', [FarmerController::class, 'update'])->whereNumber('id')->name('update');
+Route::get('/farm/{id}/update', [FarmController::class, 'farmUpdatePage'])->whereNumber('id')->name('farms.update.page');
+Route::put('/farm/{id}', [FarmController::class, 'update'])->whereNumber('id')->name('farms.update');
 Route::delete('/farm/{id}', [FarmController::class, 'destroy'])->whereNumber('id')->name('farms.destroy');
 });
 

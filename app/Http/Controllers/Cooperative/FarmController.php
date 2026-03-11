@@ -90,7 +90,25 @@ class FarmController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate([
+            'farm_name' => ['required', 'string', 'max:255'],
+            'location' => ['required', 'string', 'max:255'],
+            'area_acres' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+
+        $farm = Farm::query()
+            ->whereHas('farmer', function ($query) use ($cooperativeId) {
+                $query->where('cooperative_id', $cooperativeId);
+            })
+            ->findOrFail($id);
+
+        $farm->update($validated);
+
+        return redirect()->route('cooperative.farms.show', ['id' => $farm->id])->with([
+            'success' => 'Farm details updated successfully.',
+        ]);
     }
 
     /**
@@ -112,4 +130,33 @@ class FarmController extends Controller
             'success' => 'Farm deleted successfully.',
         ]);
     }
+
+
+
+
+
+    
+    public function farmUpdatePage(Request $request, string $id)
+    {
+        $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+
+        $farm = Farm::query()
+            ->whereHas('farmer', function ($query) use ($cooperativeId) {
+                $query->where('cooperative_id', $cooperativeId);
+            })
+            ->findOrFail($id);
+
+        return Inertia::render('FarmUpdatePage', [
+            'title' => 'Update Farm',
+            'farm' => new FarmResource($farm),
+        ]);
+    }
+
+
+
+
+
+
+
+
 }

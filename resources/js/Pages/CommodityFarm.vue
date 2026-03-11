@@ -110,14 +110,6 @@ const goBack = () => {
                     <span class="sub-text detail-label"><em class="icon ni ni-layers mr-1"></em>Area (Acres)</span>
                     <strong>{{ farm.area_acres ?? 'N/A' }}</strong>
                   </div>
-                  <div class="detail-item">
-                    <span class="sub-text detail-label"><em class="icon ni ni-link-alt mr-1"></em>Latitude</span>
-                    <strong>{{ farm.latitude ?? 'N/A' }}</strong>
-                  </div>
-                  <div class="detail-item">
-                    <span class="sub-text detail-label"><em class="icon ni ni-link-alt mr-1"></em>Longitude</span>
-                    <strong>{{ farm.longitude ?? 'N/A' }}</strong>
-                  </div>
                 </div>
               </div>
             </div>

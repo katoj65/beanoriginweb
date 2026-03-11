@@ -1,7 +1,8 @@
 <script setup>
 import { computed } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
+import { EditPen } from '@element-plus/icons-vue';
 
 const page = usePage();
 const farm = computed(() => page.props.farm?.data ?? page.props.farm ?? {});
@@ -15,6 +16,12 @@ const ownerFullName = computed(() => {
 const ownerLocation = computed(() => {
   return [owner.value?.village, owner.value?.sub_county, owner.value?.district].filter(Boolean).join(', ') || 'N/A';
 });
+
+const goToFarmUpdatePage = () => {
+  const id = farm.value?.id;
+  if (!id) return;
+  router.get(route('farmer.farms.update.page', { id }));
+};
 </script>
 
 <template>
@@ -25,31 +32,26 @@ const ownerLocation = computed(() => {
       <div class="row g-gs">
         <div class="col-12 col-lg-8">
           <div class="card card-bordered h-100">
-            <div class="card-inner border-bottom">
-              <h6 class="title mb-1"><em class="icon ni ni-home mr-1"></em>Farm Information</h6>
-              <p class="sub-text mb-0">Core details about the farm.</p>
+            <div class="card-inner border-bottom d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="title mb-1"><em class="icon ni ni-home mr-1"></em>Farm Information</h6>
+                <p class="sub-text mb-0">Core details about the farm.</p>
+              </div>
+              <el-button  :icon="EditPen" @click="goToFarmUpdatePage">Edit Farm</el-button>
             </div>
             <div class="card-inner">
               <div class="details-grid">
-                <div class="detail-item detail-item-full">
+                <div class="detail-item">
                   <span class="sub-text"><em class="icon ni ni-home mr-1"></em>Farm Name</span>
                   <strong>{{ farm.farm_name || 'N/A' }}</strong>
                 </div>
-                <div class="detail-item detail-item-full">
+                <div class="detail-item">
                   <span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Location</span>
                   <strong>{{ farm.location || 'N/A' }}</strong>
                 </div>
-                <div class="detail-item">
+                <div class="detail-item detail-item-full">
                   <span class="sub-text"><em class="icon ni ni-grid-alt mr-1"></em>Area (Acres)</span>
                   <strong>{{ farm.area_acres || '0' }}</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-navigation mr-1"></em>Latitude</span>
-                  <strong>{{ farm.latitude ?? 'N/A' }}</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-navigation-fill mr-1"></em>Longitude</span>
-                  <strong>{{ farm.longitude ?? 'N/A' }}</strong>
                 </div>
               </div>
             </div>
