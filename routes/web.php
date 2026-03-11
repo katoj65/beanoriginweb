@@ -183,6 +183,8 @@ Route::get('/{id}/update', [FarmerController::class, 'farmerUpdatePage'])->where
 Route::put('/{id}', [FarmerController::class, 'update'])->whereNumber('id')->name('update');
 Route::get('/farm/{id}/update', [FarmController::class, 'farmUpdatePage'])->whereNumber('id')->name('farms.update.page');
 Route::put('/farm/{id}', [FarmController::class, 'update'])->whereNumber('id')->name('farms.update');
+Route::post('/farm/{id}/sustainability-data', [FarmController::class, 'storeFarmSustainabilityData'])->whereNumber('id')->name('farms.sustainability.store');
+Route::delete('/farm/{id}/sustainability-data/{sustainabilityId}', [FarmController::class, 'destroySustainabilityData'])->whereNumber('id')->whereNumber('sustainabilityId')->name('farms.sustainability.destroy');
 Route::delete('/farm/{id}', [FarmController::class, 'destroy'])->whereNumber('id')->name('farms.destroy');
 });
 

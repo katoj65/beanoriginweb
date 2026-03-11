@@ -8,7 +8,10 @@ use App\Http\Resources\FarmResource;
 use App\Models\Cooperative;
 use App\Models\Farmer;
 use App\Models\Farm;
+use App\Models\FarmSustainabilityData;
+use App\Models\SustainabilityMetadata;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class FarmController extends Controller
@@ -82,8 +85,26 @@ class FarmController extends Controller
             'title' => 'Farm Details',
             'farm' => new FarmResource($farm),
             'owner' => new CooperativeFarmerResource($farm->farmer),
+            'sustainability_metadata' => SustainabilityMetadata::query()
+                ->orderBy('activity')
+                ->pluck('activity')
+                ->values(),
+            'farm_sustainability_data' => FarmSustainabilityData::query()
+                ->where('farm_id', $farm->id)
+                ->latest('id')
+                ->get()
+                ->map(fn ($item) => [
+                    'id' => $item->id,
+                    'activity' => $item->activity,
+                    'value' => $item->value,
+                    'created_at' => optional($item->created_at)->format('Y-m-d H:i:s'),
+                ])
+                ->values(),
         ]);
     }
+
+
+
 
     /**
      * Update the specified resource in storage.
@@ -111,6 +132,8 @@ class FarmController extends Controller
         ]);
     }
 
+
+
     /**
      * Remove the specified resource from storage.
      */
@@ -135,7 +158,7 @@ class FarmController extends Controller
 
 
 
-    
+
     public function farmUpdatePage(Request $request, string $id)
     {
         $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
@@ -151,6 +174,70 @@ class FarmController extends Controller
             'farm' => new FarmResource($farm),
         ]);
     }
+
+
+
+
+
+    public function storeFarmSustainabilityData(Request $request, string $id)
+    {
+        $validated = $request->validate([
+            'activity' => ['required', 'string', 'max:255'],
+            'value' => ['required', 'string', 'max:255'],
+        ]);
+
+        $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+
+        $farm = Farm::query()
+            ->whereHas('farmer', function ($query) use ($cooperativeId) {
+                $query->where('cooperative_id', $cooperativeId);
+            })
+            ->findOrFail($id);
+
+        $activityExists = FarmSustainabilityData::query()
+            ->where('farm_id', $farm->id)
+            ->where('activity', trim($validated['activity']))
+            ->exists();
+        if ($activityExists) {
+            throw ValidationException::withMessages([
+                'activity' => 'Activity has already been added.',
+            ]);
+        }
+
+        FarmSustainabilityData::create([
+            'farm_id' => $farm->id,
+            'activity' => trim($validated['activity']),
+            'value' => $validated['value'],
+        ]);
+
+        return redirect()
+            ->route('cooperative.farms.show', ['id' => $farm->id])
+            ->with('success', 'Farm sustainability data saved successfully.');
+    }
+
+
+
+
+public function destroySustainabilityData(Request $request, string $id, string $sustainabilityId){
+    $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+
+    $farm = Farm::query()
+        ->whereHas('farmer', function ($query) use ($cooperativeId) {
+            $query->where('cooperative_id', $cooperativeId);
+        })
+        ->findOrFail($id);
+
+    $model = FarmSustainabilityData::query()
+        ->where('farm_id', $farm->id)
+        ->findOrFail($sustainabilityId);
+    $model->delete();
+
+    return redirect()
+        ->route('cooperative.farms.show', ['id' => $farm->id])
+        ->with('success', 'Farm sustainability data deleted successfully.');
+}
+
+
 
 
 
