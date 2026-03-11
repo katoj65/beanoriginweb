@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { Link, router, useForm, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import { ElNotification } from 'element-plus';
@@ -86,6 +86,21 @@ form.cooperative_farmer_id = farmer.value?.id ?? '';
 ElNotification({
 title: 'Success',
 message: page.props.flash?.success || 'Farm has been saved successfully.',
+type: 'success',
+});
+},
+});
+};
+
+const destroyFarm = (farmId) => {
+if (!farmId) return;
+
+router.delete(route('farmer.farms.destroy', { id: farmId }), {
+preserveScroll: true,
+onSuccess: () => {
+ElNotification({
+title: 'Success',
+message: page.props.flash?.success || 'Farm deleted successfully.',
 type: 'success',
 });
 },
@@ -198,7 +213,16 @@ type: 'success',
 <div class="card card-bordered farmer-main-card h-100">
 <div class="card-inner">
 <div class="nk-block">
+<div class="profile-head-actions">
 <div class="overline-title-alt mb-2 mt-2 section-head"><em class="icon ni ni-user mr-1"></em>Farmer Profile</div>
+<el-button
+v-if="farmer.id"
+class="farmer-edit-btn"
+@click="router.get(route('farmer.update.page', { id: farmer.id }))"
+>
+<em class="icon ni ni-edit mr-1"></em>Edit Farmer
+</el-button>
+</div>
 <div class="in-profile-grid">
 <div class="in-profile-card">
 <span class="in-profile-label"><em class="icon ni ni-home mr-1"></em>Total Farms</span>
@@ -237,6 +261,7 @@ type: 'success',
 <div class="nk-tb-col tb-col-sm"><span class="sub-text"><em class="icon ni ni-home mr-1"></em>Farm Name</span></div>
 <div class="nk-tb-col"><span class="sub-text"><em class="icon ni ni-package mr-1"></em>Farm Size (Acres)</span></div>
 <div class="nk-tb-col"><span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Location</span></div>
+<div class="nk-tb-col tb-col-end"><span class="sub-text"><em class="icon ni ni-trash mr-1"></em>Action</span></div>
 </div>
 <div class="nk-tb-item" v-for="farm in farms" :key="farm.id">
 <div class="nk-tb-col">
@@ -252,6 +277,11 @@ type: 'success',
 </div>
 <div class="nk-tb-col">
 <span class="sub-text text-capitalize">{{ farm.location || 'N/A' }}</span>
+</div>
+<div class="nk-tb-col tb-col-end">
+<el-button type="danger" plain size="small" @click="destroyFarm(farm.id)">
+<em class="icon ni ni-trash mr-1"></em>Delete
+</el-button>
 </div>
 </div>
 </div>
@@ -485,6 +515,19 @@ align-items: center;
 justify-content: space-between;
 gap: 10px;
 margin-bottom: 0.85rem;
+}
+
+.profile-head-actions {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 10px;
+margin-bottom: 0.65rem;
+}
+
+.farmer-edit-btn {
+display: inline-flex;
+align-items: center;
 }
 
 .in-profile-grid {

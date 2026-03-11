@@ -98,6 +98,18 @@ class FarmController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+
+        $farm = Farm::query()
+            ->whereHas('farmer', function ($query) use ($cooperativeId) {
+                $query->where('cooperative_id', $cooperativeId);
+            })
+            ->findOrFail($id);
+
+        $farm->delete();
+
+        return redirect()->back()->with([
+            'success' => 'Farm deleted successfully.',
+        ]);
     }
 }

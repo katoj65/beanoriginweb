@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Cooperative;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CooperativeFarmer as CooperativeFarmerResource;
+use App\Http\Resources\FarmerResource;
 use App\Http\Resources\FarmResource;
 use App\Models\Cooperative;
 use Illuminate\Http\Request;
@@ -109,7 +110,27 @@ class FarmerController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate([
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'phone_number' => ['required', 'string', 'max:30', 'regex:/^[0-9+()\\-\\s]{7,20}$/'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'gender' => ['required', 'in:male,female,other'],
+            'date_of_birth' => ['required', 'date', 'before:today'],
+            'national_id' => ['nullable', 'string', 'max:50'],
+            'district' => ['required', 'string', 'max:255'],
+            'sub_county' => ['required', 'string', 'max:255'],
+            'village' => ['required', 'string', 'max:255'],
+            'primary_crop' => ['nullable', 'string', 'max:255'],
+            'status' => ['nullable', 'in:pending,active,suspended,exited'],
+        ]);
+
+        $farmer = Farmer::query()->findOrFail($id);
+        $farmer->update($validated);
+
+        return redirect()
+            ->route('cooperative.farmers.show', ['id' => $farmer->id])
+            ->with('success', 'Farmer details updated successfully.');
     }
 
     /**
@@ -122,16 +143,35 @@ class FarmerController extends Controller
 
 
 
+public function farmerUpdatePage(Request $request, string $id)
+{
+    $farmer = Farmer::query()->findOrFail($id);
 
-
-
-
-
-
-
-
-
-
-    
+    return Inertia::render('FarmerUpdatePage', [
+        'title' => 'Update Farmer',
+        'farmer' => new FarmerResource($farmer),
+    ]);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

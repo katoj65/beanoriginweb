@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Home\HomeController;
 use App\Http\Controllers\Home\UserProfileController;
+use App\Http\Controllers\Cooperative\FarmerController;
+use App\Http\Controllers\Cooperative\FarmController;
 use App\Services\FarmerVerificationService;
 
 Route::get('/', function () {
@@ -47,7 +49,6 @@ return Inertia::render('TestPage');
 });
 
 
-
 Route::middleware([
 'auth:sanctum',
 config('jetstream.auth_session'),
@@ -62,23 +63,37 @@ Route::post('/update/user-account-status',[UserProfileController::class,'update_
 
 
 
-
-
-
-
-
-
 Route::middleware(['auth'])->group(function () {
 // Route::get('/test',[HomeController::class,'userDashboard']);
 Route::get('/test',function(){
 //return Inertia::render('TestPage');
 
 return FarmerVerificationService::checkFarmer();
-
-
-
-
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 });
 
 
@@ -153,6 +168,20 @@ include_once('admin.php');
 
 Route::middleware(['auth'])->prefix('market')->name('market.')->group(function(){
 include_once('market.php');
+});
+
+
+
+
+
+
+
+
+//farmer prefix
+Route::middleware(['auth'])->prefix('farmer')->name('farmer.')->group(function () {
+Route::get('/{id}/update', [FarmerController::class, 'farmerUpdatePage'])->whereNumber('id')->name('update.page');
+Route::put('/{id}', [FarmerController::class, 'update'])->whereNumber('id')->name('update');
+Route::delete('/farm/{id}', [FarmController::class, 'destroy'])->whereNumber('id')->name('farms.destroy');
 });
 
 
