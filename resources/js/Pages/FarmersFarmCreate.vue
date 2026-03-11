@@ -17,9 +17,6 @@ const form = useForm({
   location: '',
   area_acres: '',
   number_of_gardens: '',
-  primary_crop: '',
-  soil_type: '',
-  water_source_type: '',
 });
 
 form.cooperative_farmer_id = preselectedFarmer;
@@ -88,24 +85,6 @@ const goBack = () => {
                   <label class="form-label">Number of Gardens</label>
                   <input v-model="form.number_of_gardens" type="number" min="0" step="1" class="form-control" placeholder="0" />
                   <InputError :message="form.errors.number_of_gardens" class="mt-2" />
-                </div>
-
-                <div class="col-12 col-md-4">
-                  <label class="form-label">Primary Crop</label>
-                  <input v-model="form.primary_crop" type="text" class="form-control" placeholder="Coffee, Maize..." />
-                  <InputError :message="form.errors.primary_crop" class="mt-2" />
-                </div>
-
-                <div class="col-12 col-md-6">
-                  <label class="form-label">Soil Type</label>
-                  <input v-model="form.soil_type" type="text" class="form-control" placeholder="Loamy, Clay, Sandy..." />
-                  <InputError :message="form.errors.soil_type" class="mt-2" />
-                </div>
-
-                <div class="col-12 col-md-6">
-                  <label class="form-label"><em class="icon ni ni-dropbox mr-1"></em>Water Source Type</label>
-                  <input v-model="form.water_source_type" type="text" class="form-control" placeholder="Rainfed, Borehole, River..." />
-                  <InputError :message="form.errors.water_source_type" class="mt-2" />
                 </div>
 
                 <div class="col-12">

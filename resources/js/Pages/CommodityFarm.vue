@@ -111,18 +111,6 @@ const goBack = () => {
                     <strong>{{ farm.area_acres ?? 'N/A' }}</strong>
                   </div>
                   <div class="detail-item">
-                    <span class="sub-text detail-label"><em class="icon ni ni-growth mr-1"></em>Primary Crop</span>
-                    <strong>{{ farm.primary_crop ?? 'N/A' }}</strong>
-                  </div>
-                  <div class="detail-item">
-                    <span class="sub-text detail-label"><em class="icon ni ni-drop mr-1"></em>Soil Type</span>
-                    <strong>{{ farm.soil_type ?? 'N/A' }}</strong>
-                  </div>
-                  <div class="detail-item">
-                    <span class="sub-text detail-label"><em class="icon ni ni-sun mr-1"></em>Water Source Type</span>
-                    <strong>{{ farm.water_source_type ?? 'N/A' }}</strong>
-                  </div>
-                  <div class="detail-item">
                     <span class="sub-text detail-label"><em class="icon ni ni-link-alt mr-1"></em>Latitude</span>
                     <strong>{{ farm.latitude ?? 'N/A' }}</strong>
                   </div>

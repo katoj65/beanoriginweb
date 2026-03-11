@@ -55,9 +55,6 @@ class FarmController extends Controller
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'area_acres' => ['required', 'numeric', 'min:0'],
-            'primary_crop' => ['required', 'string', 'max:255'],
-            'soil_type' => ['required', 'string', 'max:255'],
-            'water_source_type' => ['required', 'string', 'max:255'],
         ]);
 
         Farm::create($validated);

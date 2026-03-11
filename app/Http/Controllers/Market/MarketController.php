@@ -190,9 +190,6 @@ $commodityFarmRows = Commodity::query()
 'farms.farm_name',
 'farms.location',
 'farms.area_acres',
-'farms.primary_crop',
-'farms.soil_type',
-'farms.water_source_type',
 ])
 ->orderBy('commodities.commodity_name')
 ->orderBy('farms.farm_name')
@@ -222,9 +219,6 @@ $batchFarms = $commodityFarmRows
 'farm_name' => $row->farm_name,
 'location' => $row->location,
 'area_acres' => $row->area_acres,
-'primary_crop' => $row->primary_crop,
-'soil_type' => $row->soil_type,
-'water_source_type' => $row->water_source_type,
 ])
 ->unique(fn (array $farm) => $farm['id'].'-'.$farm['commodity_id'])
 ->values();
@@ -241,9 +235,6 @@ $farms = $rows
 'farm_name' => $row->farm_name,
 'location' => $row->location,
 'area_acres' => $row->area_acres,
-'primary_crop' => $row->primary_crop,
-'soil_type' => $row->soil_type,
-'water_source_type' => $row->water_source_type,
 ])
 ->unique('id')
 ->values();
@@ -346,9 +337,6 @@ $commodityFarmRows = Commodity::query()
 'farms.farm_name',
 'farms.location',
 'farms.area_acres',
-'farms.primary_crop',
-'farms.soil_type',
-'farms.water_source_type',
 ])
 ->orderBy('commodities.commodity_name')
 ->orderBy('farms.farm_name')
@@ -378,9 +366,6 @@ $batchFarms = $commodityFarmRows
 'farm_name' => $row->farm_name,
 'location' => $row->location,
 'area_acres' => $row->area_acres,
-'primary_crop' => $row->primary_crop,
-'soil_type' => $row->soil_type,
-'water_source_type' => $row->water_source_type,
 ])
 ->unique(fn (array $farm) => $farm['id'].'-'.$farm['commodity_id'])
 ->values();
@@ -397,9 +382,6 @@ $farms = $rows
 'farm_name' => $row->farm_name,
 'location' => $row->location,
 'area_acres' => $row->area_acres,
-'primary_crop' => $row->primary_crop,
-'soil_type' => $row->soil_type,
-'water_source_type' => $row->water_source_type,
 ])
 ->unique('id')
 ->values();

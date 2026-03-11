@@ -15,9 +15,6 @@ class Farm extends Model
         'latitude',
         'longitude',
         'area_acres',
-        'primary_crop',
-        'soil_type',
-        'water_source_type',
     ];
 
     protected $casts = [

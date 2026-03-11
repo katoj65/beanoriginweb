@@ -129,7 +129,7 @@ v-for="item in crop_type"
 </div>
 
 <div class="col-12 col-md-6">
-<label class="form-label" for="03">Quantity (Kgs)</label>
+<label class="form-label" for="03">Weight (Kgs)</label>
 <input v-model="form.quantity" type="number" min="0" step="0.01" class="form-control" placeholder="Enter batch quantity in Kgs" id="03"/>
 <InputError :message="form.errors.quantity" class="mt-2" />
 </div>

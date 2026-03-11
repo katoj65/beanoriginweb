@@ -19,9 +19,6 @@ return new class extends Migration
             $table->decimal('latitude', 10, 7)->nullable();
             $table->decimal('longitude', 10, 7)->nullable();
             $table->decimal('area_acres', 10, 2);
-            $table->string('primary_crop');
-            $table->string('soil_type');
-            $table->string('water_source_type');
             $table->timestamps();
         });
     }

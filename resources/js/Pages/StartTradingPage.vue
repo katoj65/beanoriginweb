@@ -224,7 +224,7 @@ Set your buying criteria, compare verified market offers, and execute with a tra
 <thead>
 <tr>
 <th>Instrument</th>
-<th>Quantity (Kgs)</th>
+<th>Weight (Kgs)</th>
 <th>Min (UGX)</th>
 <th>Max (UGX)</th>
 <th>Mid (UGX)</th>

@@ -12,8 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('farms', function (Blueprint $table) {
-            $table->string('farmer_last_name')->nullable()->after('water_source_type');
-            $table->string('farmer_telephone')->nullable()->after('farmer_last_name');
+            if (!Schema::hasColumn('farms', 'farmer_last_name')) {
+                $table->string('farmer_last_name')->nullable()->after('area_acres');
+            }
+
+            if (!Schema::hasColumn('farms', 'farmer_telephone')) {
+                $table->string('farmer_telephone')->nullable()->after('farmer_last_name');
+            }
         });
     }
 
@@ -23,7 +28,19 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('farms', function (Blueprint $table) {
-            $table->dropColumn(['farmer_last_name', 'farmer_telephone']);
+            $dropColumns = [];
+
+            if (Schema::hasColumn('farms', 'farmer_last_name')) {
+                $dropColumns[] = 'farmer_last_name';
+            }
+
+            if (Schema::hasColumn('farms', 'farmer_telephone')) {
+                $dropColumns[] = 'farmer_telephone';
+            }
+
+            if (!empty($dropColumns)) {
+                $table->dropColumn($dropColumns);
+            }
         });
     }
 };

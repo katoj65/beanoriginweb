@@ -279,9 +279,6 @@ const destroyCommodityQualityData = (row) => {
                   <th style="width: 100px;">Farm Name</th>
                   <th>Location</th>
                   <th>Area (Acres)</th>
-                  <th>Primary Crop</th>
-                  <th>Soil Type</th>
-                  <th>Water Source</th>
                 </tr>
               </thead>
               <tbody>
@@ -293,9 +290,6 @@ const destroyCommodityQualityData = (row) => {
                   </td>
                   <td>{{ farm.location ?? 'N/A' }}</td>
                   <td>{{ farm.area_acres ?? 'N/A' }}</td>
-                  <td>{{ farm.primary_crop ?? 'N/A' }}</td>
-                  <td>{{ farm.soil_type ?? 'N/A' }}</td>
-                  <td>{{ farm.water_source_type ?? 'N/A' }}</td>
                 </tr>
               </tbody>
             </table>

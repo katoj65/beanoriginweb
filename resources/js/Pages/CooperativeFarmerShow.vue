@@ -3,14 +3,37 @@ import { computed, ref } from 'vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import InputError from '@/Components/InputError.vue';
-import SubmitButton from '@/Components/SubmitButton.vue';
-import { ElMessage } from 'element-plus'
+import { ElNotification } from 'element-plus';
 
 const page = usePage();
 const farmer = computed(() => page.props.farmer?.data ?? page.props.farmer ?? {});
-const farms = computed(() => page.props.farms?.data ?? page.props.farms ?? []);
-
-
+const farms = computed(() => {
+const source = page.props.farms;
+if (Array.isArray(source?.data)) return source.data;
+if (Array.isArray(source)) return source;
+return [];
+});
+const farmCount = computed(() => farms.value.length);
+const fullName = computed(() => {
+const value = farmer.value?.full_name;
+if (value) return value;
+return [farmer.value?.first_name, farmer.value?.last_name].filter(Boolean).join(' ') || 'N/A';
+});
+const totalFarmArea = computed(() =>
+farms.value.reduce((sum, item) => sum + Number(item?.area_acres ?? 0), 0),
+);
+const formattedTotalFarmArea = computed(() =>
+totalFarmArea.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+);
+const averageFarmArea = computed(() => (farmCount.value > 0 ? totalFarmArea.value / farmCount.value : 0));
+const formattedAverageFarmArea = computed(() =>
+averageFarmArea.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+);
+const profileSince = computed(() => {
+const value = farmer.value?.created_at;
+if (!value) return 'N/A';
+return String(value).split(' ')[0];
+});
 
 const statusClass = computed(() => {
 const status = farmer.value?.status;
@@ -36,11 +59,6 @@ const last = farmer.value?.last_name?.[0] ?? '';
 return (first + last || 'FR').toUpperCase();
 });
 
-
-
-
-
-
 const showModal = ref(false);
 
 const form = useForm({
@@ -48,32 +66,16 @@ cooperative_farmer_id: farmer.value?.id ?? '',
 farm_name: '',
 location: '',
 area_acres: '',
-primary_crop: farmer.value?.primary_crop ?? '',
-soil_type: '',
-water_source_type: '',
 });
-
-
-
-
 
 const openModal = () => {
 form.cooperative_farmer_id = farmer.value?.id ?? '';
-if (!form.primary_crop) form.primary_crop = farmer.value?.primary_crop ?? '';
 showModal.value = true;
 };
-
-
-
 
 const closeModal = () => {
 showModal.value = false;
 };
-
-
-
-
-
 
 const submit = () => {
 form.post(route('cooperative.farms.store'), {
@@ -81,12 +83,10 @@ onSuccess: () => {
 showModal.value = false;
 form.reset();
 form.cooperative_farmer_id = farmer.value?.id ?? '';
-form.primary_crop = farmer.value?.primary_crop ?? '';
-ElMessage({
-message: page.props.flash?.success,
+ElNotification({
+title: 'Success',
+message: page.props.flash?.success || 'Farm has been saved successfully.',
 type: 'success',
-placement: 'bottom-left',
-customClass: 'el-success-message',
 });
 },
 });
@@ -95,146 +95,205 @@ customClass: 'el-success-message',
 
 <template>
 <CooperativeLayout>
-<div class="container">
+<div class="container farmer-profile-page mt-0">
+<div class="nk-content-inner">
+<div class="nk-content-body">
+
+
+<div class="nk-block farmer-page-wrap">
 <div class="row g-gs">
-<div class="col-12 col-lg-4">
-<div class="card card-bordered profile-card">
-<div class="card-inner text-center">
-<div class="profile-avatar">{{ initials }}</div>
-<h5 class="mb-1 mt-2">{{ farmer.full_name || 'N/A' }}</h5>
-<p class="sub-text mb-2">Registered Farmer</p>
-<span class="badge rounded-pill" :class="statusClass">{{ statusLabel }}</span>
+<div class="col-lg-4 col-xl-4 col-xxl-3">
+<div class="card card-bordered farmer-summary-card">
+<div class="card-inner-group">
+<div class="card-inner border-0">
+<div class="user-card user-card-s2">
+<div class="user-avatar lg bg-secondary profile-avatar-solid">
+<em class="icon ni ni-user"></em>
+
 </div>
-<div class="card-inner">
-<div class="profile-metric">
+<div class="user-info">
+<div class="badge rounded-pill ucap" :class="statusClass">{{ statusLabel }}</div>
+<h5 class="text-capitalize">{{ fullName }}</h5>
+<span class="sub-text summary-email">{{ farmer.email || 'N/A' }}</span>
+<p class="summary-location mb-0"><em class="icon ni ni-map-pin mr-1"></em>{{ locationLabel }}</p>
+</div>
+</div>
+</div>
+
+
+
+<div class="card-inner border-0">
+<div class="row text-center stats-row">
+<div class="col-4">
+<div class="profile-stats">
+<span class="amount">{{ farmCount }}</span>
+<span class="sub-text">Total Farms</span>
+</div>
+</div>
+<div class="col-4">
+<div class="profile-stats">
+<span class="amount">{{ formattedTotalFarmArea }}</span>
+<span class="sub-text">Area (Acres)</span>
+</div>
+</div>
+<div class="col-4">
+<div class="profile-stats">
+<span class="amount text-capitalize">{{ farmer.primary_crop || 'N/A' }}</span>
 <span class="sub-text">Primary Crop</span>
-<strong>{{ farmer.primary_crop || 'N/A' }}</strong>
 </div>
-<div class="profile-metric">
-<span class="sub-text">Farmer ID</span>
-<strong>#{{ farmer.id || '-' }}</strong>
 </div>
-<div class="profile-metric">
-<span class="sub-text">Location</span>
-<strong>{{ locationLabel }}</strong>
 </div>
-<div class="mt-3">
-<button type="button" class="btn btn-primary btn-sm w-100" @click="openModal">
-<em class="icon ni ni-plus mr-1"></em>Add Farm Details
+</div>
+
+
+
+
+
+<div class="card-inner short-details">
+<h6 class="overline-title mb-2"><em class="icon ni ni-list mr-1"></em>Profile Snapshot</h6>
+<div class="row g-3">
+<div class="col-sm-6 col-md-4 col-lg-12 short-detail-item">
+<span class="sub-text"><em class="icon ni ni-calendar mr-1"></em>Date of Birth:</span>
+<span>{{ farmer.date_of_birth || 'N/A' }}</span>
+</div>
+<div class="col-sm-6 col-md-4 col-lg-12 short-detail-item">
+<span class="sub-text"><em class="icon ni ni-users mr-1"></em>Gender:</span>
+<span class="text-capitalize">{{ farmer.gender || 'N/A' }}</span>
+</div>
+<div class="col-sm-6 col-md-4 col-lg-12 short-detail-item">
+<span class="sub-text"><em class="icon ni ni-card-view mr-1"></em>National ID:</span>
+<span>{{ farmer.national_id || 'N/A' }}</span>
+</div>
+<div class="col-sm-6 col-md-4 col-lg-12 short-detail-item">
+<span class="sub-text"><em class="icon ni ni-tag mr-1"></em>Farmer ID:</span>
+<span>#{{ farmer.id || '-' }}</span>
+</div>
+<div class="col-sm-6 col-md-4 col-lg-12 short-detail-item">
+<span class="sub-text"><em class="icon ni ni-call mr-1"></em>Phone Number:</span>
+<span>{{ farmer.phone_number || 'N/A' }}</span>
+</div>
+<div class="col-sm-6 col-md-4 col-lg-12 short-detail-item">
+<span class="sub-text"><em class="icon ni ni-map-fill mr-1"></em>District:</span>
+<span class="text-capitalize">{{ farmer.district || 'N/A' }}</span>
+</div>
+<div class="col-sm-6 col-md-4 col-lg-12 short-detail-item">
+<span class="sub-text"><em class="icon ni ni-map mr-1"></em>Sub County:</span>
+<span class="text-capitalize">{{ farmer.sub_county || 'N/A' }}</span>
+</div>
+<div class="col-sm-6 col-md-4 col-lg-12 short-detail-item">
+<span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Village:</span>
+<span class="text-capitalize">{{ farmer.village || 'N/A' }}</span>
+</div>
+<div class="col-sm-6 col-md-4 col-lg-12 short-detail-item">
+<span class="sub-text"><em class="icon ni ni-calendar mr-1"></em>Registered At:</span>
+<span>{{ farmer.created_at || 'N/A' }}</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="col-lg-8 col-xl-8 col-xxl-9">
+<div class="card card-bordered farmer-main-card h-100">
+<div class="card-inner">
+<div class="nk-block">
+<div class="overline-title-alt mb-2 mt-2 section-head"><em class="icon ni ni-user mr-1"></em>Farmer Profile</div>
+<div class="in-profile-grid">
+<div class="in-profile-card">
+<span class="in-profile-label"><em class="icon ni ni-home mr-1"></em>Total Farms</span>
+<strong class="in-profile-value">{{ farmCount }}</strong>
+</div>
+<div class="in-profile-card">
+<span class="in-profile-label"><em class="icon ni ni-package mr-1"></em>Total Land</span>
+<strong class="in-profile-value">{{ formattedTotalFarmArea }} acres</strong>
+</div>
+<div class="in-profile-card">
+<span class="in-profile-label"><em class="icon ni ni-bar-chart mr-1"></em>Average Farm Size</span>
+<strong class="in-profile-value">{{ formattedAverageFarmArea }} acres</strong>
+</div>
+<div class="in-profile-card">
+<span class="in-profile-label"><em class="icon ni ni-check-circle mr-1"></em>Status</span>
+<strong class="in-profile-value text-capitalize">{{ statusLabel }}</strong>
+</div>
+</div>
+<div class="in-profile-meta">
+<span><em class="icon ni ni-calendar mr-1"></em>Member Since: {{ profileSince }}</span>
+<span><em class="icon ni ni-map-pin mr-1"></em>Location: {{ locationLabel }}</span>
+</div>
+</div>
+
+<div class="nk-block">
+<div class="farm-section-head">
+<h6 class="lead-text mb-0 section-head"><em class="icon ni ni-home mr-1"></em>Farm Portfolio</h6>
+<button type="button" class="btn btn-primary btn-sm add-farm-btn" @click="openModal">
+<em class="icon ni ni-plus mr-1"></em>Add Farm
 </button>
 </div>
+<div v-if="farms.length" class="farm-list-wrap">
+<div class="nk-tb-list nk-tb-ulist is-compact farm-table-modern">
+<div class="nk-tb-item nk-tb-head">
+<div class="nk-tb-col"><span class="sub-text"><em class="icon ni ni-tag mr-1"></em>Farm ID</span></div>
+<div class="nk-tb-col tb-col-sm"><span class="sub-text"><em class="icon ni ni-home mr-1"></em>Farm Name</span></div>
+<div class="nk-tb-col"><span class="sub-text"><em class="icon ni ni-package mr-1"></em>Farm Size (Acres)</span></div>
+<div class="nk-tb-col"><span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Location</span></div>
 </div>
+<div class="nk-tb-item" v-for="farm in farms" :key="farm.id">
+<div class="nk-tb-col">
+<span class="fw-bold">#{{ farm.id }}</span>
 </div>
-</div>
-
-<div class="col-12 col-lg-8">
-<div class="card card-bordered">
-<div class="card-inner">
-<h6 class="title mb-1"><em class="icon ni ni-user mr-1"></em>Farmer Profile</h6>
-<p class="sub-text mb-0">All farmer details from the database record.</p>
-</div>
-<div class="card-inner border-top">
-<div class="details-grid">
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-user mr-1"></em>First Name</span>
-<strong>{{ farmer.first_name || 'N/A' }}</strong>
-</div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-user mr-1"></em>Last Name</span>
-<strong>{{ farmer.last_name || 'N/A' }}</strong>
-</div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-users mr-1"></em>Gender</span>
-<strong>{{ farmer.gender || 'N/A' }}</strong>
-</div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-calendar mr-1"></em>Date of Birth</span>
-<strong>{{ farmer.date_of_birth || 'N/A' }}</strong>
-</div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-card-view mr-1"></em>National ID</span>
-<strong>{{ farmer.national_id || 'N/A' }}</strong>
-</div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-growth mr-1"></em>Primary Crop</span>
-<strong>{{ farmer.primary_crop || 'N/A' }}</strong>
-</div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-check-circle mr-1"></em>Status</span>
-<strong>{{ farmer.status || 'N/A' }}</strong>
-</div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-clock mr-1"></em>Created At</span>
-<strong>{{ farmer.created_at || 'N/A' }}</strong>
-</div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-update mr-1"></em>Updated At</span>
-<strong>{{ farmer.updated_at || 'N/A' }}</strong>
-</div>
-</div>
-</div>
-
-<div class="card-inner border-top">
-<h6 class="title mb-2"><em class="icon ni ni-call mr-1"></em>Contact Information</h6>
-<div class="details-grid">
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-call mr-1"></em>Phone Number</span>
-<strong>{{ farmer.phone_number || 'N/A' }}</strong>
-</div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-mail mr-1"></em>Email</span>
-<strong>{{ farmer.email || 'N/A' }}</strong>
-</div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Village</span>
-<strong>{{ farmer.village || 'N/A' }}</strong>
-</div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-map mr-1"></em>Sub County</span>
-<strong>{{ farmer.sub_county || 'N/A' }}</strong>
-</div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-map-fill mr-1"></em>District</span>
-<strong>{{ farmer.district || 'N/A' }}</strong>
-</div>
-<div class="detail-item detail-item-full">
-<span class="sub-text"><em class="icon ni ni-navigation mr-1"></em>Combined Location</span>
-<strong>{{ locationLabel }}</strong>
-</div>
-</div>
-</div>
-
-<div class="card-inner border-top">
-<h6 class="title mb-2"><em class="icon ni ni-home mr-1"></em>Farms</h6>
-<div v-if="farms.length" class="farm-table-wrap">
-<table class="table table-sm table-middle mb-0 farm-table">
-<thead>
-<tr>
-<th>Farm Name</th>
-<th>Location</th>
-<th>Area (Acres)</th>
-<th><em class="icon ni ni-growth mr-1"></em>Primary Crop</th>
-<th><em class="icon ni ni-sun-fill mr-1"></em>Soil Type</th>
-<th><em class="icon ni ni-dropbox mr-1"></em>Water Source</th>
-</tr>
-</thead>
-<tbody>
-<tr v-for="farm in farms" :key="farm.id">
-<td>
-<Link :href="route('cooperative.farms.show', farm.id)" class="farm-link">
+<div class="nk-tb-col tb-col-sm">
+<Link :href="route('cooperative.farms.show', farm.id)" class="farm-link text-capitalize">
 {{ farm.farm_name || 'Unnamed Farm' }}
 </Link>
-</td>
-<td>{{ farm.location || 'N/A' }}</td>
-<td>{{ farm.area_acres || 0 }}</td>
-<td>{{ farm.primary_crop || 'N/A' }}</td>
-<td>{{ farm.soil_type || 'N/A' }}</td>
-<td>{{ farm.water_source_type || 'N/A' }}</td>
-</tr>
-</tbody>
-</table>
 </div>
-<p v-else class="sub-text mb-0">No farms registered for this farmer yet.</p>
+<div class="nk-tb-col">
+<span class="amount">{{ farm.area_acres || 0 }} acres</span>
+</div>
+<div class="nk-tb-col">
+<span class="sub-text text-capitalize">{{ farm.location || 'N/A' }}</span>
+</div>
+</div>
+</div>
+</div>
+<p v-else class="sub-text mb-0 farm-empty-state">No farms registered for this farmer yet.</p>
+</div>
+
+<div class="nk-block">
+<h6 class="lead-text mb-3 section-head"><em class="icon ni ni-user mr-1"></em>Farmer Information</h6>
+<div class="row g-3">
+<div class="col-xl-12 col-xxl-6">
+<div class="card card-bordered internal-info-card">
+<div class="card-inner">
+<h6 class="overline-title mb-2"><em class="icon ni ni-call mr-1"></em>Contact</h6>
+<div class="detail-pairs">
+<div><span class="sub-text"><em class="icon ni ni-call mr-1"></em>Phone Number:</span><strong>{{ farmer.phone_number || 'N/A' }}</strong></div>
+<div><span class="sub-text"><em class="icon ni ni-mail mr-1"></em>Email:</span><strong>{{ farmer.email || 'N/A' }}</strong></div>
+<div><span class="sub-text"><em class="icon ni ni-check-circle mr-1"></em>Status:</span><strong class="text-capitalize">{{ farmer.status || 'N/A' }}</strong></div>
+<div><span class="sub-text"><em class="icon ni ni-update mr-1"></em>Updated At:</span><strong>{{ farmer.updated_at || 'N/A' }}</strong></div>
+<div class="detail-span-2"><span class="sub-text"><em class="icon ni ni-growth mr-1"></em>Primary Crop:</span><strong class="text-capitalize">{{ farmer.primary_crop || 'N/A' }}</strong></div>
+</div>
+</div>
+</div>
+</div>
+<div class="col-xl-12">
+<div class="card card-bordered internal-info-card">
+<div class="card-inner">
+<h6 class="overline-title mb-2"><em class="icon ni ni-map mr-1"></em>Address</h6>
+<div class="detail-pairs">
+<div><span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Village:</span><strong class="text-capitalize">{{ farmer.village || 'N/A' }}</strong></div>
+<div><span class="sub-text"><em class="icon ni ni-map mr-1"></em>Sub County:</span><strong class="text-capitalize">{{ farmer.sub_county || 'N/A' }}</strong></div>
+<div><span class="sub-text"><em class="icon ni ni-map-fill mr-1"></em>District:</span><strong class="text-capitalize">{{ farmer.district || 'N/A' }}</strong></div>
+<div><span class="sub-text"><em class="icon ni ni-navigation mr-1"></em>Combined Location:</span><strong>{{ locationLabel }}</strong></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -246,15 +305,21 @@ customClass: 'el-success-message',
 
 
 
-<div v-if="showModal" class="modal show d-block farm-modal" tabindex="-1" role="dialog" aria-modal="true">
-<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable custom-modal-dialog">
-<div class="modal-content">
-<div class="modal-header">
-<h5 class="modal-title">Create Farm Profile</h5>
-<button type="button" class="btn-close" aria-label="Close" @click="closeModal"></button>
+<el-dialog
+v-model="showModal"
+class="farm-create-dialog"
+width="680px"
+align-center
+destroy-on-close
+:close-on-click-modal="false"
+>
+<template #header>
+<div class="farm-dialog-head">
+<h5 class="farm-dialog-title mb-1"><em class="icon ni ni-home mr-1"></em>Create Farm Profile</h5>
+<p class="farm-dialog-subtext mb-0">Add the farm details linked to this farmer.</p>
 </div>
+</template>
 
-<div class="modal-body">
 <form class="row g-3 modal-form-grid" @submit.prevent="submit">
 <input v-model="form.cooperative_farmer_id" type="hidden" />
 <div class="col-12">
@@ -262,156 +327,287 @@ customClass: 'el-success-message',
 </div>
 
 <div class="col-12 col-md-6 modal-field">
-<label class="form-label">Farm/ Garden Name</label>
-<input v-model="form.farm_name" type="text" class="form-control" placeholder="Main farm name" />
+<label class="form-label"><em class="icon ni ni-home mr-1"></em>Farm/ Garden Name</label>
+<el-input v-model="form.farm_name" placeholder="Main farm name" />
 <InputError :message="form.errors.farm_name" class="mt-2" />
 </div>
 
 <div class="col-12 col-md-6 modal-field">
-<label class="form-label">Location</label>
-<input v-model="form.location" type="text" class="form-control" placeholder="Village, sub county, district" />
+<label class="form-label"><em class="icon ni ni-map-pin mr-1"></em>Location</label>
+<el-input v-model="form.location" placeholder="Village, sub county, district" />
 <InputError :message="form.errors.location" class="mt-2" />
 </div>
 
-<div class="col-12 col-md-6 modal-field">
-<label class="form-label">Area (Acres)</label>
-<input v-model="form.area_acres" type="number" min="0" step="0.01" class="form-control" placeholder="0.00" />
+<div class="col-12 modal-field modal-field-full">
+<label class="form-label"><em class="icon ni ni-package mr-1"></em>Acre Area</label>
+<el-input v-model="form.area_acres" type="text" inputmode="decimal" placeholder="e.g. 2.50" />
+<span class="field-hint">Enter acreage as a numeric value.</span>
 <InputError :message="form.errors.area_acres" class="mt-2" />
 </div>
 
-<div class="col-12 col-md-6 modal-field">
-<label class="form-label">Primary Crop</label>
-<input v-model="form.primary_crop" type="text" class="form-control" placeholder="Coffee, Maize..." />
-<InputError :message="form.errors.primary_crop" class="mt-2" />
-</div>
-
-<div class="col-12 col-md-6 modal-field">
-<label class="form-label">Soil Type</label>
-<input v-model="form.soil_type" type="text" class="form-control" placeholder="Loamy, Clay, Sandy..." />
-<InputError :message="form.errors.soil_type" class="mt-2" />
-</div>
-
-<div class="col-12 col-md-6 modal-field">
-<label class="form-label"><em class="icon ni ni-dropbox mr-1"></em>Water Source Type</label>
-<input v-model="form.water_source_type" type="text" class="form-control" placeholder="Rainfed, Borehole, River..." />
-<InputError :message="form.errors.water_source_type" class="mt-2" />
-</div>
-
-
-<div class="col-3 pt-2">
-<SubmitButton :title="'Save Farm'" :status="form.processing" />
+<div class="col-12 dialog-actions">
+<el-button @click="closeModal">Cancel</el-button>
+<el-button type="primary" native-type="submit" :loading="form.processing">Save Farm</el-button>
 </div>
 </form>
-</div>
-</div>
-</div>
-</div>
-<div v-if="showModal" class="modal-backdrop fade show"></div>
+</el-dialog>
+
+
+
 </CooperativeLayout>
 </template>
 
 <style scoped>
-.profile-card {
+.farmer-profile-page {
+padding-top: 0.5rem;
+padding-bottom: 0.75rem;
+}
+
+.farmer-page-wrap {
+margin-bottom: 0.25rem;
+}
+
+.farmer-summary-card {
+border-radius: 14px;
 overflow: hidden;
 }
 
-.profile-avatar {
-width: 72px;
-height: 72px;
-border-radius: 50%;
-margin: 0 auto;
-background: linear-gradient(135deg, #6f4e37, #8b5a2b);
-color: #fff;
-font-weight: 700;
-display: inline-flex;
-align-items: center;
-justify-content: center;
-font-size: 1.25rem;
-text-transform: uppercase;
-}
-
-.profile-metric {
-display: flex;
-flex-direction: column;
-gap: 2px;
-padding: 10px 0;
-border-bottom: 1px solid #edf2f7;
-}
-
-.profile-metric:last-child {
-border-bottom: 0;
-}
-
-.details-grid {
-display: grid;
-grid-template-columns: repeat(2, minmax(0, 1fr));
-gap: 12px;
-}
-
-.detail-item {
-display: flex;
-flex-direction: column;
-gap: 4px;
-background: #f8fafc;
-border-radius: 10px;
-padding: 12px;
-}
-
-.detail-item-full {
-grid-column: span 2;
-}
-
-.custom-modal-dialog {
-max-width: 50%;
-}
-
-.modal-content {
-border: 1px solid #dbe3ed;
+.farmer-main-card {
 border-radius: 14px;
 }
 
-.modal-body {
-height: 400px;
-overflow-y: auto;
-padding: 1rem 1.25rem;
+.profile-avatar-solid span {
+font-weight: 700;
 }
 
-.section-divider {
-padding-top: 6px;
-border-top: 1px solid #edf2f7;
+.profile-avatar-solid {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+gap: 1px;
 }
 
-.farm-table-wrap {
-overflow-x: auto;
-border-radius: 10px;
+.profile-avatar-solid .icon {
+font-size: 24px;
+line-height: 1;
+}
+
+.avatar-initials {
+font-size: 12px;
+font-weight: 700;
+line-height: 1;
+}
+
+.profile-stats {
+background: #f8fafc;
 border: 1px solid #edf2f7;
+border-radius: 8px;
+padding: 10px 8px;
+min-height: 88px;
+height: 100%;
+display: flex;
+flex-direction: column;
+justify-content: center;
 }
 
-.farm-table th {
-white-space: nowrap;
-font-weight: 600;
-color: #526484;
+.summary-email {
+display: block;
+margin-bottom: 0.3rem;
+}
+
+.summary-location {
+font-size: 12px;
+color: #8094ae;
+display: flex;
+align-items: center;
+gap: 2px;
+}
+
+.stats-row .amount {
+font-size: 18px;
+font-weight: 700;
+}
+
+.short-details .sub-text {
+display: block;
+}
+
+.short-detail-item {
+padding: 8px 10px;
+border-radius: 8px;
 background: #f8fafc;
 }
 
-.farm-table td {
+.farm-list-wrap {
+overflow-x: auto;
+}
+
+.farm-table-modern {
+border: 1px solid #e3e8ef;
+border-radius: 12px;
+overflow: hidden;
+}
+
+.farm-table-modern .nk-tb-head {
+background: #f7f9fc;
+}
+
+.farm-table-modern .nk-tb-item {
+border-bottom: 1px solid #edf2f7;
+}
+
+.farm-table-modern .nk-tb-item:last-child {
+border-bottom: none;
+}
+
+.farm-table-modern .nk-tb-col {
+padding-top: 0.85rem;
+padding-bottom: 0.85rem;
+}
+
+.farm-table-modern .nk-tb-head .sub-text {
+font-size: 12px;
+letter-spacing: 0.02em;
+color: #526484;
+font-weight: 700;
+}
+
+.farm-empty-state {
+padding: 12px 14px;
+background: #f8fafc;
+border-radius: 8px;
+}
+
+.farm-section-head {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 10px;
+margin-bottom: 0.85rem;
+}
+
+.in-profile-grid {
+display: grid;
+grid-template-columns: repeat(4, minmax(0, 1fr));
+gap: 10px;
+}
+
+.in-profile-card {
+background: #f8fafc;
+border: 1px solid #edf2f7;
+border-radius: 10px;
+padding: 10px 12px;
+display: flex;
+flex-direction: column;
+gap: 5px;
+}
+
+.in-profile-label {
+font-size: 12px;
+color: #8094ae;
+font-weight: 600;
+}
+
+.in-profile-value {
+font-size: 16px;
+font-weight: 700;
 color: #364a63;
-vertical-align: middle;
+line-height: 1.25;
+}
+
+.in-profile-meta {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 12px;
+margin-top: 10px;
+padding-top: 10px;
+border-top: 1px solid #edf2f7;
+font-size: 12px;
+color: #8094ae;
+}
+
+.in-profile-meta span {
+display: inline-flex;
+align-items: center;
+}
+
+.add-farm-btn {
+display: inline-flex;
+align-items: center;
+}
+
+.detail-pairs {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 12px 14px;
+}
+
+.detail-pairs div {
+display: flex;
+flex-direction: column;
+gap: 3px;
+padding: 10px 12px;
+border-radius: 8px;
+background: #f8fafc;
+}
+
+.detail-pairs strong {
+color: #364a63;
+font-weight: 600;
+}
+
+.detail-span-2 {
+grid-column: span 2;
+}
+
+.section-head {
+font-size: 13px;
+letter-spacing: 0.03em;
+text-transform: uppercase;
+color: #526484;
 }
 
 .farm-link {
-  color: #364a63;
-  font-weight: 400;
-  text-decoration: none;
+color: #364a63;
+font-weight: 600;
+text-decoration: none;
 }
 
 .farm-link:hover {
-  color: #364a63;
-  text-decoration: none;
+color: #1f2b3a;
+text-decoration: none;
+}
+
+.internal-info-card {
+box-shadow: none !important;
+border-radius: 12px;
+border: none !important;
+}
+
+.farm-dialog-head {
+padding-right: 30px;
+}
+
+.farm-dialog-title {
+font-size: 18px;
+font-weight: 700;
+color: #364a63;
+}
+
+.farm-dialog-subtext {
+font-size: 13px;
+color: #8094ae;
 }
 
 .modal-form-grid .form-label {
 margin-bottom: 0.35rem;
+font-weight: 600;
+}
+
+.modal-form-grid {
+row-gap: 2px;
 }
 
 .modal-field {
@@ -419,24 +615,90 @@ display: flex;
 flex-direction: column;
 }
 
+.modal-field-full {
+margin-top: 2px;
+}
+
+.field-hint {
+font-size: 12px;
+color: #8094ae;
+margin-top: 6px;
+}
+
+:deep(.farm-create-dialog .el-dialog) {
+border-radius: 14px;
+overflow: hidden;
+}
+
+:deep(.farm-create-dialog .el-dialog__header) {
+margin-right: 0;
+padding: 16px 18px 12px;
+border-bottom: 1px solid #edf2f7;
+}
+
+:deep(.farm-create-dialog .el-dialog__body) {
+padding: 16px 18px 18px;
+max-height: 70vh;
+overflow-y: auto;
+}
+
+.modal-field :deep(.el-input__wrapper) {
+border-radius: 8px;
+}
+
+:deep(.farm-create-dialog .el-dialog__headerbtn) {
+top: 16px;
+right: 18px;
+}
+
+.dialog-actions {
+display: flex;
+justify-content: flex-end;
+gap: 10px;
+padding-top: 12px;
+margin-top: 6px;
+border-top: 1px solid #edf2f7;
+}
+
 @media (max-width: 991px) {
-.custom-modal-dialog {
-max-width: 95%;
+.detail-pairs {
+grid-template-columns: 1fr;
+}
+
+.in-profile-grid {
+grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.in-profile-meta {
+flex-direction: column;
+align-items: flex-start;
+}
+
+.detail-span-2 {
+grid-column: span 1;
+}
+
+.short-detail-item {
+padding: 8px 9px;
 }
 }
 
 @media (max-width: 768px) {
-.details-grid {
-grid-template-columns: 1fr;
-}
+  .nk-tb-list.is-compact {
+  min-width: 760px;
+  }
 
-.detail-item-full {
-grid-column: span 1;
-}
+  .farm-section-head {
+  align-items: flex-start;
+  flex-direction: column;
+  }
 
-  .farm-table th,
-  .farm-table td {
-  white-space: nowrap;
+  :deep(.farm-create-dialog .el-dialog) {
+  width: 92vw !important;
+  }
+
+  .farmer-profile-page {
+  padding-top: 0.35rem;
   }
 }
 </style>

@@ -150,7 +150,7 @@ public function show(Request $request, string $id)
 
 // Scope commodity visibility to the logged-in user's cooperative.
 $cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
-$commodity = Commodity::with('farms:id,cooperative_farmer_id,farm_name,location,area_acres,primary_crop,soil_type,water_source_type')
+$commodity = Commodity::with('farms:id,cooperative_farmer_id,farm_name,location,area_acres')
 ->where('id', $id)
 ->where('cooperative_id', $cooperativeId)
 ->firstOrFail();
@@ -167,11 +167,6 @@ return Inertia::render('CommodityShow', [
 'latitude' => $farm->latitude,
 'longitude' => $farm->longitude,
 'area_acres' => $farm->area_acres,
-'primary_crop' => $farm->primary_crop,
-'soil_type' => $farm->soil_type,
-'water_source_type' => $farm->water_source_type,
-'farmer_last_name' => $farm->farmer_last_name,
-'farmer_telephone' => $farm->farmer_telephone,
 
 ])
 ->values(),

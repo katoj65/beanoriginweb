@@ -376,7 +376,7 @@ prices, and settle trades with full transparency.
 <thead>
 <tr>
 <th>Commodity</th>
-<th>Quantity (Kgs)</th>
+<th>Weight (Kgs)</th>
 <th>Min Price (UGX)</th>
 <th>Max Price (UGX)</th>
 </tr>
@@ -516,7 +516,7 @@ prices, and settle trades with full transparency.
 <thead>
 <tr>
 <th>Commodity</th>
-<th>Quantity (Kgs)</th>
+<th>Weight (Kgs)</th>
 <th>Low (UGX)</th>
 <th>High (UGX)</th>
 <th>Spread (UGX)</th>

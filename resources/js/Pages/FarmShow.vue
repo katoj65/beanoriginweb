@@ -44,18 +44,6 @@ const ownerLocation = computed(() => {
                   <strong>{{ farm.area_acres || '0' }}</strong>
                 </div>
                 <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-growth mr-1"></em>Primary Crop</span>
-                  <strong>{{ farm.primary_crop || 'N/A' }}</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-sun-fill mr-1"></em>Soil Type</span>
-                  <strong>{{ farm.soil_type || 'N/A' }}</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-dropbox mr-1"></em>Water Source Type</span>
-                  <strong>{{ farm.water_source_type || 'N/A' }}</strong>
-                </div>
-                <div class="detail-item">
                   <span class="sub-text"><em class="icon ni ni-navigation mr-1"></em>Latitude</span>
                   <strong>{{ farm.latitude ?? 'N/A' }}</strong>
                 </div>

@@ -22,9 +22,6 @@ class FarmResource extends JsonResource
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'area_acres' => $this->area_acres,
-            'primary_crop' => $this->primary_crop,
-            'soil_type' => $this->soil_type,
-            'water_source_type' => $this->water_source_type,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             
         ];
