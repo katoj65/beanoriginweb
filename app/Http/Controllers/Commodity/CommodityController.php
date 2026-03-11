@@ -13,7 +13,7 @@ use App\Models\Commodity;
 use App\Models\Batch;
 use App\Models\BatchStatusList;
 use App\Models\Cooperative;
-use App\Models\CooperativeFarmer;
+use App\Models\Farmer;
 use App\Models\CropGrade;
 use App\Models\Crops;
 use App\Models\CropType;
@@ -42,9 +42,6 @@ public function index()
 
 
 
-
-
-
 /**
  * Store a newly created resource in storage.
  */
@@ -63,7 +60,7 @@ $validated = $request->validate([
 
 // Resolve logged-in cooperative and locate farmer by submitted phone number.
 $cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
-$farmer = CooperativeFarmer::query()
+$farmer = Farmer::query()
 ->where('cooperative_id', $cooperativeId)
 ->where('phone_number', $validated['phone_number'])
 ->first();
@@ -262,7 +259,7 @@ public function create(Request $request)
 {
 // Load cooperative-scoped farms and supporting metadata for create form.
 $cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
-$farmerIds = CooperativeFarmer::query()
+$farmerIds = Farmer::query()
 ->where('cooperative_id', $cooperativeId)
 ->pluck('id');
 $farms = Farm::query()
@@ -294,7 +291,7 @@ return Inertia::render('CommodityCreate', [
 /**
  * Link the newly posted commodity to farms where it originated.
  */
-private function addOriginFarmsToCommodity(Commodity $commodity, CooperativeFarmer $farmer): void
+private function addOriginFarmsToCommodity(Commodity $commodity, Farmer $farmer): void
 {
 // Attach all farms registered under the matched farmer.
 $farmIds = Farm::query()

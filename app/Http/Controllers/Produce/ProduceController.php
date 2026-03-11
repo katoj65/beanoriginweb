@@ -18,7 +18,7 @@ use App\Models\ProcessMethod;
 use App\Http\Resources\ProcessMethodResource;
 use App\Models\CropGrade;
 use App\Http\Resources\CropGradeResource;
-use App\Models\CooperativeFarmer;
+use App\Models\Farmer;
 use App\Services\FarmerVerificationService;
 use App\Models\FarmerBatchVerification;
 use App\Http\Resources\FarmerFullDetailsResource;
@@ -271,7 +271,7 @@ $crop_type=CropType::get();
 $process_method=ProcessMethod::get();
 $grade=CropGrade::get();
 $farmer_id=$verification->cooperative_farmers_id;
-$farmer=CooperativeFarmer::where('id',$farmer_id)->first();
+$farmer=Farmer::where('id',$farmer_id)->first();
 $farms =Farm::select('id','farm_name')->where('cooperative_farmer_id',$farmer->id)->get();
 
 return Inertia::render('ProduceCreateAfterVerification', [
@@ -301,7 +301,7 @@ $validated = $request->validate([
 ]);
 
 $cooperative=Cooperative::where('user_id',$request->user()->id)->first()->id;
-$farmer = CooperativeFarmer::where('last_name', $validated['last_name'])
+$farmer = Farmer::where('last_name', $validated['last_name'])
 ->where('phone_number', $validated['phone_number'])
 ->where('cooperative_id',$cooperative)->first();
 

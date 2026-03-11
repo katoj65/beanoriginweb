@@ -25,6 +25,6 @@ class FarmerBatchVerification extends Model
 
     public function farmer(): BelongsTo
     {
-        return $this->belongsTo(CooperativeFarmer::class, 'cooperative_farmers_id');
+        return $this->belongsTo(Farmer::class, 'cooperative_farmers_id');
     }
 }

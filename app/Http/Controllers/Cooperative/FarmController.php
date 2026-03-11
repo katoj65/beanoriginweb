@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CooperativeFarmer as CooperativeFarmerResource;
 use App\Http\Resources\FarmResource;
 use App\Models\Cooperative;
-use App\Models\CooperativeFarmer;
+use App\Models\Farmer;
 use App\Models\Farm;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -28,7 +28,7 @@ class FarmController extends Controller
     {
         $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
 
-        $farmers = CooperativeFarmer::query()
+        $farmers = Farmer::query()
             ->where('cooperative_id', $cooperativeId)
             ->orderBy('first_name')
             ->orderBy('last_name')
@@ -49,7 +49,7 @@ class FarmController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'cooperative_farmer_id' => ['required', 'exists:cooperative_farmers,id'],
+            'cooperative_farmer_id' => ['required', 'exists:farmers,id'],
             'farm_name' => ['required', 'string', 'max:255'],
             'location' => ['required', 'string', 'max:255'],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],

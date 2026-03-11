@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('farms', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('cooperative_farmer_id')->constrained('cooperative_farmers')->cascadeOnDelete();
+            $table->foreignId('cooperative_farmer_id')->constrained('farmers')->cascadeOnDelete();
             $table->string('farm_name');
             $table->string('location');
             $table->decimal('latitude', 10, 7)->nullable();

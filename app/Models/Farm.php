@@ -28,7 +28,7 @@ class Farm extends Model
 
     public function farmer(): BelongsTo
     {
-        return $this->belongsTo(CooperativeFarmer::class, 'cooperative_farmer_id');
+        return $this->belongsTo(Farmer::class, 'cooperative_farmer_id');
     }
 
     public function commodities(): BelongsToMany

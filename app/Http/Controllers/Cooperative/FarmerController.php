@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CooperativeFarmer as CooperativeFarmerResource;
 use App\Http\Resources\FarmResource;
 use App\Models\Cooperative;
-use App\Models\CooperativeFarmer;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Farm;
+use App\Models\Farmer;
 
 class FarmerController extends Controller
 {
@@ -20,7 +20,7 @@ class FarmerController extends Controller
     {
         $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
 
-        $farmers = CooperativeFarmer::query()
+        $farmers = Farmer::query()
             ->where('cooperative_id', $cooperativeId)
             ->latest('id')
             ->get();
@@ -63,11 +63,11 @@ class FarmerController extends Controller
             'sub_county' => ['required', 'string', 'max:255'],
             'village' => ['required', 'string', 'max:255'],
             'primary_crop' => ['nullable', 'string', 'max:255'],
-       
+
         ]);
 
         $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
-        $farmer = CooperativeFarmer::create([
+        $farmer = Farmer::create([
             ...$validated,
             'cooperative_id' => $cooperativeId,
             'status' => $validated['status'] ?? 'pending',
@@ -89,7 +89,7 @@ class FarmerController extends Controller
     {
         $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
 
-        $farmer = CooperativeFarmer::query()
+        $farmer = Farmer::query()
             ->where('cooperative_id', $cooperativeId)
             ->findOrFail($id);
 

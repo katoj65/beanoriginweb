@@ -25,6 +25,6 @@ class Cooperative extends Model
 
     public function farmers(): HasMany
     {
-        return $this->hasMany(CooperativeFarmer::class);
+        return $this->hasMany(Farmer::class);
     }
 }

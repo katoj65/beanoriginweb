@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('farmer_batch_verifications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('cooperative_id')->constrained('cooperative')->cascadeOnDelete();
-            $table->foreignId('cooperative_farmers_id')->constrained('cooperative_farmers')->cascadeOnDelete();
+            $table->foreignId('cooperative_farmers_id')->constrained('farmers')->cascadeOnDelete();
             $table->string('verification_code');
             $table->integer('expiry_minutes');
             $table->enum('status', ['active', 'expired'])->default('active');

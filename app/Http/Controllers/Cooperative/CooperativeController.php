@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Cooperative;
-use App\Models\CooperativeFarmer;
+use App\Models\Farmer;
 use App\Models\Produce;
 use App\Models\Batch;
 use App\Http\Resources\CooperativeFarmer as CooperativeFarmerResource;
@@ -30,7 +30,7 @@ return Inertia::render('CooperativeCreate', [
 }
 
 $cooperative = $user ? Cooperative::where('user_id', $user->id)->first() : null;
-$farmers = CooperativeFarmer::where('cooperative_id', $cooperative->id)->get();
+$farmers = Farmer::where('cooperative_id', $cooperative->id)->get();
 $produces = Batch::query()
 ->where('owner_id', $user->id)
 ->whereIn('status', ['tokenized', 'tokenized'])
