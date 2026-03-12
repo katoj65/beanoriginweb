@@ -1,9 +1,9 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { useForm } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
 import InputError from '@/Components/InputError.vue';
 import { ElNotification } from 'element-plus';
-import { Plus, Search } from '@element-plus/icons-vue';
+import { Delete, Plus, ScaleToOriginal, Search } from '@element-plus/icons-vue';
 
 const props = defineProps({
   batchId: {
@@ -23,6 +23,13 @@ const form = useForm({
 
 const linkedCommodities = computed(() => (Array.isArray(props.commodities) ? props.commodities : []));
 
+const formatHarvestDate = (value) => {
+  if (!value) return 'N/A';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString();
+};
+
 const openModal = () => {
   form.clearErrors();
   addCommodityModalVisible.value = true;
@@ -41,27 +48,32 @@ const submit = () => {
     preserveScroll: true,
     onSuccess: () => {
       ElNotification({
-        title: 'Successful',
+        title: 'Success',
         message: `Commodity #${form.commodity_id} was attached to batch #${props.batchId}.`,
         type: 'success',
-        duration: 3200,
-        position: 'top-right',
-        offset: 84,
-        showClose: true,
-        customClass: 'theme-notification-success',
       });
       closeModal();
     },
     onError: () => {
       ElNotification({
-        title: 'Attachment Failed',
+        title: 'Error',
         message: form.errors.commodity_id || 'Unable to attach commodity to this batch.',
         type: 'error',
-        duration: 4200,
-        position: 'top-right',
-        offset: 84,
-        showClose: true,
-        customClass: 'theme-notification-error',
+      });
+    },
+  });
+};
+
+const destroyCommodity = (commodityId) => {
+  if (!props.batchId || !commodityId) return;
+
+  router.delete(route('batch.commodities.destroy', { id: props.batchId, commodityId }), {
+    preserveScroll: true,
+    onSuccess: () => {
+      ElNotification({
+        title: 'Success',
+        message: 'Commodity removed from batch successfully.',
+        type: 'success',
       });
     },
   });
@@ -69,26 +81,37 @@ const submit = () => {
 </script>
 
 <template>
-  <div class="card-inner">
-    <div class="prompt-box">
-      <h6 class="title mb-2"><em class="icon ni ni-alert-circle mr-1"></em>Next Step</h6>
-      <p class="mb-3 text-muted">
-        Search commodity by ID and attach it to this batch for traceability.
-      </p>
-      <el-button type="primary" :icon="Plus" @click="openModal">
-        Add Commodity To Batch
-      </el-button>
+  <div class="card-inner m-0 p-0">
+    <div class="prompt-plain">
+      <div class="prompt-head">
+        <div class="prompt-copy">
+          <h6 class="title mb-0">Harvests Data</h6>
+          <p class="prompt-subtitle mb-0">Attach verified commodities to this batch.</p>
+        </div>
+        <el-button type="primary" :icon="Plus" @click="openModal">
+          Add Commodity To Batch
+        </el-button>
+      </div>
     </div>
 
     <div v-if="linkedCommodities.length" class="table-responsive linked-table-wrap mt-3">
       <table class="table table-sm table-middle mb-0 linked-table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Commodity Name</th>
-            <th>Type</th>
-            <th>Grade</th>
-            <th>Weight</th>
+            <th><span class="head-label"><em class="icon ni ni-hash"></em>ID</span></th>
+            <th><span class="head-label"><em class="icon ni ni-package"></em>Commodity Name</span></th>
+            <th><span class="head-label"><em class="icon ni ni-layers"></em>Type</span></th>
+            <th><span class="head-label"><em class="icon ni ni-medal"></em>Grade</span></th>
+            <th>
+              <span class="head-label">
+                <el-icon><ScaleToOriginal /></el-icon>
+                Weight
+              </span>
+            </th>
+            <th><span class="head-label"><em class="icon ni ni-growth"></em>Ripe %</span></th>
+            <th><span class="head-label"><em class="icon ni ni-drop"></em>Density %</span></th>
+            <th><span class="head-label"><em class="icon ni ni-calendar"></em>Date Harvested</span></th>
+            <th class="text-right"><span class="head-label"><em class="icon ni ni-trash"></em></span></th>
           </tr>
         </thead>
         <tbody>
@@ -98,6 +121,18 @@ const submit = () => {
             <td class="text-capitalize">{{ item.commodity_type ?? 'N/A' }}</td>
             <td class="text-capitalize">{{ item.grade ?? 'N/A' }}</td>
             <td>{{ item.weight ?? 'N/A' }} kg</td>
+            <td>{{ item.ripe_percentage === null || item.ripe_percentage === undefined ? 'N/A' : `${item.ripe_percentage}%` }}</td>
+            <td>{{ item.density_percentage === null || item.density_percentage === undefined ? 'N/A' : `${item.density_percentage}%` }}</td>
+            <td>{{ formatHarvestDate(item.harvest_date) }}</td>
+            <td class="text-right">
+              <el-button
+                class="commodity-delete-btn"
+                type="danger"
+                text
+                :icon="Delete"
+                @click="destroyCommodity(item.id)"
+              />
+            </td>
           </tr>
         </tbody>
       </table>
@@ -153,11 +188,29 @@ const submit = () => {
 </template>
 
 <style scoped>
-.prompt-box {
-  border: 1px dashed #d9e2f0;
-  border-radius: 10px;
-  background: #f8fafc;
-  padding: 14px;
+.prompt-plain {
+  padding: 0;
+}
+
+.prompt-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 6px;
+}
+
+.prompt-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.prompt-subtitle {
+  color: #8094ae;
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .linked-table-wrap {
@@ -172,6 +225,21 @@ const submit = () => {
   color: #526484;
   font-weight: 600;
   white-space: nowrap;
+}
+
+.head-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.head-label .icon {
+  color: #8094ae;
+  font-size: 13px;
+}
+
+.commodity-delete-btn {
+  padding: 4px;
 }
 
 .linked-table td {
@@ -191,5 +259,15 @@ const submit = () => {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+@media (max-width: 767px) {
+  .prompt-head {
+    align-items: stretch;
+  }
+
+  .prompt-head :deep(.el-button) {
+    width: 100%;
+  }
 }
 </style>

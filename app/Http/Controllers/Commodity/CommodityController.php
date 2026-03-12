@@ -26,6 +26,7 @@ use Illuminate\Validation\ValidationException;
 use App\Http\Resources\CommodityResource;
 use App\Http\Resources\BatchResource;
 use App\Models\CommodityBatch;
+use App\Models\BatchProcessingData;
 use App\Models\CommodityQualityData;
 use App\Models\QualityMetadata;
 use Inertia\Inertia;
@@ -53,6 +54,8 @@ $validated = $request->validate([
 'crop_type' => ['required', 'string', 'max:255'],
 'quantity' => ['required', 'numeric', 'min:0'],
 'price' => ['required', 'numeric', 'min:0'],
+'ripe_percentage' => ['nullable', 'integer', 'between:0,100'],
+'density_percentage' => ['nullable', 'integer', 'between:0,100'],
 'date_of_harvest' => ['required', 'date'],
 'crop_grade' => ['required', 'string', 'max:255'],
 'phone_number' => ['required', 'string', 'regex:/^[0-9+()\\-\\s]{7,20}$/'],
@@ -80,6 +83,8 @@ $commodity = Commodity::create([
 'weight' => $validated['quantity'],
 'harvest_date' => $validated['date_of_harvest'],
 'price' => $validated['price'],
+'ripe_percentage' => $validated['ripe_percentage'] ?? null,
+'density_percentage' => $validated['density_percentage'] ?? null,
 ]);
 
 return redirect()
@@ -407,6 +412,8 @@ return Inertia::render('CommodityUpdatePage', [
 'grade' => $commodity->grade,
 'weight' => $commodity->weight,
 'price' => $commodity->price,
+'ripe_percentage' => $commodity->ripe_percentage,
+'density_percentage' => $commodity->density_percentage,
 'harvest_date' => $commodity->harvest_date ? $commodity->harvest_date->format('Y-m-d') : null,
 ],
 'crops' => CropResource::collection($crops),
@@ -463,10 +470,12 @@ $commodityIds = CommodityBatch::query()
 ->values();
 
 // Build attached commodity and activity timelines for verification page.
-$attachedCommodities = Commodity::query()
+$attachedCommodities = CommodityResource::collection(
+Commodity::query()
 ->whereIn('id', $commodityIds)
-->get(['id', 'commodity_name', 'commodity_type', 'grade', 'weight', 'status'])
-->values();
+->latest('id')
+->get()
+)->resolve();
 
 $batchActivities = $batch->activities()
 ->latest('id')
@@ -478,11 +487,30 @@ $batchActivities = $batch->activities()
 ])
 ->values();
 
+$batchProcessingMetadata = DB::table('processing_metadata')
+->orderBy('name')
+->pluck('name')
+->values();
+
+$batchProcessingData = BatchProcessingData::query()
+->where('batch_id', $batch->id)
+->latest('id')
+->get(['id', 'activity', 'value', 'created_at'])
+->map(fn ($item) => [
+'id' => $item->id,
+'activity' => $item->activity,
+'value' => $item->value,
+'created_at' => $item->created_at?->toDateTimeString(),
+])
+->values();
+
 return Inertia::render('BatchCommodityVerification', [
 'title' => 'Batch Commodity Verification',
 'batch' => new BatchResource($batch),
 'attached_commodities' => $attachedCommodities,
 'batch_activities' => $batchActivities,
+'batch_processing_metadata' => $batchProcessingMetadata,
+'batch_processing_data' => $batchProcessingData,
 'batch_status_list' => BatchStatusList::query()->where('name','!=','created')->orderBy('id')->pluck('name')->values(),
 ]);
 }
@@ -620,6 +648,8 @@ $validated = $request->validate([
 'grade' => ['required', 'string', 'max:255', 'exists:crop_grades,name'],
 'weight' => ['required', 'numeric', 'min:0'],
 'price' => ['required', 'numeric', 'min:0'],
+'ripe_percentage' => ['nullable', 'integer', 'between:0,100'],
+'density_percentage' => ['nullable', 'integer', 'between:0,100'],
 'harvest_date' => ['required', 'date'],
 ]);
 
@@ -637,6 +667,8 @@ $commodity->update([
 'grade' => $validated['grade'],
 'weight' => $validated['weight'],
 'price' => $validated['price'],
+'ripe_percentage' => $validated['ripe_percentage'] ?? null,
+'density_percentage' => $validated['density_percentage'] ?? null,
 'harvest_date' => $validated['harvest_date'],
 ]);
 

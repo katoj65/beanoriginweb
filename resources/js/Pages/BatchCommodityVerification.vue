@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import AddCommodityToBatch from '@/Components/AddCommodityToBatch.vue';
+import AddBatchProcess from '@/Components/AddBatchProcess.vue';
 import { ElNotification } from 'element-plus';
 import { Back, Plus, MoreFilled, Edit, Delete } from '@element-plus/icons-vue';
 
@@ -10,6 +11,8 @@ const page = usePage();
 const batch = computed(() => page.props.batch?.data ?? page.props.batch ?? {});
 const attachedCommodities = computed(() => page.props.attached_commodities ?? []);
 const batchActivities = computed(() => page.props.batch_activities ?? []);
+const batchProcessingMetadata = computed(() => page.props.batch_processing_metadata ?? []);
+const batchProcessingData = computed(() => page.props.batch_processing_data ?? []);
 const activityOptions = computed(() => page.props.batch_status_list ?? []);
 const timelineActivities = computed(() => {
 const activities = Array.isArray(batchActivities.value) ? [...batchActivities.value] : [];
@@ -174,6 +177,7 @@ const data=page.props.attached_commodities.length;
 return data>0? true : false;
 });
 
+const activeVerificationTab = ref('commodities');
 
 
 
@@ -270,6 +274,29 @@ Tokenize
 </div>
 
 <div class="card-inner border-bottom">
+<el-tabs v-model="activeVerificationTab" class="app-themed-tabs">
+<el-tab-pane name="commodities">
+<template #label>
+<span class="verification-tab-label"><em class="icon ni ni-package mr-1"></em>Batch Harvests</span>
+</template>
+<add-commodity-to-batch :batch-id="batch.id" :commodities="attachedCommodities" />
+</el-tab-pane>
+
+<el-tab-pane name="batch_processing">
+<template #label>
+<span class="verification-tab-label"><em class="icon ni ni-setting-alt mr-1"></em>Batch Processing</span>
+</template>
+<add-batch-process
+:batch-id="batch.id"
+:batch-processing-metadata="batchProcessingMetadata"
+:batch-processing-data="batchProcessingData"
+/>
+</el-tab-pane>
+
+<el-tab-pane name="batch_activities">
+<template #label>
+<span class="verification-tab-label"><em class="icon ni ni-activity mr-1"></em>Batch Activities</span>
+</template>
 <div class="activity-log-head">
 <h6 class="title mb-0"><em class="icon ni ni-activity mr-1"></em>Batch Activities</h6>
 <span class="activity-log-count">{{ timelineActivities.length }} activities</span>
@@ -292,110 +319,9 @@ placement="top"
 <div v-else class="empty-activity-log">
 No activities recorded for this batch yet.
 </div>
+</el-tab-pane>
+</el-tabs>
 </div>
-
-
-<add-commodity-to-batch :batch-id="batch.id" :commodities="attachedCommodities" />
-
-<el-dialog
-v-model="addActivityModalVisible"
-class="activity-dialog"
-width="560"
-align-center
-destroy-on-close
-:close-on-click-modal="false"
->
-<template #header>
-<div class="activity-dialog-header">
-<div class="activity-dialog-icon">
-<i class="bi bi-list-check"></i>
-</div>
-<div>
-<h5 class="mb-1">Add Batch Activity</h5>
-<p class="sub-text mb-0">Record a new activity and keep this batch timeline up to date.</p>
-</div>
-</div>
-</template>
-
-<form @submit.prevent="submitActivity">
-<div class="activity-dialog-body">
-<div class="activity-context">
-<div class="context-item">
-<span class="sub-text">Batch Code</span>
-<strong>{{ batch.batch_code ?? 'N/A' }}</strong>
-</div>
-<div class="context-item">
-<span class="sub-text">Commodity</span>
-<strong>{{ batch.commodity_name ?? 'N/A' }}</strong>
-</div>
-</div>
-
-<div class="form-group mb-0 activity-form-block">
-<label class="form-label mb-1">Activity</label>
-<el-select
-v-model="activityForm.activity"
-class="w-100"
-size="large"
-clearable
-placeholder="Select activity"
->
-<el-option
-v-for="status in activityOptions"
-:key="status"
-:label="status"
-:value="status"
-/>
-</el-select>
-<div class="sub-text mt-1">Activities are sourced from batch status list.</div>
-<div v-if="activityForm.errors.activity" class="text-danger small mt-1">
-{{ activityForm.errors.activity }}
-</div>
-</div>
-</div>
-
-<div class="activity-dialog-actions">
-<el-button type="primary" native-type="submit" :loading="activityForm.processing">
-Save Activity
-</el-button>
-</div>
-</form>
-</el-dialog>
-
-<el-dialog
-v-model="deleteDialogVisible"
-class="delete-dialog"
-width="440"
-align-center
-destroy-on-close
-:close-on-click-modal="false"
->
-<template #header>
-<div class="delete-dialog-header">
-<div class="delete-dialog-icon">
-<i class="bi bi-exclamation-triangle"></i>
-</div>
-<div>
-<h5 class="mb-1">Delete Batch</h5>
-<p class="sub-text mb-0">Are you sure you want to delete this batch?</p>
-</div>
-</div>
-</template>
-
-<div class="delete-dialog-body">
-<p class="mb-0">
-This action will permanently remove
-<strong>{{ batch.batch_code ?? 'this batch' }}</strong>
-and related records.
-</p>
-</div>
-
-<template #footer>
-<div class="delete-dialog-actions">
-<el-button @click="closeDeleteDialog" :disabled="deletingBatch">Cancel</el-button>
-<el-button type="danger" :loading="deletingBatch" @click="confirmDeleteBatch">Delete</el-button>
-</div>
-</template>
-</el-dialog>
 
 
 
@@ -426,9 +352,15 @@ gap: 12px;
 flex-wrap: wrap;
 }
 
+.verification-tab-label {
+display: inline-flex;
+align-items: center;
+font-weight: 600;
+}
+
 .details-grid {
 display: grid;
-grid-template-columns: repeat(2, minmax(0, 1fr));
+grid-template-columns: repeat(3, minmax(0, 1fr));
 gap: 12px;
 }
 

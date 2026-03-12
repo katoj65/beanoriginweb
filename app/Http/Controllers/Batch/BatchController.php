@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\BatchResource;
 use App\Models\Batch;
 use App\Models\BatchActivity;
+use App\Models\CommodityBatch;
+use App\Models\BatchProcessingData;
 use App\Models\CropGrade;
 use App\Models\CropType;
 use App\Models\Crops;
@@ -441,6 +443,104 @@ return Inertia::render('BachSavedShow', [
 ],
 ]);
 }
+
+
+
+
+
+
+public function storeBatchProcessing(Request $request, string $id)
+{
+    // Validate processing form input posted from AddBatchProcess modal.
+    $validated = $request->validate([
+        'activity' => ['required', 'string', 'max:255', 'exists:processing_metadata,name'],
+        'value' => ['required', 'string', 'max:255'],
+    ]);
+
+    // Ensure the batch exists and belongs to the authenticated owner.
+    $batch = Batch::query()
+        ->where('id', (int) $id)
+        ->where('owner_id', $request->user()->id)
+        ->firstOrFail();
+
+    // Prevent adding the same processing activity more than once per batch.
+    $activity = trim((string) $validated['activity']);
+    $alreadyAdded = BatchProcessingData::query()
+        ->where('batch_id', (int) $batch->id)
+        ->whereRaw('LOWER(activity) = ?', [strtolower($activity)])
+        ->exists();
+
+    if ($alreadyAdded) {
+        throw ValidationException::withMessages([
+            'activity' => 'This processing activity already exists for this batch.',
+        ]);
+    }
+
+    // Save one batch processing record.
+    BatchProcessingData::query()->create([
+        'batch_id' => (int) $batch->id,
+        'activity' => $activity,
+        'value' => trim((string) $validated['value']),
+    ]);
+
+    // Return to batch verification page with success flash message.
+    return redirect()
+        ->route('commodity.batch.verify', ['id' => $batch->id])
+        ->with('success', 'Batch processing data saved successfully.');
+}
+
+
+
+
+public function destroyBatchProcessData(Request $request, string $id, string $processingId)
+{
+    // Ensure batch exists and belongs to the authenticated owner.
+    $batch = Batch::query()
+        ->where('id', (int) $id)
+        ->where('owner_id', $request->user()->id)
+        ->firstOrFail();
+
+    // Delete only processing record that belongs to the selected batch.
+    BatchProcessingData::query()
+        ->where('id', (int) $processingId)
+        ->where('batch_id', (int) $batch->id)
+        ->firstOrFail()
+        ->delete();
+
+    return redirect()
+        ->route('commodity.batch.verify', ['id' => $batch->id])
+        ->with('success', 'Batch processing data deleted successfully.');
+}
+
+
+
+
+
+public function destroyBatchCommodityData(Request $request, string $id, string $commodityId)
+{
+    // Ensure batch exists and belongs to the authenticated owner.
+    $batch = Batch::query()
+        ->where('id', (int) $id)
+        ->where('owner_id', $request->user()->id)
+        ->firstOrFail();
+
+    // Remove only the selected commodity link from this batch.
+    $deleted = CommodityBatch::query()
+        ->where('batch_id', (int) $batch->id)
+        ->where('commodity_id', (int) $commodityId)
+        ->delete();
+
+    if (!$deleted) {
+        abort(404);
+    }
+
+    return redirect()
+        ->route('commodity.batch.verify', ['id' => $batch->id])
+        ->with('success', 'Commodity removed from batch successfully.');
+}
+
+
+
 
 
 

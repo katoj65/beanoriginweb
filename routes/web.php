@@ -4,6 +4,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\Batch\BatchController;
 use App\Http\Controllers\Home\HomeController;
 use App\Http\Controllers\Home\UserProfileController;
 use App\Http\Controllers\Cooperative\FarmerController;
@@ -187,6 +188,26 @@ Route::post('/farm/{id}/sustainability-data', [FarmController::class, 'storeFarm
 Route::delete('/farm/{id}/sustainability-data/{sustainabilityId}', [FarmController::class, 'destroySustainabilityData'])->whereNumber('id')->whereNumber('sustainabilityId')->name('farms.sustainability.destroy');
 Route::delete('/farm/{id}', [FarmController::class, 'destroy'])->whereNumber('id')->name('farms.destroy');
 });
+
+
+
+
+
+//batch prefix
+Route::middleware(['auth'])->prefix('batch')->name('batch.')->group(function () {
+Route::post('/{id}/processing', [BatchController::class, 'storeBatchProcessing'])->whereNumber('id')->name('processing.store');
+Route::delete('/{id}/processing/{processingId}', [BatchController::class, 'destroyBatchProcessData'])->whereNumber('id')->whereNumber('processingId')->name('processing.destroy');
+Route::delete('/{id}/commodities/{commodityId}', [BatchController::class, 'destroyBatchCommodityData'])->whereNumber('id')->whereNumber('commodityId')->name('commodities.destroy');
+
+
+
+
+});
+
+
+
+
+
 
 
 
