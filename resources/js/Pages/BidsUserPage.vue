@@ -34,7 +34,7 @@ const statusClass = (status) => {
 const openBatch = (batchId) => {
   const id = Number(batchId ?? 0);
   if (!id) return;
-  router.get(route('market.batchBidding', { id }));
+  router.get(route('bid.show', { id }));
 };
 
 const goBackToBidding = () => {
