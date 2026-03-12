@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
+import { ElNotification } from 'element-plus';
 import { ShoppingCart } from '@element-plus/icons-vue';
 
 const props = defineProps({
@@ -14,6 +15,7 @@ const isModalVisible = ref(false);
 const quantity = ref(1);
 const serverError = ref('');
 const isSubmitting = ref(false);
+const ownership=computed(()=>props.item.ownership);
 
 const batchId = computed(() => Number(props.item?.id ?? 0));
 const batchCode = computed(() => props.item?.batch_code ?? `#${props.item?.id ?? 'N/A'}`);
@@ -56,7 +58,7 @@ return `Enter a quantity between 1 and ${availableQuantity.value}.`;
 });
 
 const openModal = () => {
-if (!batchId.value) return;
+if (!batchId.value || ownership.value) return;
 quantity.value = 1;
 serverError.value = '';
 isModalVisible.value = true;
@@ -69,11 +71,11 @@ serverError.value = '';
 };
 
 const submitBuy = () => {
-if (!batchId.value || clientError.value) return;
+if (!batchId.value || ownership.value || clientError.value) return;
 const requested = Number(quantity.value);
 isSubmitting.value = true;
 router.post(
-route('market.cart.store'),
+route('cart.store'),
 {
 batch_id: batchId.value,
 quantity: requested,
@@ -81,6 +83,11 @@ quantity: requested,
 {
 preserveScroll: true,
 onSuccess: () => {
+ElNotification({
+title: 'Success',
+message: 'Batch added to cart successfully.',
+type: 'success',
+});
 closeModal();
 },
 onError: (errors) => {
@@ -121,7 +128,8 @@ return Math.floor(amount).toLocaleString();
 
 <template>
 <div class="buy-button">
-<el-button plain size="small" :icon="ShoppingCart" :disabled="isOutOfStock" @click.stop="openModal">
+
+<el-button plain size="small" :icon="ShoppingCart" :disabled="isOutOfStock || ownership" @click.stop="openModal">
 {{ isOutOfStock ? 'Unavailable' : 'Buy' }}
 </el-button>
 
@@ -183,8 +191,11 @@ Estimated total: <strong>{{ formatMoney(lineTotal) }}</strong>
 <p v-if="errorMessage" class="buy-error mt-2 mb-0">{{ errorMessage }}</p>
 </div>
 
+
+
+
 <template #footer>
-<el-button type="primary" :icon="ShoppingCart" :loading="isSubmitting" :disabled="isSubmitting || !batchId" @click="submitBuy">
+<el-button type="primary" :icon="ShoppingCart" :loading="isSubmitting" :disabled="isSubmitting || !batchId || ownership" @click="submitBuy">
 Add to Cart
 </el-button>
 </template>

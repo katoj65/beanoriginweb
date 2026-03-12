@@ -1,29 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Cart;
+namespace App\Services\Blockchain;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Batch;
 use App\Models\ShoppingCart;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
-class CartController extends Controller
-{
-/**
- * Display a listing of the resource.
- */
-public function index()
-{
-//
-}
+class CartService{
 
 /**
- * Store a newly created resource in storage.
+ * Add a batch to the logged-in user's active cart.
  */
-public function store(Request $request)
-{
-
+static function createCart(Request $request){
 // Validate required batch id and requested quantity.
 $validated = $request->validate([
 'batch_id' => ['required', 'integer', 'exists:batches,id'],
@@ -83,35 +72,17 @@ $cartItem->status = 'active';
 
 $cartItem->save();
 return back()->with('success', 'Batch added to cart successfully.');
-
-
-
-
-
-
 }
 
-/**
- * Display the specified resource.
- */
-public function show(string $id)
-{
-//
-}
 
-/**
- * Update the specified resource in storage.
- */
-public function update(Request $request, string $id)
-{
-//
-}
 
-/**
- * Remove the specified resource from storage.
- */
-public function destroy(string $id)
-{
-//
-}
+
+
+
+
+
+
+
+
+
 }

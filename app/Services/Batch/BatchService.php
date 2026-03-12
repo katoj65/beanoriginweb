@@ -70,6 +70,15 @@ $batchProcessingData = BatchProcessingData::query()
 ])
 ->values();
 
+
+
+
+
+
+
+
+
+
 // Return full page payload for tabs: commodities, processing, and activities.
 return Inertia::render('BatchPage', [
 'title' => 'Batch Commodity Verification',
@@ -79,12 +88,27 @@ return Inertia::render('BatchPage', [
 'batch_processing_metadata' => $batchProcessingMetadata,
 'batch_processing_data' => $batchProcessingData,
 'batch_status_list' => BatchStatusList::query()->where('name','!=','created')->orderBy('id')->pluck('name')->values(),
+
+
 ]);
 }
 
 
 
 
+static function ownershipCheck($ownerID,$userId):bool
+{
+if($ownerID==$userId){
+return true;
+}
+return false;
+}
+
+
+
+
+
+
 
 
 
@@ -94,7 +118,6 @@ return Inertia::render('BatchPage', [
 
 
 }
-
 
 
 

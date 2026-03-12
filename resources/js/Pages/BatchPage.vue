@@ -54,7 +54,6 @@ const activeVerificationTab = ref('commodities');
 <template>
 <CooperativeLayout>
 
-
 <div class="container">
 <div class="card card-bordered verification-shell">
 <div class="card-inner border-bottom verification-head">

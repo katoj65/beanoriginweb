@@ -93,7 +93,7 @@ router.get(route('market.bought'));
 // Open selected batch details page from tokenized batches table.
 const openBatchDetails = (batchId) => {
 if (!batchId) return;
-router.get(route('market.show', { id: batchId }));
+router.get(route('batch.data', { id: batchId }));
 };
 
 const clearFilters = () => {
@@ -120,17 +120,7 @@ isFilterOpen.value = !isFilterOpen.value;
 {{ isFilterOpen ? 'Hide Filter' : 'Show Filter' }}
 </el-button>
 </div>
-<!-- <el-button-group>
-<el-button plain :icon="Back" @click="goBack">
-Back
-</el-button>
-<el-button plain :icon="Clock" @click="goToReservedMarket">
-Reserved
-</el-button>
-<el-button plain :icon="ShoppingCart" @click="goToBoughtMarket">
-Bought
-</el-button>
-</el-button-group> -->
+
 
 <div class="card-inner token-table-body">
 <transition name="filter-slide">

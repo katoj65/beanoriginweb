@@ -12,6 +12,26 @@ class BatchResource extends JsonResource
      *
      * @return array<string, mixed>
      */
+
+
+static function ownershipCheck(Request $request, int|string|null $ownerId): bool
+{
+if (!$request->user()) {
+return false;
+}
+
+if((int) $ownerId === (int) $request->user()->id){
+return true;
+}
+return false;
+}
+
+
+
+
+
+
+
     public function toArray(Request $request): array
     {
         return [
@@ -28,6 +48,7 @@ class BatchResource extends JsonResource
             'warehouse' => $this->warehouse,
             'is_on_chain' => (bool) $this->is_on_chain,
             'status' => $this->status,
+            'ownership'=>BatchResource::ownershipCheck($request, $this->owner_id),
             'created_at' => optional($this->created_at)->toDateTimeString(),
             'updated_at' => optional($this->updated_at)->toDateTimeString(),
             'owner' => $this->whenLoaded('owner', function () {
@@ -46,4 +67,9 @@ class BatchResource extends JsonResource
             }),
         ];
     }
+
+
+
+
+
 }

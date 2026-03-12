@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Batch\BatchController;
+use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Home\HomeController;
 use App\Http\Controllers\Home\UserProfileController;
 use App\Http\Controllers\Cooperative\FarmerController;
@@ -206,8 +207,28 @@ Route::delete('/{id}', [BatchController::class, 'destroy'])->whereNumber('id')->
 
 
 
+});
+
+
+
+
+
+//cart prefix
+Route::middleware(['auth'])->prefix('cart')->name('cart.')->group(function () {
+Route::post('/store', [CartController::class, 'store'])->name('store');
+
+
+
 
 });
+
+
+
+
+
+
+
+
 
 
 
