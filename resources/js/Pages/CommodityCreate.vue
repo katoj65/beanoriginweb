@@ -15,10 +15,19 @@ crop_type: '',
 phone_number: '',
 quantity: '',
 price: '',
+ripe_percentage: null,
+density_percentage: null,
 date_of_harvest: '',
 crop_grade: '',
 
 });
+
+const sanitizePercentageInteger = (value) => {
+if (value === '' || value === null || value === undefined) return null;
+const numericValue = Number(value);
+if (Number.isNaN(numericValue)) return null;
+return Math.min(100, Math.max(0, Math.trunc(numericValue)));
+};
 
 const submit = () => {
 form.post(route('commodity.store'), {
@@ -138,6 +147,38 @@ v-for="item in crop_type"
 <label class="form-label" for="04">Price</label>
 <input v-model="form.price" type="number" min="0" step="0.01" class="form-control" placeholder="Enter price" id="04"/>
 <InputError :message="form.errors.price" class="mt-2" />
+</div>
+
+<div class="col-12 col-md-6">
+<label class="form-label" for="04a">Ripe Percentage</label>
+<input
+:value="form.ripe_percentage ?? ''"
+type="number"
+min="0"
+max="100"
+step="1"
+class="form-control"
+placeholder="Enter ripe percentage"
+id="04a"
+@input="form.ripe_percentage = sanitizePercentageInteger($event.target.value)"
+/>
+<InputError :message="form.errors.ripe_percentage" class="mt-2" />
+</div>
+
+<div class="col-12 col-md-6">
+<label class="form-label" for="04b">Density Percentage</label>
+<input
+:value="form.density_percentage ?? ''"
+type="number"
+min="0"
+max="100"
+step="1"
+class="form-control"
+placeholder="Enter density percentage"
+id="04b"
+@input="form.density_percentage = sanitizePercentageInteger($event.target.value)"
+/>
+<InputError :message="form.errors.density_percentage" class="mt-2" />
 </div>
 
 

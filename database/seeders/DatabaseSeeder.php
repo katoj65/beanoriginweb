@@ -35,7 +35,8 @@ class DatabaseSeeder extends Seeder
             CommodityLifecycleSeeder::class,
             SystemSeeder::class,
             SystemActivitySeeder::class,
-            SustainabilityMetadataSeeder::class
+            SustainabilityMetadataSeeder::class,
+            ProcessingMetadataSeeder::class,
         ]);
 
 

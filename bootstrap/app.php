@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
 // Register route middleware alias
     $middleware->alias([
         'role' => \App\Http\Middleware\RoleMiddleware::class,
+        'farmer' => \App\Http\Middleware\FarmerMiddleware::class,
     ]);
 
         $middleware->web(append: [

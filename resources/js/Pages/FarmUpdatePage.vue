@@ -57,7 +57,11 @@ router.get(route('cooperative.farms.show', { id }));
 </div>
 
 <div class="card-inner">
-<form class="row g-3" @submit.prevent="submit">
+
+<div class="row">
+<div class="col-12 col-md-2"></div>
+<div class="col-12 col-md-8">
+<form class="row g-3 border m-2 p-2 rounded" @submit.prevent="submit">
 <div class="col-12 col-md-6">
 <label class="form-label">Farm Name</label>
 <el-input v-model="form.farm_name" placeholder="Main farm name" />
@@ -80,6 +84,11 @@ router.get(route('cooperative.farms.show', { id }));
 <SubmitButton :title="'Update Farm'" :status="form.processing" />
 </div>
 </form>
+</div>
+<div class="col-12 col-md-2"></div>
+
+</div>
+
 </div>
 </div>
 </div>

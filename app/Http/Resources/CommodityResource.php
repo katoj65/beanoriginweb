@@ -23,6 +23,10 @@ class CommodityResource extends JsonResource
             'grade' => $this->grade,
             'weight' => $this->weight,
             'price' => $this->price,
+            'ripe_percentage' => $this->ripe_percentage !== null ? (int) $this->ripe_percentage : null,
+            'density_percentage' => ($this->density_percentage ?? $this->desity_percentage) !== null
+                ? (int) ($this->density_percentage ?? $this->desity_percentage)
+                : null,
             'harvest_date' => $this->harvest_date
                 ? Carbon::parse($this->harvest_date)->format('F j, Y')
                 : null,

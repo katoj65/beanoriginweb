@@ -1,19 +1,16 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { router, useForm, usePage } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
-import AddCommodityToBatch from '@/Components/AddCommodityToBatch.vue';
-import AddBatchProcess from '@/Components/AddBatchProcess.vue';
-import { ElNotification } from 'element-plus';
-import { Back, Plus, MoreFilled, Edit, Delete } from '@element-plus/icons-vue';
+import BatchCommodity from '@/Batch/CommodityToBatch.vue';
+import BatchProcessing from '@/Batch/BatchProcess.vue';
+import BuyButton from '@/Components/BuyButton.vue';
 
 const page = usePage();
 const batch = computed(() => page.props.batch?.data ?? page.props.batch ?? {});
 const attachedCommodities = computed(() => page.props.attached_commodities ?? []);
 const batchActivities = computed(() => page.props.batch_activities ?? []);
-const batchProcessingMetadata = computed(() => page.props.batch_processing_metadata ?? []);
 const batchProcessingData = computed(() => page.props.batch_processing_data ?? []);
-const activityOptions = computed(() => page.props.batch_status_list ?? []);
 const timelineActivities = computed(() => {
 const activities = Array.isArray(batchActivities.value) ? [...batchActivities.value] : [];
 const createdAt = batch.value?.created_at ?? null;
@@ -37,12 +34,6 @@ if (status === 'processing' || status === 'processed') return 'badge bg-warning-
 return 'badge bg-light text-dark';
 });
 
-// Prevent tokenize action once the batch is already listed.
-const isTokenizeDisabled = computed(() => {
-const status = String(batch.value?.status ?? '').toLowerCase();
-return status === 'listed';
-});
-
 const formatMoney = (value) => {
 if (value === null || value === undefined || value === '') return 'N/A';
 const amount = Number(value);
@@ -57,134 +48,7 @@ if (Number.isNaN(date.getTime())) return value;
 return date.toLocaleString();
 };
 
-const goBack = () => {
-router.get(route('cooperative.produce'));
-};
-
-const addActivityModalVisible = ref(false);
-const deleteDialogVisible = ref(false);
-const deletingBatch = ref(false);
-const tokenizingBatch = ref(false);
-const activityForm = useForm({
-activity: '',
-});
-
-const closeActivityModal = () => {
-addActivityModalVisible.value = false;
-activityForm.clearErrors();
-};
-
-const closeDeleteDialog = () => {
-if (deletingBatch.value) return;
-deleteDialogVisible.value = false;
-};
-
-const confirmDeleteBatch = () => {
-const batchId = batch.value?.id ?? page.props.batch?.id ?? null;
-if (!batchId) return;
-
-router.delete(route('batch.destroy', { id: batchId }), {
-preserveScroll: true,
-onStart: () => {
-deletingBatch.value = true;
-},
-onFinish: () => {
-deletingBatch.value = false;
-},
-});
-};
-
-const handleMoreCommand = (command) => {
-if (command === 'activity') {
-activityForm.clearErrors();
-addActivityModalVisible.value = true;
-return;
-}
-
-if (command === 'edit') {
-const batchId = batch.value?.id ?? page.props.batch?.id ?? null;
-if (!batchId) return;
-router.get(route('commodity.batch.edit', { id: batchId }));
-return;
-}
-
-if (command === 'delete') {
-deleteDialogVisible.value = true;
-}
-};
-
-const submitActivity = () => {
-const batchId = batch.value?.id ?? page.props.batch?.id ?? null;
-if (!batchId) return;
-
-activityForm.post(route('commodity.batch.activities.store', { id: batchId }), {
-preserveScroll: true,
-onSuccess: (response) => {
-const message = response?.props?.flash?.success || 'Batch activity added successfully.';
-ElNotification({
-title: 'Successful',
-message,
-type: 'success',
-duration: 3200,
-position: 'top-right',
-offset: 84,
-showClose: true,
-customClass: 'theme-notification-success',
-});
-closeActivityModal();
-activityForm.reset('activity');
-},
-});
-};
-
-// Trigger tokenize flow via token controller route and refresh batch verification page.
-const tokenizeBatch = () => {
-const batchId = batch.value?.id ?? page.props.batch?.id ?? null;
-if (!batchId || tokenizingBatch.value) return;
-
-router.post(route('token.batch.tokenize', { id: batchId }), {}, {
-preserveScroll: true,
-onStart: () => {
-tokenizingBatch.value = true;
-},
-onSuccess: (response) => {
-const message = response?.props?.flash?.success || 'Batch tokenized successfully.';
-ElNotification({
-title: 'Successful',
-message,
-type: 'success',
-duration: 3200,
-position: 'top-right',
-offset: 84,
-showClose: true,
-customClass: 'theme-notification-success',
-});
-},
-onFinish: () => {
-tokenizingBatch.value = false;
-},
-});
-};
-
-
-
-
-
-
-//
-const commodityBatchState=computed(()=>{
-const data=page.props.attached_commodities.length;
-return data>0? true : false;
-});
-
 const activeVerificationTab = ref('commodities');
-
-
-
-
-
-
-
 </script>
 
 <template>
@@ -195,31 +59,11 @@ const activeVerificationTab = ref('commodities');
 <div class="card card-bordered verification-shell">
 <div class="card-inner border-bottom verification-head">
 <div>
-<h6 class="title mb-1"><em class="icon ni ni-shield-check mr-1"></em>Batch Commodity Verification</h6>
-<p class="sub-text mb-0">Review this batch and proceed to add commodities under it.</p>
+<h6 class="title mb-1"><em class="icon ni ni-shield-check mr-1"></em>Batch</h6>
+<p class="sub-text mb-0">Batch details and specifications</p>
 </div>
 
-<el-button-group>
-<el-button :icon="Back" @click="goBack">Back</el-button>
-<el-button
-:icon="Plus"
-:loading="tokenizingBatch"
-:disabled="isTokenizeDisabled"
-v-if="commodityBatchState == true"
-@click="tokenizeBatch"
->
-Tokenize
-</el-button>
-<el-dropdown trigger="click" class="more-dropdown-trigger" :disabled="isTokenizeDisabled" @command="handleMoreCommand">
-<el-button :icon="MoreFilled" class="more-dropdown-button" :disabled="isTokenizeDisabled" />
-<template #dropdown>
-<el-dropdown-menu>
-<el-dropdown-item :icon="Edit" command="edit">Edit</el-dropdown-item>
-<el-dropdown-item :icon="Delete" command="delete">Delete</el-dropdown-item>
-</el-dropdown-menu>
-</template>
-</el-dropdown>
-</el-button-group>
+<buy-button :item="batch" />
 </div>
 
 <div class="card-inner border-bottom">
@@ -278,16 +122,14 @@ Tokenize
 <template #label>
 <span class="verification-tab-label"><em class="icon ni ni-package mr-1"></em>Batch Harvests</span>
 </template>
-<add-commodity-to-batch :batch-id="batch.id" :commodities="attachedCommodities" />
+<batch-commodity :commodities="attachedCommodities" />
 </el-tab-pane>
 
 <el-tab-pane name="batch_processing">
 <template #label>
 <span class="verification-tab-label"><em class="icon ni ni-setting-alt mr-1"></em>Batch Processing</span>
 </template>
-<add-batch-process
-:batch-id="batch.id"
-:batch-processing-metadata="batchProcessingMetadata"
+<batch-processing
 :batch-processing-data="batchProcessingData"
 />
 </el-tab-pane>
@@ -321,51 +163,6 @@ No activities recorded for this batch yet.
 </el-tab-pane>
 </el-tabs>
 </div>
-
-<el-dialog
-v-model="deleteDialogVisible"
-width="480px"
-class="delete-dialog"
-:close-on-click-modal="!deletingBatch"
-:close-on-press-escape="!deletingBatch"
-:show-close="!deletingBatch"
-@close="closeDeleteDialog"
->
-<template #header>
-<div class="delete-dialog-header">
-<div class="delete-dialog-icon">
-<em class="icon ni ni-alert-circle"></em>
-</div>
-<div>
-<h5>Delete Batch</h5>
-<p class="sub-text mb-0">This action cannot be undone.</p>
-</div>
-</div>
-</template>
-
-<div class="delete-dialog-body">
-Are you sure you want to delete this batch?
-</div>
-
-<template #footer>
-<div class="delete-dialog-actions">
-<el-button @click="closeDeleteDialog" :disabled="deletingBatch">Cancel</el-button>
-<el-button type="danger" :loading="deletingBatch" @click="confirmDeleteBatch">
-Delete Batch
-</el-button>
-</div>
-</template>
-</el-dialog>
-
-
-
-
-
-
-
-
-
-
 
 
 </div>

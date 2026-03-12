@@ -33,8 +33,8 @@ router.get(route('cooperative.farmers'));
 <template>
 <CooperativeLayout>
 <div class="container">
-<div class="row g-gs">
-<div class="col-12">
+<div class="row g-gs mt-0">
+<div class="col-12 mt-0 pt-0">
 <div class="card card-bordered">
 <div class="card-inner border-bottom d-flex justify-content-between align-items-center">
 <div>

@@ -18,12 +18,16 @@ class Commodity extends Model
         'grade',
         'weight',
         'price',
+        'ripe_percentage',
+        'density_percentage',
         'harvest_date',
     ];
 
     protected $casts = [
         'weight' => 'decimal:2',
         'price' => 'decimal:2',
+        'ripe_percentage' => 'integer',
+        'density_percentage' => 'integer',
         'harvest_date' => 'date',
     ];
 

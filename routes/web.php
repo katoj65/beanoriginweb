@@ -11,6 +11,9 @@ use App\Http\Controllers\Cooperative\FarmerController;
 use App\Http\Controllers\Cooperative\FarmController;
 use App\Services\FarmerVerificationService;
 
+
+
+
 Route::get('/', function () {
 if (auth()->check()) {
 return redirect()->route('dashboard');
@@ -195,9 +198,11 @@ Route::delete('/farm/{id}', [FarmController::class, 'destroy'])->whereNumber('id
 
 //batch prefix
 Route::middleware(['auth'])->prefix('batch')->name('batch.')->group(function () {
+Route::get('/{id}', [BatchController::class, 'batchData'])->whereNumber('id')->name('data');
 Route::post('/{id}/processing', [BatchController::class, 'storeBatchProcessing'])->whereNumber('id')->name('processing.store');
 Route::delete('/{id}/processing/{processingId}', [BatchController::class, 'destroyBatchProcessData'])->whereNumber('id')->whereNumber('processingId')->name('processing.destroy');
 Route::delete('/{id}/commodities/{commodityId}', [BatchController::class, 'destroyBatchCommodityData'])->whereNumber('id')->whereNumber('commodityId')->name('commodities.destroy');
+Route::delete('/{id}', [BatchController::class, 'destroy'])->whereNumber('id')->name('destroy');
 
 
 

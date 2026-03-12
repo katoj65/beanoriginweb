@@ -19,6 +19,8 @@ commodity_type: commodity.value.commodity_type ?? '',
 grade: commodity.value.grade ?? '',
 weight: commodity.value.weight ?? '',
 price: commodity.value.price ?? '',
+ripe_percentage: commodity.value.ripe_percentage ?? null,
+density_percentage: commodity.value.density_percentage ?? null,
 harvest_date: commodity.value.harvest_date ?? '',
 };
 
@@ -28,6 +30,8 @@ commodity_type: initialValues.commodity_type,
 grade: initialValues.grade,
 weight: initialValues.weight,
 price: initialValues.price,
+ripe_percentage: initialValues.ripe_percentage,
+density_percentage: initialValues.density_percentage,
 harvest_date: initialValues.harvest_date,
 });
 
@@ -39,10 +43,18 @@ return text.charAt(0).toUpperCase() + text.slice(1);
 
 const normalizeText = (value) => String(value ?? '').trim();
 const normalizeNumber = (value) => {
+if (value === '' || value === null || value === undefined) return null;
 const num = Number(value);
 return Number.isNaN(num) ? null : num;
 };
 const normalizeDate = (value) => String(value ?? '').trim().slice(0, 10);
+
+const sanitizePercentageInteger = (value) => {
+if (value === '' || value === null || value === undefined) return null;
+const numericValue = Number(value);
+if (Number.isNaN(numericValue)) return null;
+return Math.min(100, Math.max(0, Math.trunc(numericValue)));
+};
 
 const hasChanges = () => (
 normalizeText(form.commodity_name) !== normalizeText(initialValues.commodity_name)
@@ -50,6 +62,8 @@ normalizeText(form.commodity_name) !== normalizeText(initialValues.commodity_nam
 || normalizeText(form.grade) !== normalizeText(initialValues.grade)
 || normalizeNumber(form.weight) !== normalizeNumber(initialValues.weight)
 || normalizeNumber(form.price) !== normalizeNumber(initialValues.price)
+|| normalizeNumber(form.ripe_percentage) !== normalizeNumber(initialValues.ripe_percentage)
+|| normalizeNumber(form.density_percentage) !== normalizeNumber(initialValues.density_percentage)
 || normalizeDate(form.harvest_date) !== normalizeDate(initialValues.harvest_date)
 );
 
@@ -169,6 +183,36 @@ class="text-capitalize"
 <label class="form-label">Price</label>
 <el-input v-model="form.price" type="number" min="0" step="0.01" />
 <InputError :message="form.errors.price" class="mt-1" />
+</div>
+
+<div class="col-12 col-md-6">
+<label class="form-label">Ripe Percentage</label>
+<input
+:value="form.ripe_percentage ?? ''"
+type="number"
+min="0"
+max="100"
+step="1"
+class="form-control"
+placeholder="Enter ripe percentage"
+@input="form.ripe_percentage = sanitizePercentageInteger($event.target.value)"
+/>
+<InputError :message="form.errors.ripe_percentage" class="mt-1" />
+</div>
+
+<div class="col-12 col-md-6">
+<label class="form-label">Density Percentage</label>
+<input
+:value="form.density_percentage ?? ''"
+type="number"
+min="0"
+max="100"
+step="1"
+class="form-control"
+placeholder="Enter density percentage"
+@input="form.density_percentage = sanitizePercentageInteger($event.target.value)"
+/>
+<InputError :message="form.errors.density_percentage" class="mt-1" />
 </div>
 
 <div class="col-12 col-md-6">

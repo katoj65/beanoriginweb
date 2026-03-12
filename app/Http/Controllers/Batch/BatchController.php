@@ -12,6 +12,7 @@ use App\Models\CropGrade;
 use App\Models\CropType;
 use App\Models\Crops;
 use App\Models\UserProfile;
+use App\Services\Batch\BatchService;
 use App\Services\Blockchain\BatchChainService;
 use App\Services\Blockchain\BlockService;
 use App\Models\Block;
@@ -542,6 +543,16 @@ public function destroyBatchCommodityData(Request $request, string $id, string $
 
 
 
+
+
+
+
+
+
+public function batchData(Request $request, string $id, BatchService $batchService)
+{
+return $batchService->batch($request, $id);
+}
 
 
 
