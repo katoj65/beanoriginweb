@@ -72,7 +72,7 @@ const hasBidders = (item) => getBidUsers(item).length > 0;
 const openBatchDetails = (id) => {
   const batchId = Number(id ?? 0);
   if (!batchId) return;
-  router.get(`/market/batch-bidding/${batchId}`);
+  router.get(route('bid.show', { id: batchId }));
 };
 
 // Open the logged-in user's bids page from the Bids button.

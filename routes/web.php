@@ -219,7 +219,6 @@ Route::middleware(['auth'])->prefix('cart')->name('cart.')->group(function () {
 Route::post('/store', [CartController::class, 'store'])->name('store');
 
 
-
 });
 
 
