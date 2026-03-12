@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Batch\BatchController;
 use App\Http\Controllers\Cart\CartController;
+use App\Http\Controllers\Market\BiddingController;
 use App\Http\Controllers\Home\HomeController;
 use App\Http\Controllers\Home\UserProfileController;
 use App\Http\Controllers\Cooperative\FarmerController;
@@ -219,6 +220,15 @@ Route::post('/store', [CartController::class, 'store'])->name('store');
 
 
 
+});
+
+
+
+
+//bid prefix
+// Use this group for bid-specific routes.
+Route::middleware(['auth'])->prefix('bid')->name('bid.')->group(function () {
+Route::get('/{id}', [BiddingController::class, 'show'])->whereNumber('id')->name('show');
 
 });
 
