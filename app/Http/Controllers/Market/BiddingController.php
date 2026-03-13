@@ -3,16 +3,15 @@
 namespace App\Http\Controllers\Market;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BatchBidsResource;
 use App\Models\Batch;
 use App\Models\BatchBid;
-use App\Models\Commodity;
-use App\Models\Cooperative;
-use App\Models\UserProfile;
 use App\Services\Bid\BidService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Http\Resources\BidMetadataResource;
 
 class BiddingController extends Controller
 {
@@ -37,6 +36,7 @@ $batches = Batch::query()
 'market_type',
 ])
 ->latest('id')
+->limit(50)
 ->get();
 
 $userId = (int) (auth()->id() ?? 0);
@@ -75,8 +75,28 @@ $batch->bid_users = $bidRows
 return $batch;
 });
 
+// Query bids where i am among bidders
+$myBids = BatchBidsResource::collection(
+BatchBid::query()
+->with('batch:id,batch_code,commodity_name,commodity_type,grade,weight,quantity,price,warehouse')
+->where('user_id', $userId)
+->orderByDesc('id')
+->limit(50)
+->get()
+)->resolve();
+
+
+// Step 2: Fetch bids attached to owned batches without SQL joins.
+$submittedBids =BidMetadataResource::collection(Batch::query()
+->where('owner_id',$userId)
+->where('market_type','bidding')
+->orderByDesc('id')
+->get());
+
 return Inertia::render('BiddingPage', [
 'batches' => $batches,
+'my_bids' => $myBids,
+'submitted_bids' => $submittedBids,
 ]);
 }
 
@@ -196,7 +216,7 @@ BatchBid::updateOrCreate(
 
 if ($isCounterOffer) {
 return redirect()
-->route('market.batchBidding', ['id' => $batch->id]);
+->route('bid.show', ['id' => $batch->id]);
 }
 
 

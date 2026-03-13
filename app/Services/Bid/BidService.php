@@ -7,6 +7,7 @@ use App\Models\BatchBid;
 use App\Models\Commodity;
 use App\Models\Cooperative;
 use App\Models\UserProfile;
+use App\Models\BatchProcessingData;
 use Inertia\Inertia;
 
 
@@ -114,6 +115,30 @@ return [
 })
 ->values();
 
+// Load existing batch activity entries for the activities timeline tab.
+$batchActivities = $batch->activities()
+->latest('id')
+->get(['id', 'activity', 'created_at'])
+->map(fn ($activity) => [
+'id' => $activity->id,
+'activity' => $activity->activity,
+'created_at' => $activity->created_at?->toDateTimeString(),
+])
+->values();
+
+// Load existing processing rows displayed in the batch processing table.
+$batchProcessingData = BatchProcessingData::query()
+->where('batch_id', $batch->id)
+->latest('id')
+->get(['id', 'activity', 'value', 'created_at'])
+->map(fn ($item) => [
+'id' => $item->id,
+'activity' => $item->activity,
+'value' => $item->value,
+'created_at' => $item->created_at?->toDateTimeString(),
+])
+->values();
+
 // Ownership flags used by the page actions.
 $isReservedByUser = false;
 $batchOwner = $batch->owner_id;
@@ -201,6 +226,9 @@ return Inertia::render('BatchBiddingPage',
 'my_bid_offer' => $myBidOffer,
 'other_buyer_offers' => $otherBuyerOffers,
 'bid_offers' => $bidOffers,
+'attached_commodities' => $batchCommodities,
+'batch_activities' => $batchActivities,
+'batch_processing_data' => $batchProcessingData,
 'batch_commodities' => $batchCommodities,
 'batch_farms' => $batchFarms,
 'commodity_farm_map' => $commodityFarmMap,
@@ -254,7 +282,6 @@ return Inertia::render('BatchBiddingPage',
 
 
 }
-
 
 
 

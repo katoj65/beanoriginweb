@@ -914,12 +914,12 @@ $deletedRows = BatchBid::query()
 
 if ($deletedRows < 1) {
 return redirect()
-->route('market.batchBidding', ['id' => $batchId])
+->route('bid.show', ['id' => $batchId])
 ->withErrors(['bid_offer' => 'No active bid found to withdraw.']);
 }
 
 return redirect()
-->route('market.batchBidding', ['id' => $batchId]);
+->route('bid.show', ['id' => $batchId]);
 }
 
 

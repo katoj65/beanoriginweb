@@ -115,6 +115,10 @@ const activeVerificationTab = ref('commodities');
 </div>
 </div>
 
+
+
+
+
 <div class="card-inner border-bottom">
 <el-tabs v-model="activeVerificationTab" class="app-themed-tabs">
 <el-tab-pane name="commodities">

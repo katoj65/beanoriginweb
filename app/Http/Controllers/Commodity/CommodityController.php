@@ -29,6 +29,7 @@ use App\Models\CommodityBatch;
 use App\Models\BatchProcessingData;
 use App\Models\CommodityQualityData;
 use App\Models\QualityMetadata;
+use App\Services\Blockchain\BlockService;
 use Inertia\Inertia;
 
 class CommodityController extends Controller
@@ -99,7 +100,7 @@ return redirect()
 
 
 // Store a new batch record from commodity batch form.
-public function storeBatch(Request $request)
+public function storeBatch(Request $request, BlockService $blockService)
 {
 // Validate required batch fields and publish destination.
 $validated = $request->validate([
@@ -116,8 +117,9 @@ $validated = $request->validate([
 
 ]);
 
+
 // Persist batch atomically to keep data consistent.
-$batch = DB::transaction(function () use ($validated, $request) {
+$batch = DB::transaction(function () use ($validated, $request, $blockService) {
 $batch = Batch::create([
 'owner_id' => $request->user()->id,
 'batch_code' => $validated['batch_code'],
@@ -133,6 +135,18 @@ $batch = Batch::create([
 'price' => $validated['price'],
 'market_type' => $validated['market_type'] ?? 'save',
 ]);
+
+
+// Add block only when batch is not saved as draft.
+if (($validated['market_type'] ?? 'save') !== 'save') {
+$blockService->addBlock($batch, [
+'event_type' => 'created',
+'action' => 'batch_created',
+]);
+}
+
+
+
 
 return $batch;
 });

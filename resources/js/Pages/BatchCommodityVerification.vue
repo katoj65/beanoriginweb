@@ -201,15 +201,6 @@ const activeVerificationTab = ref('commodities');
 
 <el-button-group>
 <el-button :icon="Back" @click="goBack">Back</el-button>
-<el-button
-:icon="Plus"
-:loading="tokenizingBatch"
-:disabled="isTokenizeDisabled"
-v-if="commodityBatchState == true"
-@click="tokenizeBatch"
->
-Tokenize
-</el-button>
 <el-dropdown trigger="click" class="more-dropdown-trigger" :disabled="isTokenizeDisabled" @command="handleMoreCommand">
 <el-button :icon="MoreFilled" class="more-dropdown-button" :disabled="isTokenizeDisabled" />
 <template #dropdown>

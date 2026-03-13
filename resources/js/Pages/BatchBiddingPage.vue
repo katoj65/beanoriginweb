@@ -1,14 +1,34 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import { ElNotification } from 'element-plus';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
+import BatchCommodity from '@/Batch/CommodityToBatch.vue';
+import BatchProcessing from '@/Batch/BatchProcess.vue';
 
 const page = usePage();
 const batch = computed(() => page.props.batch ?? {});
 const ownerProfile = computed(() => page.props.owner_profile ?? {});
 const batchCommodities = computed(() => page.props.batch_commodities ?? []);
 const commodityFarmMap = computed(() => page.props.commodity_farm_map ?? []);
+const attachedCommodities = computed(() => page.props.attached_commodities ?? page.props.batch_commodities ?? []);
+const batchActivities = computed(() => page.props.batch_activities ?? []);
+const batchProcessingData = computed(() => page.props.batch_processing_data ?? []);
+const timelineActivities = computed(() => {
+const activities = Array.isArray(batchActivities.value) ? [...batchActivities.value] : [];
+const createdAt = batch.value?.created_at ?? null;
+
+if (createdAt) {
+activities.push({
+id: 'batch-created',
+activity: 'batch created',
+created_at: createdAt,
+});
+}
+
+return activities;
+});
+const activeVerificationTab = ref('commodities');
 const hasBidOnBatch = computed(() => Boolean(page.props.has_bid_on_batch ?? false));
 const myBidOffer = computed(() => page.props.my_bid_offer ?? null);
 // Read bidder offers from backend and keep descending price order for table rank.
@@ -191,53 +211,74 @@ type: 'error',
 </div>
 
 <div class="commodities-section mt-3">
-<div class="section-head mb-2">
-<h6 class="title mb-0">Batch Harvest Details</h6>
-<span class="sub-text">{{ commodityRows.length }} item(s)</span>
+
+<div class="card-inner p-0">
+<el-tabs v-model="activeVerificationTab" class="app-themed-tabs">
+<el-tab-pane name="commodities">
+<template #label>
+<span class="verification-tab-label"><em class="icon ni ni-package mr-1"></em>Batch Harvests</span>
+</template>
+<batch-commodity :commodities="attachedCommodities" />
+</el-tab-pane>
+
+<el-tab-pane name="batch_processing">
+<template #label>
+<span class="verification-tab-label"><em class="icon ni ni-setting-alt mr-1"></em>Batch Processing</span>
+</template>
+<batch-processing
+:batch-processing-data="batchProcessingData"
+/>
+</el-tab-pane>
+
+<el-tab-pane name="batch_activities">
+<template #label>
+<span class="verification-tab-label"><em class="icon ni ni-activity mr-1"></em>Batch Activities</span>
+</template>
+<div class="activity-log-head">
+<h6 class="title mb-0"><em class="icon ni ni-activity mr-1"></em>Batch Activities</h6>
+<span class="activity-log-count">{{ timelineActivities.length }} activities</span>
 </div>
-<div v-if="commodityRows.length" class="commodity-table-wrap">
-<el-table :data="commodityRows" size="small" border stripe class="commodity-table">
-<el-table-column prop="commodity_name" min-width="180">
-<template #header>
-<span class="table-head-label"><em class="icon ni ni-tag"></em>Commodity</span>
-</template>
-</el-table-column>
-<el-table-column prop="commodity_type" min-width="120">
-<template #header>
-<span class="table-head-label"><em class="icon ni ni-layers"></em>Type</span>
-</template>
-</el-table-column>
-<el-table-column prop="grade" min-width="100">
-<template #header>
-<span class="table-head-label"><em class="icon ni ni-award"></em>Grade</span>
-</template>
-</el-table-column>
-<el-table-column prop="weight" min-width="100">
-<template #header>
-<span class="table-head-label"><em class="icon ni ni-package"></em>Weight</span>
-</template>
-</el-table-column>
-<el-table-column prop="harvest_date" min-width="140">
-<template #header>
-<span class="table-head-label"><em class="icon ni ni-calendar"></em>Harvest Date</span>
-</template>
-<template #default="{ row }">
-{{ formatDate(row.harvest_date) }}
-</template>
-</el-table-column>
-<el-table-column prop="farm_names" min-width="220" show-overflow-tooltip>
-<template #header>
-<span class="table-head-label"><em class="icon ni ni-home-fill"></em>Farm</span>
-</template>
-</el-table-column>
-<el-table-column prop="farm_locations" min-width="220" show-overflow-tooltip>
-<template #header>
-<span class="table-head-label"><em class="icon ni ni-map-pin"></em>Farm Location</span>
-</template>
-</el-table-column>
-</el-table>
+
+<div v-if="timelineActivities.length" class="activity-log-list">
+<el-timeline class="activity-timeline batch-activities-timeline">
+<el-timeline-item
+v-for="item in timelineActivities"
+:key="item.id"
+type="primary"
+:timestamp="formatDateTime(item.created_at)"
+placement="top"
+>
+<div class="activity-timeline-content text-capitalize">{{ item.activity }}</div>
+</el-timeline-item>
+</el-timeline>
 </div>
-<div v-else class="sub-text">No commodities linked to this batch.</div>
+
+<div v-else class="empty-activity-log">
+<el-empty description="No activities recorded for this batch yet." />
+</div>
+</el-tab-pane>
+</el-tabs>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </div>
 
 
