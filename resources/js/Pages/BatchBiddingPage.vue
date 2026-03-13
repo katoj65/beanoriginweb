@@ -240,7 +240,7 @@ type: 'error',
 </div>
 
 <div v-if="timelineActivities.length" class="activity-log-list">
-<el-timeline class="activity-timeline batch-activities-timeline">
+<el-timeline class="activity-timeline">
 <el-timeline-item
 v-for="item in timelineActivities"
 :key="item.id"
@@ -254,7 +254,7 @@ placement="top"
 </div>
 
 <div v-else class="empty-activity-log">
-<el-empty description="No activities recorded for this batch yet." />
+No activities recorded for this batch yet.
 </div>
 </el-tab-pane>
 </el-tabs>
