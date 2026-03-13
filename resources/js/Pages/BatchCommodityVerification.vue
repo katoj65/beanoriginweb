@@ -4,6 +4,7 @@ import { router, useForm, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import AddCommodityToBatch from '@/Components/AddCommodityToBatch.vue';
 import AddBatchProcess from '@/Components/AddBatchProcess.vue';
+import TokenData from '@/Batch/TokenData.vue';
 import { ElNotification } from 'element-plus';
 import { Back, Plus, MoreFilled, Edit, Delete } from '@element-plus/icons-vue';
 
@@ -13,6 +14,7 @@ const attachedCommodities = computed(() => page.props.attached_commodities ?? []
 const batchActivities = computed(() => page.props.batch_activities ?? []);
 const batchProcessingMetadata = computed(() => page.props.batch_processing_metadata ?? []);
 const batchProcessingData = computed(() => page.props.batch_processing_data ?? []);
+const batchBlocks = computed(() => page.props.batch_blocks ?? []);
 const activityOptions = computed(() => page.props.batch_status_list ?? []);
 const timelineActivities = computed(() => {
 const activities = Array.isArray(batchActivities.value) ? [...batchActivities.value] : [];
@@ -309,6 +311,13 @@ placement="top"
 <div v-else class="empty-activity-log">
 No activities recorded for this batch yet.
 </div>
+</el-tab-pane>
+
+<el-tab-pane name="token">
+<template #label>
+<span class="verification-tab-label"><em class="icon ni ni-coins mr-1"></em>Token</span>
+</template>
+<token-data />
 </el-tab-pane>
 </el-tabs>
 </div>

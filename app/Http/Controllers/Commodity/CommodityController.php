@@ -29,7 +29,9 @@ use App\Models\CommodityBatch;
 use App\Models\BatchProcessingData;
 use App\Models\CommodityQualityData;
 use App\Models\QualityMetadata;
+use App\Models\Block;
 use App\Services\Blockchain\BlockService;
+use App\Http\Resources\BlockResource;
 use Inertia\Inertia;
 
 class CommodityController extends Controller
@@ -130,7 +132,7 @@ $batch = Batch::create([
 'grade' => $validated['grade'],
 'moisture' => $validated['moisture'] ?? null,
 'warehouse' => $validated['warehouse'],
-'is_on_chain' => false,
+'is_on_chain' => $validated['commodity_type']!='saved'?true:false,
 'status' => 'created',
 'price' => $validated['price'],
 'market_type' => $validated['market_type'] ?? 'save',
@@ -143,6 +145,11 @@ $blockService->addBlock($batch, [
 'event_type' => 'created',
 'action' => 'batch_created',
 ]);
+
+
+
+
+
 }
 
 
@@ -518,6 +525,15 @@ $batchProcessingData = BatchProcessingData::query()
 ])
 ->values();
 
+
+// Load blockchain records that belong to the selected batch.
+$batchBlocks = Block::query()
+->where('batch_id', $batch->id)
+->latest('id')
+->get();
+
+
+
 return Inertia::render('BatchCommodityVerification', [
 'title' => 'Batch Commodity Verification',
 'batch' => new BatchResource($batch),
@@ -525,6 +541,7 @@ return Inertia::render('BatchCommodityVerification', [
 'batch_activities' => $batchActivities,
 'batch_processing_metadata' => $batchProcessingMetadata,
 'batch_processing_data' => $batchProcessingData,
+'batch_blocks' => BlockResource::collection($batchBlocks)->resolve(),
 'batch_status_list' => BatchStatusList::query()->where('name','!=','created')->orderBy('id')->pluck('name')->values(),
 ]);
 }
