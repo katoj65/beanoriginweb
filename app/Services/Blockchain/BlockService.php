@@ -55,6 +55,7 @@ return Block::create([
 'batch_id' => $batch->id,
 'block_index' => $blockIndex,
 'event_type' => $eventType,
+
 'event_data' => array_merge([
 'owner_id' => $resolvedCurrentOwner,
 'batch_code' => $batch->batch_code,
@@ -71,6 +72,7 @@ return Block::create([
 'ask_price' => $enteredPrice,
 'resolved_price' => $resolvedPrice,
 ], $eventData),
+
 'current_hash' => $currentHash,
 'previous_hash' => $previousHash,
 'current_owner' => $resolvedCurrentOwner,

@@ -68,6 +68,11 @@ class Batch extends Model
         return $this->hasMany(BatchActivityLog::class, 'batch_id');
     }
 
+    public function activityData(): HasMany
+    {
+        return $this->hasMany(BatchActivityData::class, 'batch_id');
+    }
+
     public function transactionLogs(): HasMany
     {
         return $this->hasMany(BatchTransactionLog::class, 'batch_id');
