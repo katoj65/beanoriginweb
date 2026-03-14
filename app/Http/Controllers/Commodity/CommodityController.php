@@ -556,12 +556,13 @@ $batchProcessingData = BatchProcessingData::query()
 $batchTokens = Token::query()
 ->where('batch_id', $batch->id)
 ->latest('id')
-->get(['id', 'token_index', 'event_type', 'current_hash', 'status', 'created_at'])
+->get(['id', 'token_index', 'event_type', 'current_hash', 'metadata', 'status', 'created_at'])
 ->map(fn ($token) => [
 'id' => $token->id,
 'token_index' => $token->token_index,
 'event_type' => $token->event_type,
 'current_hash' => $token->current_hash,
+'metadata' => $token->metadata,
 'status' => $token->status,
 'created_at' => $token->created_at?->toDateTimeString(),
 ])

@@ -32,6 +32,49 @@ const formatDateTime = (value) => {
   return date.toLocaleString();
 };
 
+const parseMetadata = (value) => {
+  if (value === null || value === undefined || value === '') return {};
+  if (typeof value === 'string') {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return value;
+    }
+  }
+  return value;
+};
+
+const formatMetadataValue = (value) => {
+  if (value === null || value === undefined || value === '') return 'N/A';
+  if (typeof value === 'object') return JSON.stringify(value);
+  return String(value);
+};
+
+const metadataItems = (value) => {
+  const parsed = parseMetadata(value);
+
+  if (Array.isArray(parsed)) {
+    return parsed.map((item, index) => ({
+      key: `item_${index + 1}`,
+      value: formatMetadataValue(item),
+    }));
+  }
+
+  if (parsed && typeof parsed === 'object') {
+    return Object.entries(parsed).map(([key, itemValue]) => ({
+      key,
+      value: formatMetadataValue(itemValue),
+    }));
+  }
+
+  return [
+    {
+      key: 'value',
+      value: formatMetadataValue(parsed),
+    },
+  ];
+};
+
 const submitToken = () => {
   const batchId = batch.value?.id ?? null;
   if (!batchId || tokenizing.value) return;
@@ -75,6 +118,7 @@ const submitToken = () => {
           <tr>
             <th><span class="head-label"><em class="icon ni ni-hash"></em>Token #</span></th>
             <th><span class="head-label"><em class="icon ni ni-activity"></em>Event</span></th>
+            <th><span class="head-label"><em class="icon ni ni-file-text"></em>Metadata</span></th>
             <th><span class="head-label"><em class="icon ni ni-shield-check"></em>Status</span></th>
             <th><span class="head-label"><em class="icon ni ni-calendar"></em>Created</span></th>
           </tr>
@@ -83,6 +127,17 @@ const submitToken = () => {
           <tr v-for="token in batchTokens" :key="token.id">
             <td>{{ token.token_index ?? 'N/A' }}</td>
             <td class="text-capitalize">{{ token.event_type ?? 'N/A' }}</td>
+            <td>
+              <div class="token-meta-list">
+                <span
+                  v-for="item in metadataItems(token.metadata)"
+                  :key="`${token.id}-${item.key}-${item.value}`"
+                  class="badge token-meta-badge"
+                >
+                  {{ item.key }}: {{ item.value }}
+                </span>
+              </div>
+            </td>
             <td class="text-capitalize">{{ token.status ?? 'N/A' }}</td>
             <td>{{ formatDateTime(token.created_at) }}</td>
           </tr>
@@ -186,6 +241,21 @@ const submitToken = () => {
 .token-table td {
   color: #364a63;
   white-space: nowrap;
+}
+
+.token-meta-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 360px;
+}
+
+.token-meta-badge {
+  background: #eff6ff;
+  color: #1e3a8a;
+  border: 1px solid #bfdbfe;
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .head-label {
