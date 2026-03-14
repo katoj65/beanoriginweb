@@ -11,28 +11,24 @@ class Token extends Model
     protected $table = 'token';
 
     protected $fillable = [
-        'block_id',
+        'batch_id',
         'token_index',
-        'token_hash',
-        'previous_hash',
-        'weight',
-        'price',
-        'event_data',
         'event_type',
-        'status',
+        'metadata',
+        'current_hash',
+        'previous_hash',
         'current_owner',
         'previous_owner',
+        'status',
     ];
 
     protected $casts = [
-        'event_data' => 'array',
-        'weight' => 'decimal:2',
-        'price' => 'decimal:2',
+        'metadata' => 'array',
     ];
 
-    public function block(): BelongsTo
+    public function batch(): BelongsTo
     {
-        return $this->belongsTo(Block::class, 'block_id');
+        return $this->belongsTo(Batch::class, 'batch_id');
     }
 
     public function currentOwner(): BelongsTo
@@ -45,8 +41,8 @@ class Token extends Model
         return $this->belongsTo(User::class, 'previous_owner');
     }
 
-    public function activities(): HasMany
+    public function conversions(): HasMany
     {
-        return $this->hasMany(TokenActivity::class, 'token_id');
+        return $this->hasMany(TokenConversion::class, 'token_id');
     }
 }

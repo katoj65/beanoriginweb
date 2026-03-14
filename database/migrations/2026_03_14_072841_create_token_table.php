@@ -6,31 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('token', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('block_id')->constrained('blocks')->cascadeOnDelete();
+            $table->foreignId('batch_id')->constrained('batches')->cascadeOnDelete();
             $table->unsignedBigInteger('token_index')->unique();
-            $table->string('token_hash')->unique();
+            $table->string('event_type');
+            $table->json('metadata')->nullable();
+            $table->string('current_hash')->unique();
             $table->string('previous_hash')->nullable();
-            $table->decimal('weight', 12, 2)->nullable();
-            $table->decimal('price', 12, 2)->nullable();
-            $table->json('event_data')->nullable();
-            $table->string('event_type')->nullable();
-            $table->enum('status', ['active', 'redeemed'])->default('active');
             $table->foreignId('current_owner')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('previous_owner')->nullable()->constrained('users')->nullOnDelete();
+            $table->enum('status', ['active', 'redeemed'])->default('active');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('token');

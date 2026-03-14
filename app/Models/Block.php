@@ -58,8 +58,4 @@ class Block extends Model
         return $this->hasMany(BlockPurchase::class, 'block_id');
     }
 
-    public function tokens(): HasMany
-    {
-        return $this->hasMany(Token::class, 'block_id');
-    }
 }

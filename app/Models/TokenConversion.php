@@ -5,13 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class TokenActivity extends Model
+class TokenConversion extends Model
 {
-    protected $table = 'token_activities';
-
     protected $fillable = [
         'token_id',
-        'activity',
+        'weight',
+        'price',
+    ];
+
+    protected $casts = [
+        'weight' => 'decimal:2',
+        'price' => 'decimal:2',
     ];
 
     public function token(): BelongsTo

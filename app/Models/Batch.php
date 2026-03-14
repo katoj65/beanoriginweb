@@ -72,4 +72,10 @@ class Batch extends Model
     {
         return $this->hasMany(BatchTransactionLog::class, 'batch_id');
     }
+
+    public function tokens(): HasMany
+    {
+        return $this->hasMany(Token::class, 'batch_id');
+    }
+
 }
