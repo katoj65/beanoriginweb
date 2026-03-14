@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import AddCommodityToBatch from '@/Components/AddCommodityToBatch.vue';
-import AddBatchProcess from '@/Components/AddBatchProcess.vue';
+import AddBatchTradeActivity from '@/Components/AddBatchTradeActivity.vue';
 import TokenData from '@/Batch/TokenData.vue';
 import { ElNotification } from 'element-plus';
 import { Back, Plus, MoreFilled, Edit, Delete } from '@element-plus/icons-vue';
@@ -12,7 +12,7 @@ const page = usePage();
 const batch = computed(() => page.props.batch?.data ?? page.props.batch ?? {});
 const attachedCommodities = computed(() => page.props.attached_commodities ?? []);
 const batchActivities = computed(() => page.props.batch_activities ?? []);
-const batchProcessingMetadata = computed(() => page.props.batch_processing_metadata ?? []);
+const batchTradeActivityMetadata = computed(() => page.props.batch_trade_activity_metadata ?? []);
 const batchProcessingData = computed(() => page.props.batch_processing_data ?? []);
 const batchBlocks = computed(() => page.props.batch_blocks ?? []);
 const activityOptions = computed(() => page.props.batch_status_list ?? []);
@@ -278,9 +278,9 @@ const activeVerificationTab = ref('commodities');
 <template #label>
 <span class="verification-tab-label"><em class="icon ni ni-setting-alt mr-1"></em>Batch Processing</span>
 </template>
-<add-batch-process
+<add-batch-trade-activity
 :batch-id="batch.id"
-:batch-processing-metadata="batchProcessingMetadata"
+:batch-trade-activity-metadata="batchTradeActivityMetadata"
 :batch-processing-data="batchProcessingData"
 />
 </el-tab-pane>

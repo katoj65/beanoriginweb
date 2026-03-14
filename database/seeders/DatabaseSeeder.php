@@ -16,7 +16,8 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->withPersonalTeam()->create();
 
         User::factory()->withPersonalTeam()->create([
-            'name' => 'Test User',
+            'fname' => 'Test',
+            'lname' => 'User',
             'email' => 'test@example.com',
         ]);
 
@@ -34,7 +35,7 @@ class DatabaseSeeder extends Seeder
             MarketTypeSeeder::class,
             CommodityLifecycleSeeder::class,
             SystemSeeder::class,
-            SystemActivitySeeder::class,
+            BatchTradeActivityMetadataSeeder::class,
             SustainabilityMetadataSeeder::class,
             ProcessingMetadataSeeder::class,
         ]);

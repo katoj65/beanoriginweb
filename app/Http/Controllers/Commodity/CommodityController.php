@@ -27,6 +27,7 @@ use App\Http\Resources\CommodityResource;
 use App\Http\Resources\BatchResource;
 use App\Models\CommodityBatch;
 use App\Models\BatchProcessingData;
+use App\Models\BatchTradeActivityMetadata;
 use App\Models\CommodityQualityData;
 use App\Models\QualityMetadata;
 use App\Models\Block;
@@ -532,6 +533,15 @@ $batchBlocks = Block::query()
 ->latest('id')
 ->get();
 
+// Load selectable trade activity options for the verification page tab.
+$batchTradeActivityMetadata = BatchTradeActivityMetadata::query()
+->orderBy('activity')
+->pluck('activity')
+->values();
+
+
+
+
 
 
 return Inertia::render('BatchCommodityVerification', [
@@ -540,6 +550,8 @@ return Inertia::render('BatchCommodityVerification', [
 'attached_commodities' => $attachedCommodities,
 'batch_activities' => $batchActivities,
 'batch_processing_metadata' => $batchProcessingMetadata,
+// Expose trade activity metadata for the Vue component dropdown.
+'batch_trade_activity_metadata' => $batchTradeActivityMetadata,
 'batch_processing_data' => $batchProcessingData,
 'batch_blocks' => BlockResource::collection($batchBlocks)->resolve(),
 'batch_status_list' => BatchStatusList::query()->where('name','!=','created')->orderBy('id')->pluck('name')->values(),
