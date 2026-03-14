@@ -555,8 +555,7 @@ public function destroyBatchProcessData(Request $request, string $id, string $pr
         ->delete();
 
     // Send the user back so the trade activity table refreshes after deletion.
-    return redirect()
-        ->route('commodity.batch.verify', ['id' => $batch->id])
+    return back()
         ->with('success', 'Batch processing data deleted successfully.');
 }
 
@@ -597,7 +596,24 @@ return $batchService->batch($request, $id);
 }
 
 
+public function destroyBatchTradeActivityData(Request $request, string $id, string $tradeActivityId)
+{
+// Ensure batch exists and belongs to the authenticated owner.
+$batch = Batch::query()
+->where('id', (int) $id)
+->where('owner_id', $request->user()->id)
+->firstOrFail();
 
+// Delete only the selected trade activity row that belongs to this batch.
+BatchTradeActivityData::query()
+->where('id', (int) $tradeActivityId)
+->where('batch_id', (int) $batch->id)
+->firstOrFail()
+->delete();
+
+return back()
+->with('success', 'Batch trade activity deleted successfully.');
+}
 
 
 

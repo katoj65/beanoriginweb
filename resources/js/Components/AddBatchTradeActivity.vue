@@ -56,6 +56,21 @@ closeModal();
 });
 };
 
+const destroyTradeActivity = (tradeActivityId) => {
+if (!resolvedBatchId.value || !tradeActivityId) return;
+
+router.delete(route('batch.trade-activity.destroy', { id: resolvedBatchId.value, tradeActivityId }), {
+preserveScroll: true,
+onSuccess: () => {
+ElNotification({
+title: 'Success',
+message: 'Batch trade activity deleted successfully.',
+type: 'success',
+});
+},
+});
+};
+
 
 
 
@@ -85,6 +100,7 @@ Add Batch Activity
 <tr>
 <th style="width:80%;"><span class="head-label"><em class="icon ni ni-activity"></em>Activity</span></th>
 <th><span class="head-label"><em class="icon ni ni-calendar"></em>Date Added</span></th>
+<th class="text-right"><span class="head-label"><em class="icon ni ni-trash"></em></span></th>
 </tr>
 </thead>
 <tbody>
@@ -96,6 +112,15 @@ Add Batch Activity
 </span>
 </td>
 <td>{{ formatDateTime(item.created_at) }}</td>
+<td class="text-right">
+<el-button
+class="process-delete-btn"
+type="danger"
+text
+:icon="Delete"
+@click="destroyTradeActivity(item.id)"
+/>
+</td>
 </tr>
 </tbody>
 </table>
