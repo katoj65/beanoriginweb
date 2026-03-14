@@ -27,6 +27,7 @@ use App\Http\Resources\CommodityResource;
 use App\Http\Resources\BatchResource;
 use App\Models\CommodityBatch;
 use App\Models\BatchProcessingData;
+use App\Models\BatchTradeActivityData;
 use App\Models\BatchTradeActivityMetadata;
 use App\Models\CommodityQualityData;
 use App\Models\QualityMetadata;
@@ -514,7 +515,7 @@ $batchProcessingMetadata = DB::table('processing_metadata')
 ->pluck('name')
 ->values();
 
-$batchProcessingData = BatchProcessingData::query()
+$batchTradeActivityData = BatchTradeActivityData::query()
 ->where('batch_id', $batch->id)
 ->latest('id')
 ->get(['id', 'activity', 'value', 'created_at'])
@@ -539,6 +540,20 @@ $batchTradeActivityMetadata = BatchTradeActivityMetadata::query()
 ->pluck('activity')
 ->values();
 
+$batchProcessingData = BatchProcessingData::query()
+->where('batch_id', $batch->id)
+->latest('id')
+->get(['id', 'activity', 'value', 'created_at'])
+->map(fn ($item) => [
+'id' => $item->id,
+'activity' => $item->activity,
+'value' => $item->value,
+'created_at' => $item->created_at?->toDateTimeString(),
+])
+->values();
+
+
+
 
 
 
@@ -550,9 +565,10 @@ return Inertia::render('BatchCommodityVerification', [
 'attached_commodities' => $attachedCommodities,
 'batch_activities' => $batchActivities,
 'batch_processing_metadata' => $batchProcessingMetadata,
+'batch_processing_data' => $batchProcessingData,
 // Expose trade activity metadata for the Vue component dropdown.
 'batch_trade_activity_metadata' => $batchTradeActivityMetadata,
-'batch_processing_data' => $batchProcessingData,
+'batch_trade_activity_data' => $batchTradeActivityData,
 'batch_blocks' => BlockResource::collection($batchBlocks)->resolve(),
 'batch_status_list' => BatchStatusList::query()->where('name','!=','created')->orderBy('id')->pluck('name')->values(),
 ]);
@@ -719,6 +735,20 @@ return redirect()
 ->route('commodity.show', ['id' => $commodity->id])
 ->with('success', 'Commodity updated successfully.');
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

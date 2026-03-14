@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue';
-import { router, useForm } from '@inertiajs/vue3';
+import { ref,computed } from 'vue';
+import { router, useForm, usePage } from '@inertiajs/vue3';
 import { ElNotification } from 'element-plus';
 import { Delete, Plus } from '@element-plus/icons-vue';
 import InputError from '@/Components/InputError.vue';
@@ -8,17 +8,16 @@ import InputError from '@/Components/InputError.vue';
 const props = defineProps({
   batchId: {
     type: [Number, String],
-    required: true,
-  },
-  batchProcessingMetadata: {
-    type: Array,
-    default: () => [],
-  },
-  batchProcessingData: {
-    type: Array,
-    default: () => [],
+    default: null,
   },
 });
+
+const page = usePage();
+const batchProcessingMetadata = computed(() =>page.props.batch_processing_metadata ?? []);
+const batchProcessingData = computed(() => page.props.batch_processing_data ?? []);
+const batchId = computed(() => props.batchId ?? page.props.batch?.id ?? page.props.batch?.data?.id ?? null);
+
+
 
 const addProcessModalVisible = ref(false);
 const form = useForm({
@@ -38,9 +37,9 @@ const closeModal = () => {
 };
 
 const submit = () => {
-  if (!props.batchId) return;
+  if (!batchId.value) return;
 
-  form.post(route('batch.processing.store', { id: props.batchId }), {
+  form.post(route('batch.processing.store', { id: batchId.value }), {
     preserveScroll: true,
     onSuccess: () => {
       ElNotification({
@@ -54,9 +53,9 @@ const submit = () => {
 };
 
 const destroyProcess = (processingId) => {
-  if (!props.batchId || !processingId) return;
+  if (!batchId.value || !processingId) return;
 
-  router.delete(route('batch.processing.destroy', { id: props.batchId, processingId }), {
+  router.delete(route('batch.processing.destroy', { id: batchId.value, processingId }), {
     preserveScroll: true,
     onSuccess: () => {
       ElNotification({
@@ -87,6 +86,7 @@ const formatDateTime = (value) => {
         Add Batch Processing
       </el-button>
     </div>
+
 
     <div v-if="batchProcessingData.length" class="table-responsive process-table-wrap mt-3">
       <table class="table table-sm table-middle mb-0 process-table">
@@ -181,6 +181,11 @@ const formatDateTime = (value) => {
         </div>
       </form>
     </el-dialog>
+
+
+
+
+
   </div>
 </template>
 

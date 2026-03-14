@@ -4,6 +4,7 @@ import { router, useForm, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import AddCommodityToBatch from '@/Components/AddCommodityToBatch.vue';
 import AddBatchTradeActivity from '@/Components/AddBatchTradeActivity.vue';
+import AddBatchProcess from '@/Components/AddBatchProcess.vue';
 import TokenData from '@/Batch/TokenData.vue';
 import { ElNotification } from 'element-plus';
 import { Back, Plus, MoreFilled, Edit, Delete } from '@element-plus/icons-vue';
@@ -12,8 +13,8 @@ const page = usePage();
 const batch = computed(() => page.props.batch?.data ?? page.props.batch ?? {});
 const attachedCommodities = computed(() => page.props.attached_commodities ?? []);
 const batchActivities = computed(() => page.props.batch_activities ?? []);
-const batchTradeActivityMetadata = computed(() => page.props.batch_trade_activity_metadata ?? []);
-const batchProcessingData = computed(() => page.props.batch_processing_data ?? []);
+const batchProcessingMetadata = computed(() => page.props.batch_processing_metadata ?? []);
+const batchTradeActivityData = computed(() => page.props.batch_trade_activity_data ?? []);
 const batchBlocks = computed(() => page.props.batch_blocks ?? []);
 const activityOptions = computed(() => page.props.batch_status_list ?? []);
 const timelineActivities = computed(() => {
@@ -278,39 +279,14 @@ const activeVerificationTab = ref('commodities');
 <template #label>
 <span class="verification-tab-label"><em class="icon ni ni-setting-alt mr-1"></em>Batch Processing</span>
 </template>
-<add-batch-trade-activity
-:batch-id="batch.id"
-:batch-trade-activity-metadata="batchTradeActivityMetadata"
-:batch-processing-data="batchProcessingData"
-/>
+<add-batch-process/>
 </el-tab-pane>
 
 <el-tab-pane name="batch_activities">
 <template #label>
 <span class="verification-tab-label"><em class="icon ni ni-activity mr-1"></em>Batch Activities</span>
 </template>
-<div class="activity-log-head">
-<h6 class="title mb-0"><em class="icon ni ni-activity mr-1"></em>Batch Activities</h6>
-<span class="activity-log-count">{{ timelineActivities.length }} activities</span>
-</div>
-
-<div v-if="timelineActivities.length" class="activity-log-list">
-<el-timeline class="activity-timeline">
-<el-timeline-item
-v-for="item in timelineActivities"
-:key="item.id"
-type="primary"
-:timestamp="formatDateTime(item.created_at)"
-placement="top"
->
-<div class="activity-timeline-content text-capitalize">{{ item.activity }}</div>
-</el-timeline-item>
-</el-timeline>
-</div>
-
-<div v-else class="empty-activity-log">
-No activities recorded for this batch yet.
-</div>
+<add-batch-trade-activity/>
 </el-tab-pane>
 
 <el-tab-pane name="token">

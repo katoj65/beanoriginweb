@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\BatchResource;
 use App\Models\Batch;
 use App\Models\BatchActivity;
+use App\Models\BatchTradeActivityData;
 use App\Models\CommodityBatch;
 use App\Models\BatchProcessingData;
 use App\Models\CropGrade;
@@ -30,6 +31,7 @@ class BatchController extends Controller
  */
 public function create(Request $request)
 {
+// Load reference data needed to render the batch creation form.
 $crops = Crops::query()
 ->orderBy('name')
 ->get(['id', 'name']);
@@ -63,7 +65,7 @@ return Inertia::render('BatchCreate', [
  */
 public function store(Request $request, BatchChainService $batchChainService, BlockService $blockService)
 {
-
+// Validate input and create a new batch record for the authenticated user.
 $validated = $request->validate([
 'batch_code' => ['required', 'string', 'max:255', 'unique:batches,batch_code'],
 'commodity_name' => ['required', 'string', 'max:255', 'exists:crops,name'],
@@ -118,8 +120,7 @@ return redirect()
  */
 public function show(string $id)
 {
-
-
+// Load one batch with owner and latest matching on-chain block details.
 $batch = Batch::query()
 ->with('owner:id,fname,lname,email')
 ->findOrFail($id);
@@ -158,6 +159,7 @@ return Inertia::render('BatchDetailsPage', [
 
 public function storeBatchActivity(Request $request, string $id)
 {
+// Attach one verification workflow activity to the selected batch.
 $validated = $request->validate([
 'activity' => ['required', 'string', 'exists:batch_status_list,name'],
 ]);
@@ -273,6 +275,7 @@ return redirect()
  */
 public function destroy(Request $request, string $id)
 {
+// Delete a batch only when the current user is its owner.
 $batch = Batch::query()
 ->where('id', $id)
 ->where('owner_id', $request->user()->id)
@@ -321,6 +324,7 @@ return Inertia::render('BatchEdit', [
 // Custom method to handle batch verification action form submission.
 public function listOnChain(Request $request, string $id, BlockService $blockService)
 {
+// List the batch on-chain and persist the corresponding blockchain event.
 $validated = $request->validate([
 'price' => ['required', 'numeric', 'min:0.01'],
 ]);
@@ -364,6 +368,7 @@ return redirect()
 
 
 public function batchSaved(Request $request){
+// Build the saved-batches table for the authenticated cooperative user.
 $user = $request->user();
 
 $batches = Batch::query()
@@ -411,6 +416,7 @@ return Inertia::render('BatchSaved', [
 
 
 public function showBatchSaved(Request $request, string $id){
+// Show the details page for one saved batch owned by the current user.
 $batch = Batch::query()
 ->where('id', $id)
 ->where('owner_id', $request->user()->id)
@@ -477,17 +483,57 @@ public function storeBatchProcessing(Request $request, string $id)
         ]);
     }
 
-    // Save one batch processing record.
+    // Persist one processing row for the selected batch.
     BatchProcessingData::query()->create([
         'batch_id' => (int) $batch->id,
         'activity' => $activity,
         'value' => trim((string) $validated['value']),
     ]);
 
-    // Return to batch verification page with success flash message.
+    // Return to the verification page so the refreshed table shows the new entry.
     return redirect()
         ->route('commodity.batch.verify', ['id' => $batch->id])
         ->with('success', 'Batch processing data saved successfully.');
+}
+
+
+
+
+public function storeBatchTradeActivityData(Request $request, string $id)
+{
+    // Validate the selected trade activity from the AddBatchTradeActivity modal.
+    $validated = $request->validate([
+        'activity' => ['required', 'string', 'max:255', 'exists:batch_trade_activity_metadata,activity'],
+    ]);
+
+    // Ensure the selected batch belongs to the signed-in owner before saving.
+    $batch = Batch::query()
+        ->where('id', (int) $id)
+        ->where('owner_id', $request->user()->id)
+        ->firstOrFail();
+
+    $activity = trim((string) $validated['activity']);
+
+    // Prevent duplicate trade activity rows for the same batch.
+    $alreadyAdded = BatchTradeActivityData::query()
+        ->where('batch_id', (int) $batch->id)
+        ->whereRaw('LOWER(activity) = ?', [strtolower($activity)])
+        ->exists();
+
+    if ($alreadyAdded) {
+        throw ValidationException::withMessages([
+            'activity' => 'This trade activity already exists for this batch.',
+        ]);
+    }
+
+    // Persist the selected trade activity row for this batch.
+    BatchTradeActivityData::query()->create([
+        'batch_id' => (int) $batch->id,
+        'activity' => $activity,
+        'value' => $activity,
+    ]);
+
+    return back()->with('success', 'Batch trade activity saved successfully.');
 }
 
 
@@ -501,13 +547,14 @@ public function destroyBatchProcessData(Request $request, string $id, string $pr
         ->where('owner_id', $request->user()->id)
         ->firstOrFail();
 
-    // Delete only processing record that belongs to the selected batch.
+    // Delete only the processing row that belongs to this batch.
     BatchProcessingData::query()
         ->where('id', (int) $processingId)
         ->where('batch_id', (int) $batch->id)
         ->firstOrFail()
         ->delete();
 
+    // Send the user back so the trade activity table refreshes after deletion.
     return redirect()
         ->route('commodity.batch.verify', ['id' => $batch->id])
         ->with('success', 'Batch processing data deleted successfully.');
@@ -543,16 +590,15 @@ public function destroyBatchCommodityData(Request $request, string $id, string $
 
 
 
-
-
-
-
-
-
 public function batchData(Request $request, string $id, BatchService $batchService)
 {
+// Delegate verification-page payload assembly to the dedicated batch service.
 return $batchService->batch($request, $id);
 }
+
+
+
+
 
 
 
