@@ -16,6 +16,7 @@ use App\Models\UserProfile;
 use App\Services\Batch\BatchService;
 use App\Services\Blockchain\BatchChainService;
 use App\Services\Blockchain\BlockService;
+use App\Services\Token\TokenService;
 use App\Models\Block;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -618,7 +619,32 @@ return back()
 
 
 
+public function storeBatchToken(Request $request, string $id, TokenService $tokenService)
+{
+// Ensure the action only targets a batch owned by the authenticated user.
+$batch = Batch::query()
+->where('id', (int) $id)
+->where('owner_id', $request->user()->id)
+->firstOrFail();
 
+// Keep this operation idempotent.
+if (strtolower((string) $batch->status) === 'listed') {
+return back()->with('success', 'Batch is already tokenized.');
+}
+
+// Create one token-chain entry for this batch using the dedicated token service.
+$tokenService->addToken($batch, [
+'event_type' => 'created',
+'current_owner' => $batch->owner_id,
+]);
+
+// Keep batch lifecycle in sync with token creation for marketplace visibility.
+$batch->update([
+'status' => 'listed',
+]);
+
+return back()->with('success', 'Batch tokenized and moved to listed status successfully.');
+}
 
 
 

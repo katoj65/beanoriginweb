@@ -32,6 +32,7 @@ use App\Models\BatchTradeActivityMetadata;
 use App\Models\CommodityQualityData;
 use App\Models\QualityMetadata;
 use App\Models\Block;
+use App\Models\Token;
 use App\Http\Resources\BlockResource;
 use App\Services\Token\TokenService;
 use Inertia\Inertia;
@@ -552,6 +553,20 @@ $batchProcessingData = BatchProcessingData::query()
 ])
 ->values();
 
+$batchTokens = Token::query()
+->where('batch_id', $batch->id)
+->latest('id')
+->get(['id', 'token_index', 'event_type', 'current_hash', 'status', 'created_at'])
+->map(fn ($token) => [
+'id' => $token->id,
+'token_index' => $token->token_index,
+'event_type' => $token->event_type,
+'current_hash' => $token->current_hash,
+'status' => $token->status,
+'created_at' => $token->created_at?->toDateTimeString(),
+])
+->values();
+
 
 
 
@@ -569,6 +584,7 @@ return Inertia::render('BatchCommodityVerification', [
 // Expose trade activity metadata for the Vue component dropdown.
 'batch_trade_activity_metadata' => $batchTradeActivityMetadata,
 'batch_trade_activity_data' => $batchTradeActivityData,
+'batch_tokens' => $batchTokens,
 'batch_blocks' => BlockResource::collection($batchBlocks)->resolve(),
 'batch_status_list' => BatchStatusList::query()->where('name','!=','created')->orderBy('id')->pluck('name')->values(),
 ]);

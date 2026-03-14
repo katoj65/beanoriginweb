@@ -203,6 +203,7 @@ Route::middleware(['auth'])->prefix('batch')->name('batch.')->group(function () 
 Route::get('/{id}', [BatchController::class, 'batchData'])->whereNumber('id')->name('data');
 Route::post('/{id}/trade-activity', [BatchController::class, 'storeBatchTradeActivityData'])->whereNumber('id')->name('trade-activity.store');
 Route::delete('/{id}/trade-activity/{tradeActivityId}', [BatchController::class, 'destroyBatchTradeActivityData'])->whereNumber('id')->whereNumber('tradeActivityId')->name('trade-activity.destroy');
+Route::post('/{id}/token', [BatchController::class, 'storeBatchToken'])->whereNumber('id')->name('token.store');
 Route::post('/{id}/processing', [BatchController::class, 'storeBatchProcessing'])->whereNumber('id')->name('processing.store');
 Route::delete('/{id}/processing/{processingId}', [BatchController::class, 'destroyBatchProcessData'])->whereNumber('id')->whereNumber('processingId')->name('processing.destroy');
 Route::delete('/{id}/commodities/{commodityId}', [BatchController::class, 'destroyBatchCommodityData'])->whereNumber('id')->whereNumber('commodityId')->name('commodities.destroy');

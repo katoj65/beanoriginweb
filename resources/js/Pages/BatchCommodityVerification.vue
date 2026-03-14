@@ -5,7 +5,7 @@ import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import AddCommodityToBatch from '@/Components/AddCommodityToBatch.vue';
 import AddBatchTradeActivity from '@/Components/AddBatchTradeActivity.vue';
 import AddBatchProcess from '@/Components/AddBatchProcess.vue';
-import TokenData from '@/Batch/TokenData.vue';
+import AddToken from '@/Components/AddToken.vue';
 import { ElNotification } from 'element-plus';
 import { Back, Plus, MoreFilled, Edit, Delete } from '@element-plus/icons-vue';
 
@@ -293,7 +293,7 @@ const activeVerificationTab = ref('commodities');
 <template #label>
 <span class="verification-tab-label"><em class="icon ni ni-coins mr-1"></em>Token</span>
 </template>
-<token-data />
+<add-token/>
 </el-tab-pane>
 </el-tabs>
 </div>
