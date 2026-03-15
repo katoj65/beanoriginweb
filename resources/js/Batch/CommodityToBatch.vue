@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { ScaleToOriginal } from '@element-plus/icons-vue';
+import { DataAnalysis, ScaleToOriginal } from '@element-plus/icons-vue';
 
 const props = defineProps({
   commodities: {
@@ -16,6 +16,20 @@ const formatHarvestDate = (value) => {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
   return date.toLocaleDateString();
+};
+
+const formatFarmerName = (farmDetails) => {
+  const fullName = `${farmDetails?.first_name ?? ''} ${farmDetails?.last_name ?? ''}`.trim();
+  return fullName || 'N/A';
+};
+
+const farmerInitials = (farmDetails) => {
+  const initials = [farmDetails?.first_name, farmDetails?.last_name]
+    .filter(Boolean)
+    .map((value) => value.trim().charAt(0).toUpperCase())
+    .join('');
+
+  return initials || 'NA';
 };
 </script>
 
@@ -34,9 +48,7 @@ const formatHarvestDate = (value) => {
       <table class="table table-sm table-middle mb-0 linked-table">
         <thead>
           <tr>
-            <th><span class="head-label"><em class="icon ni ni-hash"></em>ID</span></th>
             <th><span class="head-label"><em class="icon ni ni-package"></em>Commodity Name</span></th>
-            <th><span class="head-label"><em class="icon ni ni-layers"></em>Type</span></th>
             <th><span class="head-label"><em class="icon ni ni-medal"></em>Grade</span></th>
             <th>
               <span class="head-label">
@@ -45,19 +57,34 @@ const formatHarvestDate = (value) => {
               </span>
             </th>
             <th><span class="head-label"><em class="icon ni ni-growth"></em>Ripe %</span></th>
-            <th><span class="head-label"><em class="icon ni ni-drop"></em>Density %</span></th>
-            <th><span class="head-label"><em class="icon ni ni-calendar"></em>Date Harvested</span></th>
+            <th>
+              <span class="head-label">
+                <el-icon><DataAnalysis /></el-icon>
+                Density %
+              </span>
+            </th>
+            <th><span class="head-label"><em class="icon ni ni-home-fill"></em>Farm</span></th>
+            <th><span class="head-label"><em class="icon ni ni-user"></em>Farmer</span></th>
+            <th><span class="head-label"><em class="icon ni ni-calendar"></em>Harvested</span></th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="item in linkedCommodities" :key="item.id">
-            <td>#{{ item.id }}</td>
-            <td class="text-capitalize">{{ item.commodity_name ?? 'N/A' }}</td>
-            <td class="text-capitalize">{{ item.commodity_type ?? 'N/A' }}</td>
+            <td class="text-capitalize">{{ item.commodity_name ?? 'N/A' }}
+           -  {{ item.commodity_type ?? 'N/A' }}
+            </td>
+
             <td class="text-capitalize">{{ item.grade ?? 'N/A' }}</td>
             <td>{{ item.weight ?? 'N/A' }} kg</td>
             <td>{{ item.ripe_percentage === null || item.ripe_percentage === undefined ? 'N/A' : `${item.ripe_percentage}%` }}</td>
             <td>{{ item.density_percentage === null || item.density_percentage === undefined ? 'N/A' : `${item.density_percentage}%` }}</td>
+            <td class="text-capitalize">{{ item.farm_details?.farm_name ?? 'N/A' }}</td>
+            <td class="text-capitalize">
+              <span class="activity-cell">
+                <span class="farmer-avatar">{{ farmerInitials(item.farm_details) }}</span>
+                {{ formatFarmerName(item.farm_details) }}
+              </span>
+            </td>
             <td>{{ formatHarvestDate(item.harvest_date) }}</td>
           </tr>
         </tbody>
@@ -120,6 +147,27 @@ const formatHarvestDate = (value) => {
 .head-label .icon {
   color: #8094ae;
   font-size: 13px;
+}
+
+.activity-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.farmer-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e9f2ff;
+  color: #2d6cdf;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .linked-table td {
