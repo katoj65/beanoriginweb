@@ -73,7 +73,7 @@ const recentActivity = computed(() => [
     <div class="nk-block">
       <div class="row g-gs">
         <div class="col-12 col-lg-4">
-          <div class="card card-bordered h-100">
+          <div class="card h-100">
             <div class="card-inner profile-card">
               <div class="avatar-badge">{{ initials }}</div>
               <h5 class="mb-1 text-center">{{ fullName }}</h5>
@@ -112,7 +112,7 @@ const recentActivity = computed(() => [
         <div class="col-12 col-lg-8">
           <div class="row g-gs">
             <div class="col-12">
-              <div class="card card-bordered">
+              <div class="card">
                 <div class="card-inner snapshot-card">
                   <div class="snapshot-head">
                     <div>
@@ -136,7 +136,7 @@ const recentActivity = computed(() => [
             </div>
 
             <div class="col-12">
-              <div class="card card-bordered">
+              <div class="card">
                 <div class="card-inner combined-card">
                   <div class="combined-col">
                     <h6 class="mb-3">Performance</h6>

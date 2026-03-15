@@ -63,7 +63,7 @@ router.get(route('cooperative.produce'));
 <CooperativeLayout>
 
 <div class="container">
-<div class="card card-bordered batch-create-card">
+<div class="card batch-create-card">
 <div class="card-inner border-bottom batch-create-head">
 <div class="batch-create-head-content">
 <div class="batch-create-title-wrap">

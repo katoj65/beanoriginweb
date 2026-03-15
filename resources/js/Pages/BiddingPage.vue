@@ -137,7 +137,7 @@ const activeBiddingTab = ref('bidding_batches');
 <template>
 <CooperativeLayout>
 <div class="container bidding-page">
-<section class="card card-bordered table-card">
+<section class="card table-card">
 <div class="card-inner table-top border-0">
 <div class="table-heading">
 <div class="title-line">

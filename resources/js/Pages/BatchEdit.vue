@@ -54,7 +54,7 @@ router.get(route('commodity.batch.verify', { id: batch.value.id }));
 <template>
 <CooperativeLayout>
 <div class="container">
-<div class="card card-bordered batch-edit-card">
+<div class="card batch-edit-card">
 <div class="card-inner border-bottom batch-edit-head">
 <div class="batch-edit-head-content">
 <div class="batch-edit-title-wrap">

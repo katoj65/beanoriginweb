@@ -146,7 +146,7 @@ type: 'error',
 <CooperativeLayout>
 
 <div class="container py-0">
-<div class="card card-bordered buy-batch-card">
+<div class="card buy-batch-card">
 <div class="card-inner border-bottom page-head">
 <div>
 <h6 class="title mb-1"><em class="icon ni ni-gavel mr-1"></em>Batch Bidding</h6>

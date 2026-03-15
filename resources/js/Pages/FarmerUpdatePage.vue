@@ -49,7 +49,7 @@ window.history.back();
 <div class="container">
 <div class="row g-gs">
 <div class="col-12">
-<div class="card card-bordered">
+<div class="card">
 <div class="card-inner border-bottom d-flex justify-content-between align-items-center">
 <div>
 <h6 class="title mb-1">Update Farmer</h6>

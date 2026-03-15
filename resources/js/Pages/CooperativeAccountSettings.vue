@@ -72,7 +72,7 @@ watch(
 <div class="container">
   <div class="row g-gs">
     <div class="col-12 col-xl-8">
-      <div class="card card-bordered settings-card mb-3">
+      <div class="card settings-card mb-3">
         <div class="card-inner border-bottom">
           <h6 class="title mb-1">Organization Profile</h6>
           <p class="sub-text mb-0">Update your cooperative identity and official contacts.</p>
@@ -114,7 +114,7 @@ watch(
         </div>
       </div>
 
-      <div class="card card-bordered settings-card">
+      <div class="card settings-card">
         <div class="card-inner border-bottom">
           <h6 class="title mb-1">Security Settings</h6>
           <p class="sub-text mb-0">Control account access and password policy.</p>
@@ -151,7 +151,7 @@ watch(
     </div>
 
     <div class="col-12 col-xl-4">
-      <div class="card card-bordered settings-card mb-3">
+      <div class="card settings-card mb-3">
         <div class="card-inner border-bottom">
           <h6 class="title mb-1">Notification Preferences</h6>
           <p class="sub-text mb-0">Choose what updates you receive.</p>
@@ -177,7 +177,7 @@ watch(
         </div>
       </div>
 
-      <div class="card card-bordered settings-card">
+      <div class="card settings-card">
         <div class="card-inner border-bottom">
           <h6 class="title mb-1">Workspace Preferences</h6>
           <p class="sub-text mb-0">Configure your default operational options.</p>

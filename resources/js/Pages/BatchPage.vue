@@ -4,6 +4,7 @@ import { usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import BatchCommodity from '@/Batch/CommodityToBatch.vue';
 import BatchProcessing from '@/Batch/BatchProcess.vue';
+import BatchTokenData from '@/Batch/BatchTokenData.vue';
 import BuyButton from '@/Components/BuyButton.vue';
 
 const page = usePage();
@@ -54,8 +55,8 @@ const activeVerificationTab = ref('commodities');
 <template>
 <CooperativeLayout>
 
-<div class="container">
-<div class="card card-bordered verification-shell">
+<div class="batch-page-shell">
+<div class="card verification-shell">
 <div class="card-inner border-bottom verification-head">
 <div>
 <h6 class="title mb-1"><em class="icon ni ni-shield-check mr-1"></em>Batch</h6>
@@ -164,6 +165,13 @@ placement="top"
 No activities recorded for this batch yet.
 </div>
 </el-tab-pane>
+
+<el-tab-pane name="token">
+<template #label>
+<span class="verification-tab-label"><em class="icon ni ni-coins mr-1"></em>Token</span>
+</template>
+<batch-token-data />
+</el-tab-pane>
 </el-tabs>
 </div>
 
@@ -174,8 +182,19 @@ No activities recorded for this batch yet.
 </template>
 
 <style scoped>
+.batch-page-shell {
+width: 100%;
+max-width: none;
+padding: 0;
+margin: 0;
+}
+
 .verification-shell {
 overflow: hidden;
+margin: 0;
+border-radius: 0;
+border: 0;
+box-shadow: none;
 }
 
 .verification-head {

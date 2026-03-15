@@ -106,7 +106,7 @@ const printReceipt = () => window.print();
 <template>
   <CooperativeLayout>
     <div class="confirmation-shell">
-      <div class="receipt-card card card-bordered">
+      <div class="receipt-card card">
         <div class="receipt-top">
           <div class="success-mark" aria-hidden="true">
             <em class="icon ni ni-check-circle-fill"></em>

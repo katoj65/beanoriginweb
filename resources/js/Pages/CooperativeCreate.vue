@@ -47,7 +47,7 @@ isLoading.value=false;
 <template>
 <AppLayout>
 <div class="container">
-<div class="card card-bordered">
+<div class="card">
 <div class="card-inner">
 <h6 class="title mb-0">Create Cooperative Account</h6>
 <p class="sub-text mt-1 mb-4">Provide the official details of your cooperative.</p>

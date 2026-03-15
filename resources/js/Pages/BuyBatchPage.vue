@@ -70,7 +70,7 @@ return 'warning';
 <template>
 <CooperativeLayout>
 <div class="container py-0">
-<div class="card card-bordered buy-batch-card">
+<div class="card buy-batch-card">
 <div class="card-inner border-bottom page-head">
 <div>
 <h6 class="title mb-1"><em class="icon ni ni-bag mr-1"></em>Buy Batch</h6>

@@ -49,7 +49,7 @@ router.get(route('market.batchSaved'));
 <template>
 <CooperativeLayout>
 <div class="container">
-<div class="card card-bordered details-card">
+<div class="card details-card">
 <div class="card-inner border-bottom details-head">
 <div>
 <h6 class="title mb-1"><em class="icon ni ni-folder-check mr-1"></em>Saved Batch Details</h6>

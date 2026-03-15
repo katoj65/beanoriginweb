@@ -57,7 +57,7 @@ const submitHelpRequest = () => {
     <div class="container">
       <div class="row g-gs">
         <div class="col-12 col-xl-8">
-          <div class="card card-bordered">
+          <div class="card">
             <div class="card-inner border-bottom">
               <h6 class="title mb-1">Submit Help Request</h6>
               <p class="sub-text mb-0">Describe your issue so the right admin team can respond quickly.</p>
@@ -135,7 +135,7 @@ const submitHelpRequest = () => {
         </div>
 
         <div class="col-12 col-xl-4">
-          <div class="card card-bordered mb-3">
+          <div class="card mb-3">
             <div class="card-inner border-bottom">
               <h6 class="title mb-1">Support Contacts</h6>
               <p class="sub-text mb-0">Direct channels to admins and stakeholders.</p>
@@ -165,7 +165,7 @@ const submitHelpRequest = () => {
             </div>
           </div>
 
-          <div class="card card-bordered">
+          <div class="card">
             <div class="card-inner border-bottom">
               <h6 class="title mb-1">Help Guidelines</h6>
               <p class="sub-text mb-0">Tips for faster resolution.</p>

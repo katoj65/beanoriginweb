@@ -24,7 +24,7 @@ const initials = computed(() => {
 <div class="container">
   <div class="row g-gs">
     <div class="col-12 col-lg-8">
-      <div class="card card-bordered mb-3">
+      <div class="card mb-3">
         <div class="card-inner profile-hero">
           <div class="profile-hero-inner">
             <div class="profile-hero-left">
@@ -78,7 +78,7 @@ const initials = computed(() => {
         </div>
       </div>
 
-      <div class="card card-bordered">
+      <div class="card">
         <div class="card-inner border-bottom">
           <h6 class="title mb-1">Address Information</h6>
           <p class="sub-text mb-0">Physical and postal contact addresses.</p>
@@ -97,7 +97,7 @@ const initials = computed(() => {
     </div>
 
     <div class="col-12 col-lg-4">
-      <div class="card card-bordered mb-3">
+      <div class="card mb-3">
         <div class="card-inner border-bottom">
           <h6 class="title mb-1">Contact Channels</h6>
           <p class="sub-text mb-0">Official communication details.</p>
@@ -118,7 +118,7 @@ const initials = computed(() => {
         </div>
       </div>
 
-      <div class="card card-bordered">
+      <div class="card">
         <div class="card-inner border-bottom">
           <h6 class="title mb-1">Profile Health</h6>
           <p class="sub-text mb-0">Completion and quality indicators.</p>

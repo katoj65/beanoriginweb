@@ -71,7 +71,7 @@ addBatchModalVisible.value = false;
 <template>
 <CooperativeLayout>
 <div class="container">
-<div class="card card-bordered details-card">
+<div class="card details-card">
 <div class="card-inner border-bottom details-head">
 <div>
 <h6 class="title mb-1"><em class="icon ni ni-layers mr-1"></em>Batch Details</h6>

@@ -98,7 +98,7 @@ router.get(route('commodity.show', { id: commodity.value.id }));
 <template>
 <CooperativeLayout>
 <div class="container">
-<div class="card card-bordered commodity-update-card">
+<div class="card commodity-update-card">
 <div class="card-inner border-bottom commodity-update-head">
 <div class="commodity-update-head-content">
 <div class="commodity-update-title-wrap">

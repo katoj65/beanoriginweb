@@ -45,7 +45,7 @@ const goBack = () => {
 <template>
 <AdminLayout>
 <div class="admin-token-page">
-<div class="card card-bordered admin-token-card">
+<div class="card admin-token-card">
 <div class="card-inner border-bottom admin-token-head">
 <div>
 <h6 class="title mb-1"><em class="icon ni ni-coins mr-1"></em>Unverified Tokens</h6>

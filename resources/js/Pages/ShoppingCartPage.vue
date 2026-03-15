@@ -50,7 +50,7 @@ const checkout = () => {
 <template>
   <CooperativeLayout>
     <div class="container">
-      <div class="card card-bordered cart-page-card">
+      <div class="card cart-page-card">
         <div class="card-inner border-bottom cart-head">
           <div>
             <h6 class="title mb-1"><em class="icon ni ni-cart mr-1"></em>Shopping Cart</h6>

@@ -39,7 +39,7 @@ const filteredSuppliers = computed(() => {
 <template>
   <buyer-layout>
     <div class="container py-0">
-      <div class="card card-bordered card-preview modern-panel">
+      <div class="card card-preview modern-panel">
         <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
           <div>
             <h6 class="mb-0">Suppliers</h6>

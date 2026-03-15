@@ -62,7 +62,7 @@ form.verification_id=id;
 
 
 <div class="container">
-<div class="card card-bordered">
+<div class="card">
 <div class="card-inner border-bottom">
 <h6 class="title mb-1"><em class="icon ni ni-plus mr-1"></em>Add Batch</h6>
 <p class="sub-text mb-0">Create a new coffee harvest batch for sale.</p>

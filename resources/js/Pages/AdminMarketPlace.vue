@@ -69,7 +69,7 @@ const openBatchDetails = (row) => {
 <template>
 <AdminLayout>
 <div class="container">
-<div class="card card-bordered marketplace-shell">
+<div class="card marketplace-shell">
 <div class="card-inner border-bottom marketplace-head">
 <div>
 <h6 class="title mb-1"><em class="icon ni ni-store mr-1"></em>Admin Marketplace</h6>

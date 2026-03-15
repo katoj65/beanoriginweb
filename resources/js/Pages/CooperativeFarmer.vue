@@ -31,7 +31,7 @@ return [farmer.village, farmer.sub_county, farmer.district].filter(Boolean).join
 
 <div class="row g-gs">
 <div class="col-12">
-<div class="card card-bordered">
+<div class="card">
 <div class="card-inner farmers-header-compact d-flex justify-content-between align-items-start">
 <div>
 <h6 class="title mb-1">Registered Farmers</h6>

@@ -36,6 +36,9 @@ const bidNotification = computed(() => {
 return Number(page.props.bidNotification ?? 0) || 0;
 });
 
+const isDashboardPage = computed(() => {
+return String(page.component ?? '').toLowerCase().includes('dashboard');
+});
 
 
 
@@ -360,12 +363,13 @@ Sign Out
 
 
 <!-- content @s -->
-<div class="nk-content app-page-shell">
+<div :class="['nk-content', 'app-page-shell', { 'app-page-shell-flat': !isDashboardPage }]">
 <div class="container-fluid">
 <div class="nk-content-inner">
-<div class="nk-content-body">
-
-<slot></slot>
+<div class="nk-content-body" style="background:white;">
+<div class="page-content-frame" style="background:white;">
+<slot style="background:white;"></slot>
+</div>
 </div>
 </div>
 </div>
@@ -535,5 +539,55 @@ Sign Out
 
 :deep(.sidebar-profile-menu.el-popper) {
   margin-left: 8px;
+}
+
+.app-page-shell {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.app-page-shell > .container-fluid,
+.app-page-shell .nk-content-inner,
+.app-page-shell .nk-content-body {
+  width: 100%;
+  max-width: none;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.app-page-shell-flat .page-content-frame {
+  width: 100%;
+}
+
+.app-page-shell-flat :deep(.card),
+.app-page-shell-flat :deep(.card-bordered),
+.app-page-shell-flat :deep(.verification-shell) {
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.app-page-shell-flat :deep(.border) {
+  border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+}
+
+.app-page-shell-flat :deep(.border-top) {
+  border-top: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+}
+
+.app-page-shell-flat :deep(.border-end) {
+  border-right: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+}
+
+.app-page-shell-flat :deep(.border-bottom) {
+  border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+}
+
+.app-page-shell-flat :deep(.border-start) {
+  border-left: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+}
+
+.app-page-shell-flat :deep(.card-bordered) {
+  border: 1px solid #dbdfea !important;
 }
 </style>

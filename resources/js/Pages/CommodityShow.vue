@@ -116,7 +116,7 @@ type: 'success',
 <template>
 <CooperativeLayout>
 <div class="container">
-<div class="card card-bordered commodity-show-shell">
+<div class="card commodity-show-shell">
 <div class="card-inner border-bottom header-row">
 <div>
 <h6 class="title mb-1"><em class="icon ni ni-bag mr-1"></em>Commodity #{{ commodity.id }}</h6>

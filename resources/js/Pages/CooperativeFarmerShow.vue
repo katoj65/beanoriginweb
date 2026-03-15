@@ -118,7 +118,7 @@ type: 'success',
 <div class="nk-block farmer-page-wrap">
 <div class="row g-gs">
 <div class="col-lg-4 col-xl-4 col-xxl-3">
-<div class="card card-bordered farmer-summary-card">
+<div class="card farmer-summary-card">
 <div class="card-inner-group">
 <div class="card-inner border-0">
 <div class="user-card user-card-s2">
@@ -210,7 +210,7 @@ type: 'success',
 </div>
 
 <div class="col-lg-8 col-xl-8 col-xxl-9">
-<div class="card card-bordered farmer-main-card h-100">
+<div class="card farmer-main-card h-100">
 <div class="card-inner">
 <div class="nk-block">
 <div class="profile-head-actions">
@@ -293,7 +293,7 @@ class="farmer-edit-btn"
 <h6 class="lead-text mb-3 section-head"><em class="icon ni ni-user mr-1"></em>Farmer Information</h6>
 <div class="row g-3">
 <div class="col-xl-12 col-xxl-6">
-<div class="card card-bordered internal-info-card">
+<div class="card internal-info-card">
 <div class="card-inner">
 <h6 class="overline-title mb-2"><em class="icon ni ni-call mr-1"></em>Contact</h6>
 <div class="detail-pairs">
@@ -307,7 +307,7 @@ class="farmer-edit-btn"
 </div>
 </div>
 <div class="col-xl-12">
-<div class="card card-bordered internal-info-card">
+<div class="card internal-info-card">
 <div class="card-inner">
 <h6 class="overline-title mb-2"><em class="icon ni ni-map mr-1"></em>Address</h6>
 <div class="detail-pairs">

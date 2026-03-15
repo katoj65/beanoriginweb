@@ -95,7 +95,7 @@ const initials = (name) => {
 <template>
   <BuyerLayout>
     <div class="notif-page" style="margin:-25px;">
-      <div class="card card-bordered notif-card">
+      <div class="card notif-card">
         <div class="card-inner border-bottom notif-header">
           <h5 class="title mb-1">Notifications</h5>
           <p class="sub-text mb-0">Recent alerts, trade updates, and system messages.</p>

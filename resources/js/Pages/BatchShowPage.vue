@@ -102,7 +102,7 @@ return raw?.data ?? raw ?? latestPayment.value;
 <template>
 <CooperativeLayout>
 <div class="container">
-<div class="card card-bordered">
+<div class="card">
 <div class="card-inner border-bottom d-flex justify-content-between align-items-center">
 <div>
 <h6 class="title mb-1"><em class="icon ni ni-bag mr-1"></em>{{ batchTitle }}</h6>

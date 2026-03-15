@@ -110,7 +110,7 @@ isFilterOpen.value = !isFilterOpen.value;
 <template>
 <CooperativeLayout>
 <div class="container">
-<div class="card card-bordered token-page-card">
+<div class="card token-page-card">
 <div class="card-inner border-bottom token-head">
 <div class="token-head-title">
 <h6 class="title mb-1">Marketplace </h6>

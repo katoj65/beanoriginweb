@@ -27,7 +27,7 @@ return date.toLocaleString();
 <template>
 <CooperativeLayout>
 <div class="container">
-<div class="card card-bordered requests-card">
+<div class="card requests-card">
 <div class="card-inner border-bottom requests-head">
 <div>
 <h6 class="title mb-1">Request</h6>

@@ -59,7 +59,7 @@ const statusClass = (status) => {
 <template>
   <buyer-layout>
     <div class="container py-1">
-      <div class="card card-bordered bid-page-card">
+      <div class="card bid-page-card">
         <div class="card-inner border-bottom bid-head">
           <div>
             <h5 class="title mb-1"><em class="icon ni ni-coins mr-1"></em>Bid On Batch</h5>
@@ -156,7 +156,7 @@ const statusClass = (status) => {
         </div>
       </div>
 
-      <div class="card card-bordered mt-4">
+      <div class="card mt-4">
         <div class="card-inner border-bottom">
           <h6 class="title mb-1"><em class="icon ni ni-activity mr-1"></em>Recent Bids</h6>
           <p class="sub-text mb-0">Latest offers submitted for this block.</p>

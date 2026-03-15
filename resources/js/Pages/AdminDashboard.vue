@@ -75,7 +75,7 @@ const formatDate = (value) => {
 
 <div class="row g-gs">
 <div class="col-12 col-md-8">
-<div class="card card-bordered card-preview modern-panel">
+<div class="card card-preview modern-panel">
 <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
 <h6 class="mb-0">Coffee Price Offerings</h6>
 <span class="sub-text">Tokenized batches currently available.</span>
@@ -101,7 +101,7 @@ const formatDate = (value) => {
 </div>
 
 <div class="col-12 col-md-4">
-<div class="card card-bordered pricing modern-panel h-100">
+<div class="card pricing modern-panel h-100">
 <div class="pricing-head">
 <div class="pricing-title">
 <h4 class="card-title title">Procurement Snapshot</h4>
@@ -124,7 +124,7 @@ const formatDate = (value) => {
 
 <div class="row g-gs">
 <div class="col-12 col-md-8">
-<div class="card card-bordered h-100 modern-panel">
+<div class="card h-100 modern-panel">
 <div class="card-inner">
 <div class="card-title-group align-start mb-3">
 <div class="card-title">
@@ -138,7 +138,7 @@ const formatDate = (value) => {
 </div>
 
 <div class="col-12 col-md-4">
-<div class="card card-bordered h-100 modern-panel">
+<div class="card h-100 modern-panel">
 <div class="card-inner pb-0">
 <div class="card-title-group pt-1">
 <div class="card-title">

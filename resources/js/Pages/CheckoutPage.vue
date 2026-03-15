@@ -55,7 +55,7 @@ const formatMoney = (value) => {
 <template>
   <CooperativeLayout>
     <div class="container">
-      <div class="card card-bordered checkout-page-card">
+      <div class="card checkout-page-card">
         <div class="card-inner border-bottom checkout-head">
           <div>
             <h6 class="title mb-1"><em class="icon ni ni-wallet mr-1"></em>Checkout</h6>

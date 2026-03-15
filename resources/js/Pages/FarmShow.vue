@@ -99,7 +99,7 @@ const formatSustainabilityDate = (value) => {
 
       <div class="row g-gs">
         <div class="col-12 col-lg-8">
-          <div class="card card-bordered h-100">
+          <div class="card h-100">
             <div class="card-inner border-bottom d-flex justify-content-between align-items-center">
               <div>
                 <h6 class="title mb-1"><em class="icon ni ni-home mr-1"></em>Farm Information</h6>
@@ -269,7 +269,7 @@ const formatSustainabilityDate = (value) => {
         </div>
 
         <div class="col-12 col-lg-4">
-          <div class="card card-bordered h-100">
+          <div class="card h-100">
             <div class="card-inner border-bottom">
               <h6 class="title mb-1"><em class="icon ni ni-user mr-1"></em>Owner Information</h6>
               <p class="sub-text mb-0">Farmer details linked to this farm.</p>

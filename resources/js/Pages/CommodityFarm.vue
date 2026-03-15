@@ -46,7 +46,7 @@ const goBack = () => {
 <template>
   <CooperativeLayout>
     <div class="container">
-      <div class="card card-bordered farm-details-shell">
+      <div class="card farm-details-shell">
         <div class="card-inner border-bottom header-row">
           <div>
             <h6 class="title mb-1"><em class="icon ni ni-map-pin mr-1"></em>Origin Farm Details</h6>

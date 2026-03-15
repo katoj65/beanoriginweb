@@ -70,7 +70,7 @@ router.get(route('commodity.batches.create'));
 <CooperativeLayout>
 <div class="nk-block">
 
-<div class="card card-bordered">
+<div class="card">
 <div class="card-inner border-bottom">
 <div class="row g-2 align-items-center">
 <div class="col-12 col-md">

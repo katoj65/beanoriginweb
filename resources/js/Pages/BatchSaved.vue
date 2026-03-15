@@ -81,7 +81,7 @@ router.get(route('market.batchSaved.show', { id: batch.id }));
 <template>
 <CooperativeLayout>
 <div class="container">
-<div class="card card-bordered">
+<div class="card">
 <div class="card-inner border-bottom market-card-header">
 <div class="market-title">
 <h6 class="title mb-1">Saved Batches</h6>

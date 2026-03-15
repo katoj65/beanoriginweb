@@ -169,7 +169,7 @@ const coffee_types=[
 <div class="row g-gs">
 <div class="col-12 col-md-8">
 
-<div class="card card-bordered card-preview">
+<div class="card card-preview">
 <div class="card-header bg-white border-bottom">
 <h6>Coffee Price Offerings</h6>
 </div>
@@ -186,7 +186,7 @@ const coffee_types=[
 <div class="col-12 col-md-4">
 
 
-<div class="card card-bordered pricing">
+<div class="card pricing">
 <div class="pricing-head">
 <div class="pricing-title">
 <h4 class="card-title title">Payments</h4>
@@ -240,7 +240,7 @@ const coffee_types=[
 <div class="row g-gs">
 <div class="col-12 col-md-8">
 
-<div class="card card-bordered h-100">
+<div class="card h-100">
 <div class="card-inner">
 <div class="card-title-group align-start mb-3">
 <div class="card-title">
@@ -260,7 +260,7 @@ const coffee_types=[
 <div class="col-12 col-md-4">
 
 
-<div class="card card-bordered h-100">
+<div class="card h-100">
 <div class="card-inner pb-0">
 <div class="card-title-group pt-1">
 <div class="card-title">

@@ -42,7 +42,7 @@ const statusClass = (status) => {
 <template>
   <buyer-layout>
     <div class="container py-0">
-      <div class="card card-bordered details-card unified-card">
+      <div class="card details-card unified-card">
         <div class="card-inner border-bottom details-head">
           <div>
             <h6 class="title mb-1"><em class="icon ni ni-layers mr-1"></em>Market Listing Details</h6>
