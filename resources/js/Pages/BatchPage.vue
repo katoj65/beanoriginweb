@@ -219,6 +219,7 @@ gap: 12px;
 
 .detail-item {
 background: #f8fafc;
+border: 1px solid #e5e9f2;
 border-radius: 10px;
 padding: 12px;
 display: flex;

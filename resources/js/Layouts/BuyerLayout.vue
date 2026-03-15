@@ -482,6 +482,10 @@ Sign Out
   margin: 0 !important;
 }
 
+.app-page-shell :deep(.detail-item) {
+  border: 1px solid #e5e9f2;
+}
+
 .app-page-shell-flat .page-content-frame {
   width: 100%;
 }
