@@ -10,6 +10,7 @@ use App\Models\Farmer;
 use App\Models\Farm;
 use App\Models\FarmSustainabilityData;
 use App\Models\SustainabilityMetadata;
+use App\Services\Map\MapService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -70,7 +71,7 @@ class FarmController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id, MapService $mapService)
     {
         $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
 
@@ -81,10 +82,16 @@ class FarmController extends Controller
             ->with('farmer')
             ->findOrFail($id);
 
+        // Resolve the current map payload for the saved farm coordinates.
+        $mapData = ($farm->latitude !== null && $farm->longitude !== null)
+            ? $mapService->map($farm->latitude, $farm->longitude)
+            : null;
+
         return Inertia::render('FarmShow', [
             'title' => 'Farm Details',
             'farm' => new FarmResource($farm),
             'owner' => new CooperativeFarmerResource($farm->farmer),
+            'map_data' => $mapData,
             'sustainability_metadata' => SustainabilityMetadata::query()
                 ->orderBy('activity')
                 ->pluck('activity')
@@ -114,6 +121,8 @@ class FarmController extends Controller
         $validated = $request->validate([
             'farm_name' => ['required', 'string', 'max:255'],
             'location' => ['required', 'string', 'max:255'],
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'area_acres' => ['required', 'numeric', 'min:0'],
         ]);
 
@@ -236,6 +245,39 @@ public function destroySustainabilityData(Request $request, string $id, string $
         ->route('cooperative.farms.show', ['id' => $farm->id])
         ->with('success', 'Farm sustainability data deleted successfully.');
 }
+
+
+
+
+
+
+
+
+
+   public function updateLocation(Request $request, string $id)
+    {
+        $validated = $request->validate([
+            'latitude' => ['required', 'numeric', 'between:-90,90'],
+            'longitude' => ['required', 'numeric', 'between:-180,180'],
+        ]);
+
+        $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+
+        $farm = Farm::query()
+            ->whereHas('farmer', function ($query) use ($cooperativeId) {
+                $query->where('cooperative_id', $cooperativeId);
+            })
+            ->findOrFail($id);
+
+        $farm->update($validated);
+
+        return redirect()->route('cooperative.farms.show', ['id' => $farm->id])->with([
+            'success' => 'Farm coordinates updated successfully.',
+        ]);
+    }
+
+
+
 
 
 
