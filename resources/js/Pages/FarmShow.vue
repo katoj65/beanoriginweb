@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import InputError from '@/Components/InputError.vue';
-import { EditPen } from '@element-plus/icons-vue';
+import { Back, EditPen } from '@element-plus/icons-vue';
 import { ElNotification } from 'element-plus';
 
 const page = usePage();
@@ -18,6 +18,11 @@ const latestSustainabilityDate = computed(() => {
   if (!Array.isArray(farmSustainabilityData.value) || farmSustainabilityData.value.length === 0) return 'N/A';
   return farmSustainabilityData.value[0]?.created_at || 'N/A';
 });
+const formattedFarmArea = computed(() => {
+  const value = Number(farm.value?.area_acres ?? 0);
+  if (Number.isNaN(value)) return farm.value?.area_acres ?? '0';
+  return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+});
 
 const sustainabilityForm = useForm({
   activity: '',
@@ -29,6 +34,11 @@ const ownerFullName = computed(() => {
   if (owner.value?.full_name) return owner.value.full_name;
   return [owner.value?.first_name, owner.value?.last_name].filter(Boolean).join(' ') || 'N/A';
 });
+const ownerInitials = computed(() => {
+  const first = owner.value?.first_name?.[0] ?? '';
+  const last = owner.value?.last_name?.[0] ?? '';
+  return (first + last || 'FR').toUpperCase();
+});
 
 const ownerLocation = computed(() => {
   return [owner.value?.village, owner.value?.sub_county, owner.value?.district].filter(Boolean).join(', ') || 'N/A';
@@ -38,6 +48,15 @@ const goToFarmUpdatePage = () => {
   const id = farm.value?.id;
   if (!id) return;
   router.get(route('farmer.farms.update.page', { id }));
+};
+
+const goBack = () => {
+  if (owner.value?.id) {
+    router.get(route('farmer.show', { id: owner.value.id }));
+    return;
+  }
+
+  router.get(route('cooperative.farmers'));
 };
 
 const submitFarmSustainabilityData = () => {
@@ -94,233 +113,334 @@ const formatSustainabilityDate = (value) => {
 
 <template>
   <CooperativeLayout>
-    <div class="container">
+<div class="container">
 
 
-      <div class="row g-gs">
-        <div class="col-12 col-lg-8">
-          <div class="card h-100">
-            <div class="card-inner border-bottom d-flex justify-content-between align-items-center">
-              <div>
-                <h6 class="title mb-1"><em class="icon ni ni-home mr-1"></em>Farm Information</h6>
-                <p class="sub-text mb-0">Core details about the farm.</p>
-              </div>
-              <el-button  :icon="EditPen" @click="goToFarmUpdatePage">Edit Farm</el-button>
-            </div>
-            <div class="card-inner">
-              <div class="details-grid">
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-home mr-1"></em>Farm Name</span>
-                  <strong>{{ farm.farm_name || 'N/A' }}</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Location</span>
-                  <strong>{{ farm.location || 'N/A' }}</strong>
-                </div>
-                <div class="detail-item detail-item-full">
-                  <span class="sub-text"><em class="icon ni ni-grid-alt mr-1"></em>Area (Acres)</span>
-                  <strong>{{ farm.area_acres || '0' }}</strong>
-                </div>
-              </div>
-            </div>
-            <div class="card-inner">
-              <div class="sustainability-header">
-                <div>
-                  <h6 class="title mb-1"><em class="icon ni ni-leaf mr-1"></em>Farm Sustainability Data</h6>
-                  <p class="sub-text mb-2">Capture and track sustainability activity records for this farm.</p>
-                  <div class="sustainability-stats">
-                    <span class="sustainability-stat-pill">
-                      <em class="icon ni ni-list-check mr-1"></em>{{ sustainabilityCount }} Record(s)
-                    </span>
-                    <span class="sustainability-stat-pill">
-                      <em class="icon ni ni-calendar mr-1"></em>Latest: {{ latestSustainabilityDate }}
-                    </span>
-                  </div>
-                </div>
-                <el-button v-if="!showSustainabilityModal" type="primary" @click="openSustainabilityModal">
-                  <em class="icon ni ni-plus mr-1"></em>Add Data
-                </el-button>
-                <el-button v-else @click="closeSustainabilityModal">
-                  <em class="icon ni ni-cross mr-1"></em>Hide Form
-                </el-button>
-              </div>
 
-              <form
-                v-if="showSustainabilityModal"
-                class="sustainability-form-shell mt-3"
-                @submit.prevent="submitFarmSustainabilityData"
-              >
-                <el-row :gutter="12" class="sustainability-form-grid">
-                  <el-col :xs="24" :md="9" class="sustainability-form-col">
-                    <label class="form-label">Activity</label>
-                    <el-select
-                      v-model="sustainabilityForm.activity"
-                      class="w-100"
-                      clearable
-                      allow-create
-                      default-first-option
-                      placeholder="Select or type activity"
-                    >
-                      <el-option
-                        v-for="item in sustainabilityMetadata"
-                        :key="item"
-                        :label="item"
-                        :value="item"
-                      />
-                    </el-select>
-                    <div class="sustainability-feedback">
-                      <small v-if="!sustainabilityForm.errors.activity" class="sustainability-hint">Select existing or type a new activity.</small>
-                      <InputError :message="sustainabilityForm.errors.activity" class="sustainability-error" />
-                    </div>
-                  </el-col>
+<div class="card farm-top-card">
+<div class="card-inner border-bottom farm-topbar">
+<div>
+<h4 class="mb-1">Farm Profile</h4>
+<p class="sub-text mb-0">Registered farm details, linked farmer information, and sustainability records.</p>
+</div>
+<el-button :icon="EditPen" @click="goToFarmUpdatePage">Edit Farm</el-button>
+</div>
 
-                  <el-col :xs="24" :md="9" class="sustainability-form-col">
-                    <label class="form-label">Value</label>
-                    <el-input v-model="sustainabilityForm.value" placeholder="Enter value" />
-                    <div class="sustainability-feedback">
-                      <small v-if="!sustainabilityForm.errors.value" class="sustainability-hint">Example: Shade trees planted, Drip irrigation, Organic compost.</small>
-                      <InputError :message="sustainabilityForm.errors.value" class="sustainability-error" />
-                    </div>
-                  </el-col>
+<div class="card-inner">
 
-                  <el-col :xs="24" :md="6" class="sustainability-form-col sustainability-form-actions">
-                    <label class="form-label sustainability-action-label">Action</label>
-                    <el-button type="primary" native-type="submit" :loading="sustainabilityForm.processing" class="w-100">
-                      Save
-                    </el-button>
-                    <div class="sustainability-feedback"></div>
-                  </el-col>
-                </el-row>
-              </form>
 
-              <div class="sustainability-table-wrap mt-3">
-                <el-table
-                  :data="farmSustainabilityData"
-                  row-key="id"
-                  class="sustainability-table"
-                  empty-text="No sustainability data added yet."
-                  size="small"
-                  table-layout="fixed"
-                  :fit="true"
-                  :header-cell-style="{ background: '#f8fafc', color: '#526484', fontWeight: '600' }"
-                >
-                  <el-table-column width="56" align="center">
-                    <template #header>
-                      <span class="sustainability-table-head">
-                        <em class="icon ni ni-hash mr-1"></em>#
-                      </span>
-                    </template>
-                    <template #default="{ $index }">
-                      <span class="sustainability-row-index">{{ $index + 1 }}</span>
-                    </template>
-                  </el-table-column>
+<div class="row g-gs">
+<div class="col-12 col-lg-8">
+<div class="card farm-profile-card h-100">
+<!-- <div class="card-inner border-bottom d-flex justify-content-between align-items-center">
+<div>
+<h6 class="title mb-1"><em class="icon ni ni-home mr-1"></em>Farm Information</h6>
+<p class="sub-text mb-0">Core registration details and location data for this farm.</p>
+</div>
+<span class="farm-section-badge"><em class="icon ni ni-check-circle mr-1"></em>Registered</span>
+</div> -->
+<div class="card-inner">
+<div class="details-grid">
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-home mr-1"></em>Farm Name</span>
+<strong>{{ farm.farm_name || 'N/A' }}</strong>
+</div>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Location</span>
+<strong>{{ farm.location || 'N/A' }}</strong>
+</div>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-list-check mr-1"></em>Sustainability Entries</span>
+<strong>{{ sustainabilityCount }}</strong>
+</div>
+<div class="detail-item detail-item-full">
+<span class="sub-text"><em class="icon ni ni-grid-alt mr-1"></em>Area (Acres)</span>
+<strong>{{ formattedFarmArea }}</strong>
+</div>
+</div>
+</div>
+<div class="card-inner">
+<div class="sustainability-header">
+<div>
+<h6 class="title mb-1"><em class="icon ni ni-leaf mr-1"></em>Farm Sustainability Data</h6>
+<p class="sub-text mb-2">Capture and track sustainability activity records for this farm.</p>
+<div class="sustainability-stats">
+<span class="sustainability-stat-pill">
+    <em class="icon ni ni-list-check mr-1"></em>{{ sustainabilityCount }} Record(s)
+</span>
+<span class="sustainability-stat-pill">
+    <em class="icon ni ni-calendar mr-1"></em>Latest: {{ latestSustainabilityDate }}
+</span>
+</div>
+</div>
+<el-button v-if="!showSustainabilityModal" type="primary" @click="openSustainabilityModal">
+<em class="icon ni ni-plus mr-1"></em>Add Data
+</el-button>
+<el-button v-else @click="closeSustainabilityModal">
+<em class="icon ni ni-cross mr-1"></em>Hide Form
+</el-button>
+</div>
 
-                  <el-table-column prop="activity" min-width="170" show-overflow-tooltip>
-                    <template #header>
-                      <span class="sustainability-table-head">
-                        <em class="icon ni ni-list mr-1"></em>Activity
-                      </span>
-                    </template>
-                    <template #default="{ row }">
-                      <span class="sustainability-activity-badge text-capitalize">
-                        <em class="icon ni ni-check-circle mr-1"></em>{{ row.activity || 'N/A' }}
-                      </span>
-                    </template>
-                  </el-table-column>
+<form
+v-if="showSustainabilityModal"
+class="sustainability-form-shell mt-3"
+@submit.prevent="submitFarmSustainabilityData"
+>
+<el-row :gutter="12" class="sustainability-form-grid">
+<el-col :xs="24" :md="9" class="sustainability-form-col">
+<label class="form-label">Activity</label>
+<el-select
+    v-model="sustainabilityForm.activity"
+    class="w-100"
+    clearable
+    allow-create
+    default-first-option
+    placeholder="Select or type activity"
+>
+    <el-option
+    v-for="item in sustainabilityMetadata"
+    :key="item"
+    :label="item"
+    :value="item"
+    />
+</el-select>
+<div class="sustainability-feedback">
+    <small v-if="!sustainabilityForm.errors.activity" class="sustainability-hint">Select existing or type a new activity.</small>
+    <InputError :message="sustainabilityForm.errors.activity" class="sustainability-error" />
+</div>
+</el-col>
 
-                  <el-table-column prop="value" min-width="150" show-overflow-tooltip>
-                    <template #header>
-                      <span class="sustainability-table-head">
-                        <em class="icon ni ni-pen2 mr-1"></em>Value
-                      </span>
-                    </template>
-                    <template #default="{ row }">
-                      <span class="sustainability-value-chip">{{ row.value || 'N/A' }}</span>
-                    </template>
-                  </el-table-column>
+<el-col :xs="24" :md="9" class="sustainability-form-col">
+<label class="form-label">Value</label>
+<el-input v-model="sustainabilityForm.value" placeholder="Enter value" />
+<div class="sustainability-feedback">
+    <small v-if="!sustainabilityForm.errors.value" class="sustainability-hint">Example: Shade trees planted, Drip irrigation, Organic compost.</small>
+    <InputError :message="sustainabilityForm.errors.value" class="sustainability-error" />
+</div>
+</el-col>
 
-                  <el-table-column prop="created_at" width="140" show-overflow-tooltip>
-                    <template #header>
-                      <span class="sustainability-table-head">
-                        <em class="icon ni ni-calendar mr-1"></em>Date
-                      </span>
-                    </template>
-                    <template #default="{ row }">
-                      <span class="sustainability-date">{{ formatSustainabilityDate(row.created_at) }}</span>
-                    </template>
-                  </el-table-column>
+<el-col :xs="24" :md="6" class="sustainability-form-col sustainability-form-actions">
+<label class="form-label sustainability-action-label">Action</label>
+<el-button type="primary" native-type="submit" :loading="sustainabilityForm.processing" class="w-100">
+    Save
+</el-button>
+<div class="sustainability-feedback"></div>
+</el-col>
+</el-row>
+</form>
 
-                  <el-table-column width="74" align="center">
-                    <template #header>
-                      <span class="sustainability-table-head">
-                        <em class="icon ni ni-trash"></em>
-                      </span>
-                    </template>
-                    <template #default="{ row }">
-                      <el-button type="danger" text class="sustainability-delete-btn" @click="destroySustainabilityData(row)">
-                        <em class="icon ni ni-trash"></em>
-                      </el-button>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </div>
-            </div>
-          </div>
-        </div>
+<div class="sustainability-table-wrap mt-3">
+<el-table
+:data="farmSustainabilityData"
+row-key="id"
+class="sustainability-table"
+empty-text="No sustainability data added yet."
+size="small"
+table-layout="fixed"
+:fit="true"
+:header-cell-style="{ background: '#f8fafc', color: '#526484', fontWeight: '600' }"
+>
+<el-table-column width="56" align="center">
+<template #header>
+    <span class="sustainability-table-head">
+    <em class="icon ni ni-hash mr-1"></em>#
+    </span>
+</template>
+<template #default="{ $index }">
+    <span class="sustainability-row-index">{{ $index + 1 }}</span>
+</template>
+</el-table-column>
 
-        <div class="col-12 col-lg-4">
-          <div class="card h-100">
-            <div class="card-inner border-bottom">
-              <h6 class="title mb-1"><em class="icon ni ni-user mr-1"></em>Owner Information</h6>
-              <p class="sub-text mb-0">Farmer details linked to this farm.</p>
-            </div>
-            <div class="card-inner">
-              <div class="owner-hero mb-3">
-                <div class="owner-avatar">
-                  {{ ownerFullName.slice(0, 2).toUpperCase() }}
-                </div>
-                <div>
-                  <h6 class="mb-1">{{ ownerFullName }}</h6>
-                  <p class="sub-text mb-0">{{ owner.status || 'N/A' }}</p>
-                </div>
-              </div>
+<el-table-column prop="activity" min-width="170" show-overflow-tooltip>
+<template #header>
+    <span class="sustainability-table-head">
+    <em class="icon ni ni-list mr-1"></em>Activity
+    </span>
+</template>
+<template #default="{ row }">
+    <span class="sustainability-activity-badge text-capitalize">
+    <em class="icon ni ni-check-circle mr-1"></em>{{ row.activity || 'N/A' }}
+    </span>
+</template>
+</el-table-column>
 
-              <div class="details-grid details-grid-single">
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-call mr-1"></em>Phone Number</span>
-                  <strong>{{ owner.phone_number || 'N/A' }}</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-mail mr-1"></em>Email</span>
-                  <strong>{{ owner.email || 'N/A' }}</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-card-view mr-1"></em>National ID</span>
-                  <strong>{{ owner.national_id || 'N/A' }}</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-users mr-1"></em>Gender</span>
-                  <strong>{{ owner.gender || 'N/A' }}</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-calendar mr-1"></em>Date of Birth</span>
-                  <strong>{{ owner.date_of_birth || 'N/A' }}</strong>
-                </div>
-                <div class="detail-item">
-                  <span class="sub-text"><em class="icon ni ni-map-fill mr-1"></em>Address</span>
-                  <strong>{{ ownerLocation }}</strong>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+<el-table-column prop="value" min-width="150" show-overflow-tooltip>
+<template #header>
+    <span class="sustainability-table-head">
+    <em class="icon ni ni-pen2 mr-1"></em>Value
+    </span>
+</template>
+<template #default="{ row }">
+    <span class="sustainability-value-chip">{{ row.value || 'N/A' }}</span>
+</template>
+</el-table-column>
+
+<el-table-column prop="created_at" width="140" show-overflow-tooltip>
+<template #header>
+    <span class="sustainability-table-head">
+    <em class="icon ni ni-calendar mr-1"></em>Date
+    </span>
+</template>
+<template #default="{ row }">
+    <span class="sustainability-date">{{ formatSustainabilityDate(row.created_at) }}</span>
+</template>
+</el-table-column>
+
+<el-table-column width="74" align="center">
+<template #header>
+    <span class="sustainability-table-head">
+    <em class="icon ni ni-trash"></em>
+    </span>
+</template>
+<template #default="{ row }">
+    <el-button type="danger" text class="sustainability-delete-btn" @click="destroySustainabilityData(row)">
+    <em class="icon ni ni-trash"></em>
+    </el-button>
+</template>
+</el-table-column>
+</el-table>
+</div>
+</div>
+</div>
+</div>
+
+<div class="col-12 col-lg-4">
+<div class="card farm-owner-card h-100">
+<div class="card-inner border-bottom">
+<div class="heading">
+<div>
+<h6 class="title mb-1"><em class="icon ni ni-user mr-1"></em>Farmer Profile</h6>
+<p class="sub-text mb-0">Registered farmer details linked to this farm.</p>
+</div>
+<el-button
+  type="primary"
+  plain
+  @click="owner.id && router.get(route('farmer.update.page', { id: owner.id }))"
+>
+  <em class="icon ni ni-edit mr-1"></em>Edit Farmer
+</el-button>
+</div>
+</div>
+<div class="card-inner">
+<div class="owner-hero mb-3">
+<div class="owner-avatar">
+{{ ownerInitials }}
+</div>
+<div>
+<h6 class="mb-1">{{ ownerFullName }}</h6>
+<p class="sub-text mb-0 text-capitalize">{{ owner.status || 'N/A' }}</p>
+</div>
+</div>
+
+<div class="details-grid details-grid-single">
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-call mr-1"></em>Phone Number</span>
+<strong>{{ owner.phone_number || 'N/A' }}</strong>
+</div>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-mail mr-1"></em>Email</span>
+<strong>{{ owner.email || 'N/A' }}</strong>
+</div>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-card-view mr-1"></em>National ID</span>
+<strong>{{ owner.national_id || 'N/A' }}</strong>
+</div>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-users mr-1"></em>Gender</span>
+<strong>{{ owner.gender || 'N/A' }}</strong>
+</div>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-calendar mr-1"></em>Date of Birth</span>
+<strong>{{ owner.date_of_birth || 'N/A' }}</strong>
+</div>
+<div class="detail-item">
+<span class="sub-text"><em class="icon ni ni-map-fill mr-1"></em>Address</span>
+<strong>{{ ownerLocation }}</strong>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
 
     </div>
   </CooperativeLayout>
 </template>
 
 <style scoped>
+.farm-top-card {
+  border-radius: 18px;
+  border: 1px solid #e7edf5 !important;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+  margin-bottom: 14px;
+}
+
+.farm-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  background:
+    linear-gradient(135deg, rgba(111, 78, 55, 0.08), rgba(255, 255, 255, 0) 38%),
+    linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+}
+
+.farm-header-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.farm-header-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #e5e9f2;
+  background: rgba(255, 255, 255, 0.92);
+  color: #526484;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.farm-back-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.farm-back-link:hover {
+  color: #364a63;
+  text-decoration: none;
+}
+
+.farm-profile-card,
+.farm-owner-card {
+  border-radius: 18px;
+  border: 1px solid #e7edf5 !important;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+}
+
+.heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .details-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -332,27 +452,44 @@ const formatSustainabilityDate = (value) => {
 }
 
 .detail-item {
-  background: #f8fafc;
-  border-radius: 10px;
-  padding: 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 14px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  border: 1px solid #e7edf5;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
 }
 
 .detail-item-full {
   grid-column: span 2;
 }
 
+.farm-section-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #ecfdf3;
+  color: #166534;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .owner-hero {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 14px;
+  border: 1px solid #e7edf5;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 }
 
 .owner-avatar {
-  width: 42px;
-  height: 42px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   background: linear-gradient(135deg, #6f4e37, #8b5a2b);
   color: #fff;
@@ -360,14 +497,15 @@ const formatSustainabilityDate = (value) => {
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 1rem;
+  box-shadow: 0 12px 24px rgba(111, 78, 55, 0.22);
 }
 
 .sustainability-form-shell {
   border: 1px solid #e5e9f2;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 14px;
-  background: #fbfcfe;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
 }
 
 .sustainability-header {
@@ -427,10 +565,10 @@ const formatSustainabilityDate = (value) => {
 
 .sustainability-table-wrap {
   border: 1px solid #e5e9f2;
-  border-radius: 10px;
+  border-radius: 16px;
   overflow: hidden;
   background: #fff;
-  box-shadow: inset 0 1px 0 #f5f7fb;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
 }
 
 .sustainability-table-head {
@@ -464,10 +602,15 @@ const formatSustainabilityDate = (value) => {
 }
 
 .sustainability-value-chip {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   max-width: 100%;
   color: #445870;
-  font-weight: 500;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px solid #e5e9f2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -543,6 +686,16 @@ const formatSustainabilityDate = (value) => {
 }
 
 @media (max-width: 768px) {
+  .farm-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .details-grid {
     grid-template-columns: 1fr;
   }

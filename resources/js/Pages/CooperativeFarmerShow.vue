@@ -4,6 +4,7 @@ import { Link, router, useForm, usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import { ElNotification } from 'element-plus';
+import { Back } from '@element-plus/icons-vue';
 
 const page = usePage();
 const farmer = computed(() => page.props.farmer?.data ?? page.props.farmer ?? {});
@@ -34,6 +35,13 @@ const value = farmer.value?.created_at;
 if (!value) return 'N/A';
 return String(value).split(' ')[0];
 });
+
+const formatDate = (value) => {
+if (!value) return 'N/A';
+const date = new Date(value);
+if (Number.isNaN(date.getTime())) return String(value);
+return date.toLocaleDateString();
+};
 
 const statusClass = computed(() => {
 const status = farmer.value?.status;
@@ -71,6 +79,10 @@ area_acres: '',
 const openModal = () => {
 form.cooperative_farmer_id = farmer.value?.id ?? '';
 showModal.value = true;
+};
+
+const goBack = () => {
+router.get(route('cooperative.farmers'));
 };
 
 const closeModal = () => {
@@ -113,9 +125,30 @@ type: 'success',
 <div class="container farmer-profile-page mt-0">
 <div class="nk-content-inner">
 <div class="nk-content-body">
-
-
 <div class="nk-block farmer-page-wrap">
+<div class="card">
+<div class="card-inner border-bottom farmer-section-head">
+<div class="head-section">
+<div class="head-copy">
+<div class="head-title font-large"><em class="icon ni ni-user mr-1"></em>Farmer Profile</div>
+<p class="sub-text mb-0">A quick operational summary of this farmer and their registered farms.</p>
+</div>
+<el-button
+v-if="farmer.id"
+class="farmer-edit-btn"
+@click="router.get(route('farmer.update.page', { id: farmer.id }))"
+>
+<em class="icon ni ni-edit mr-1"></em>Edit Farmer
+</el-button>
+</div>
+</div>
+
+
+
+
+
+
+<div class="card-inner">
 <div class="row g-gs">
 <div class="col-lg-4 col-xl-4 col-xxl-3">
 <div class="card farmer-summary-card">
@@ -123,11 +156,10 @@ type: 'success',
 <div class="card-inner border-0">
 <div class="user-card user-card-s2">
 <div class="user-avatar lg bg-secondary profile-avatar-solid">
-<em class="icon ni ni-user"></em>
-
+<span class="avatar-initials">{{ initials }}</span>
 </div>
 <div class="user-info">
-<div class="badge rounded-pill ucap" :class="statusClass">{{ statusLabel }}</div>
+<div class="badge rounded-pill ucap summary-status-badge" :class="statusClass">{{ statusLabel }}</div>
 <h5 class="text-capitalize">{{ fullName }}</h5>
 <span class="sub-text summary-email">{{ farmer.email || 'N/A' }}</span>
 <p class="summary-location mb-0"><em class="icon ni ni-map-pin mr-1"></em>{{ locationLabel }}</p>
@@ -153,8 +185,8 @@ type: 'success',
 </div>
 <div class="col-4">
 <div class="profile-stats">
-<span class="amount text-capitalize">{{ farmer.primary_crop || 'N/A' }}</span>
-<span class="sub-text">Primary Crop</span>
+<span class="amount">{{ formattedAverageFarmArea }}</span>
+<span class="sub-text">Avg. Acres</span>
 </div>
 </div>
 </div>
@@ -169,7 +201,7 @@ type: 'success',
 <div class="row g-3">
 <div class="col-sm-6 col-md-4 col-lg-12 short-detail-item">
 <span class="sub-text"><em class="icon ni ni-calendar mr-1"></em>Date of Birth:</span>
-<span>{{ farmer.date_of_birth || 'N/A' }}</span>
+<span>{{ formatDate(farmer.date_of_birth) }}</span>
 </div>
 <div class="col-sm-6 col-md-4 col-lg-12 short-detail-item">
 <span class="sub-text"><em class="icon ni ni-users mr-1"></em>Gender:</span>
@@ -188,6 +220,10 @@ type: 'success',
 <span>{{ farmer.phone_number || 'N/A' }}</span>
 </div>
 <div class="col-sm-6 col-md-4 col-lg-12 short-detail-item">
+<span class="sub-text"><em class="icon ni ni-growth mr-1"></em>Primary Crop:</span>
+<span class="text-capitalize">{{ farmer.primary_crop || 'N/A' }}</span>
+</div>
+<div class="col-sm-6 col-md-4 col-lg-12 short-detail-item">
 <span class="sub-text"><em class="icon ni ni-map-fill mr-1"></em>District:</span>
 <span class="text-capitalize">{{ farmer.district || 'N/A' }}</span>
 </div>
@@ -201,7 +237,7 @@ type: 'success',
 </div>
 <div class="col-sm-6 col-md-4 col-lg-12 short-detail-item">
 <span class="sub-text"><em class="icon ni ni-calendar mr-1"></em>Registered At:</span>
-<span>{{ farmer.created_at || 'N/A' }}</span>
+<span>{{ formatDate(farmer.created_at) }}</span>
 </div>
 </div>
 </div>
@@ -213,16 +249,7 @@ type: 'success',
 <div class="card farmer-main-card h-100">
 <div class="card-inner">
 <div class="nk-block">
-<div class="profile-head-actions">
-<div class="overline-title-alt mb-2 mt-2 section-head"><em class="icon ni ni-user mr-1"></em>Farmer Profile</div>
-<el-button
-v-if="farmer.id"
-class="farmer-edit-btn"
-@click="router.get(route('farmer.update.page', { id: farmer.id }))"
->
-<em class="icon ni ni-edit mr-1"></em>Edit Farmer
-</el-button>
-</div>
+
 <div class="in-profile-grid">
 <div class="in-profile-card">
 <span class="in-profile-label"><em class="icon ni ni-home mr-1"></em>Total Farms</span>
@@ -237,36 +264,39 @@ class="farmer-edit-btn"
 <strong class="in-profile-value">{{ formattedAverageFarmArea }} acres</strong>
 </div>
 <div class="in-profile-card">
-<span class="in-profile-label"><em class="icon ni ni-check-circle mr-1"></em>Status</span>
-<strong class="in-profile-value text-capitalize">{{ statusLabel }}</strong>
+<span class="in-profile-label"><em class="icon ni ni-growth mr-1"></em>Primary Crop</span>
+<strong class="in-profile-value text-capitalize">{{ farmer.primary_crop || 'N/A' }}</strong>
 </div>
 </div>
 <div class="in-profile-meta">
 <span><em class="icon ni ni-calendar mr-1"></em>Member Since: {{ profileSince }}</span>
 <span><em class="icon ni ni-map-pin mr-1"></em>Location: {{ locationLabel }}</span>
+<span><em class="icon ni ni-check-circle mr-1"></em>Status: {{ statusLabel }}</span>
 </div>
 </div>
 
 <div class="nk-block">
 <div class="farm-section-head">
-<h6 class="lead-text mb-0 section-head"><em class="icon ni ni-home mr-1"></em>Farm Portfolio</h6>
+<div class="farm-section-head-copy">
+<h6 class="lead-text mb-1 section-head"><em class="icon ni ni-home mr-1"></em>Farm Portfolio</h6>
+<p class="sub-text mb-0">Registered farms linked to this farmer profile.</p>
+</div>
+<div class="farm-section-actions">
+<span class="farm-count-badge">{{ farmCount }} total</span>
 <button type="button" class="btn btn-primary btn-sm add-farm-btn" @click="openModal">
 <em class="icon ni ni-plus mr-1"></em>Add Farm
 </button>
 </div>
+</div>
 <div v-if="farms.length" class="farm-list-wrap">
 <div class="nk-tb-list nk-tb-ulist is-compact farm-table-modern">
 <div class="nk-tb-item nk-tb-head">
-<div class="nk-tb-col"><span class="sub-text"><em class="icon ni ni-tag mr-1"></em>Farm ID</span></div>
 <div class="nk-tb-col tb-col-sm"><span class="sub-text"><em class="icon ni ni-home mr-1"></em>Farm Name</span></div>
 <div class="nk-tb-col"><span class="sub-text"><em class="icon ni ni-package mr-1"></em>Farm Size (Acres)</span></div>
 <div class="nk-tb-col"><span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Location</span></div>
 <div class="nk-tb-col tb-col-end"><span class="sub-text"><em class="icon ni ni-trash mr-1"></em>Action</span></div>
 </div>
 <div class="nk-tb-item" v-for="farm in farms" :key="farm.id">
-<div class="nk-tb-col">
-<span class="fw-bold">#{{ farm.id }}</span>
-</div>
 <div class="nk-tb-col tb-col-sm">
 <Link :href="route('cooperative.farms.show', farm.id)" class="farm-link text-capitalize">
 {{ farm.farm_name || 'Unnamed Farm' }}
@@ -276,7 +306,7 @@ class="farmer-edit-btn"
 <span class="amount">{{ farm.area_acres || 0 }} acres</span>
 </div>
 <div class="nk-tb-col">
-<span class="sub-text text-capitalize">{{ farm.location || 'N/A' }}</span>
+<span class="farm-location-chip text-capitalize">{{ farm.location || 'N/A' }}</span>
 </div>
 <div class="nk-tb-col tb-col-end">
 <el-button type="danger" plain size="small" @click="destroyFarm(farm.id)">
@@ -286,7 +316,10 @@ class="farmer-edit-btn"
 </div>
 </div>
 </div>
-<p v-else class="sub-text mb-0 farm-empty-state">No farms registered for this farmer yet.</p>
+<div v-else class="farm-empty-state">
+<h6 class="mb-1">No farms registered yet</h6>
+<p class="sub-text mb-3">Create the first farm profile for this farmer to start capturing acreage and sustainability details.</p>
+</div>
 </div>
 
 <div class="nk-block">
@@ -300,7 +333,7 @@ class="farmer-edit-btn"
 <div><span class="sub-text"><em class="icon ni ni-call mr-1"></em>Phone Number:</span><strong>{{ farmer.phone_number || 'N/A' }}</strong></div>
 <div><span class="sub-text"><em class="icon ni ni-mail mr-1"></em>Email:</span><strong>{{ farmer.email || 'N/A' }}</strong></div>
 <div><span class="sub-text"><em class="icon ni ni-check-circle mr-1"></em>Status:</span><strong class="text-capitalize">{{ farmer.status || 'N/A' }}</strong></div>
-<div><span class="sub-text"><em class="icon ni ni-update mr-1"></em>Updated At:</span><strong>{{ farmer.updated_at || 'N/A' }}</strong></div>
+<div><span class="sub-text"><em class="icon ni ni-update mr-1"></em>Updated At:</span><strong>{{ formatDate(farmer.updated_at) }}</strong></div>
 <div class="detail-span-2"><span class="sub-text"><em class="icon ni ni-growth mr-1"></em>Primary Crop:</span><strong class="text-capitalize">{{ farmer.primary_crop || 'N/A' }}</strong></div>
 </div>
 </div>
@@ -325,6 +358,18 @@ class="farmer-edit-btn"
 </div>
 </div>
 </div>
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
 </div>
 </div>
 </div>
@@ -393,21 +438,94 @@ padding-top: 0.5rem;
 padding-bottom: 0.75rem;
 }
 
+.farmer-page-header {
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+gap: 14px;
+margin-bottom: 14px;
+padding: 18px 20px;
+border: 1px solid #e7edf5;
+border-radius: 16px;
+background:
+linear-gradient(135deg, rgba(111, 78, 55, 0.08), rgba(255, 255, 255, 0) 38%),
+linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+}
+
+.farmer-page-header-copy {
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+
+.farmer-header-pills {
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+}
+
+.farmer-header-pill {
+display: inline-flex;
+align-items: center;
+padding: 6px 10px;
+border-radius: 999px;
+border: 1px solid #e5e9f2;
+background: rgba(255, 255, 255, 0.9);
+color: #526484;
+font-size: 12px;
+font-weight: 600;
+}
+
+.farmer-page-actions {
+display: inline-flex;
+align-items: center;
+gap: 10px;
+flex-wrap: wrap;
+justify-content: flex-end;
+}
+
 .farmer-page-wrap {
 margin-bottom: 0.25rem;
 }
 
+.head-section {
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+gap: 10px;
+padding: 0;
+}
+
+.farmer-section-head {
+padding-top: 6px !important;
+padding-bottom: 6px !important;
+}
+
+.head-copy {
+display: flex;
+flex-direction: column;
+gap: 0;
+}
+
+.head-title {
+font-size: 1rem;
+font-weight: 800;
+color: #102a43;
+display: inline-flex;
+align-items: center;
+}
+
 .farmer-summary-card {
-border-radius: 14px;
+border-radius: 18px;
 overflow: hidden;
+background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+border: 1px solid #e7edf5 !important;
 }
 
 .farmer-main-card {
-border-radius: 14px;
-}
-
-.profile-avatar-solid span {
-font-weight: 700;
+border-radius: 18px;
+background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+border: 1px solid #e7edf5 !important;
 }
 
 .profile-avatar-solid {
@@ -415,30 +533,28 @@ display: flex;
 flex-direction: column;
 align-items: center;
 justify-content: center;
-gap: 1px;
-}
-
-.profile-avatar-solid .icon {
-font-size: 24px;
-line-height: 1;
+background: linear-gradient(135deg, #6f4e37, #8b5a2b) !important;
+box-shadow: 0 12px 24px rgba(111, 78, 55, 0.22);
 }
 
 .avatar-initials {
-font-size: 12px;
+font-size: 20px;
 font-weight: 700;
 line-height: 1;
+color: #fff;
 }
 
 .profile-stats {
-background: #f8fafc;
-border: 1px solid #edf2f7;
-border-radius: 8px;
+background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+border: 1px solid #e7edf5;
+border-radius: 12px;
 padding: 10px 8px;
 min-height: 88px;
 height: 100%;
 display: flex;
 flex-direction: column;
 justify-content: center;
+box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
 }
 
 .summary-email {
@@ -454,6 +570,12 @@ align-items: center;
 gap: 2px;
 }
 
+.summary-status-badge {
+box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+border: 1px solid rgba(255, 255, 255, 0.3);
+margin-bottom: 0.35rem;
+}
+
 .stats-row .amount {
 font-size: 18px;
 font-weight: 700;
@@ -465,8 +587,9 @@ display: block;
 
 .short-detail-item {
 padding: 8px 10px;
-border-radius: 8px;
-background: #f8fafc;
+border-radius: 12px;
+background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+border: 1px solid #e7edf5;
 }
 
 .farm-list-wrap {
@@ -475,20 +598,27 @@ overflow-x: auto;
 
 .farm-table-modern {
 border: 1px solid #e3e8ef;
-border-radius: 12px;
+border-radius: 16px;
 overflow: hidden;
+background: #fff;
+box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
 }
 
 .farm-table-modern .nk-tb-head {
-background: #f7f9fc;
+background: linear-gradient(180deg, #f9fbfd 0%, #f3f6fa 100%);
 }
 
 .farm-table-modern .nk-tb-item {
 border-bottom: 1px solid #edf2f7;
+transition: background-color 0.2s ease;
 }
 
 .farm-table-modern .nk-tb-item:last-child {
 border-bottom: none;
+}
+
+.farm-table-modern .nk-tb-item:hover {
+background: #fbfdff;
 }
 
 .farm-table-modern .nk-tb-col {
@@ -504,9 +634,10 @@ font-weight: 700;
 }
 
 .farm-empty-state {
-padding: 12px 14px;
-background: #f8fafc;
-border-radius: 8px;
+padding: 18px 18px;
+background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+border-radius: 16px;
+border: 1px dashed #d6dfeb;
 }
 
 .farm-section-head {
@@ -517,17 +648,44 @@ gap: 10px;
 margin-bottom: 0.85rem;
 }
 
+.farm-section-head-copy {
+display: flex;
+flex-direction: column;
+gap: 2px;
+}
+
+.farm-section-actions {
+display: inline-flex;
+align-items: center;
+gap: 10px;
+flex-wrap: wrap;
+}
+
+.farm-count-badge {
+display: inline-flex;
+align-items: center;
+padding: 6px 10px;
+border-radius: 999px;
+background: #eef4ff;
+color: #335c9b;
+font-size: 12px;
+font-weight: 700;
+}
+
 .profile-head-actions {
 display: flex;
 align-items: center;
 justify-content: space-between;
 gap: 10px;
-margin-bottom: 0.65rem;
+margin-bottom: 0.9rem;
 }
 
 .farmer-edit-btn {
 display: inline-flex;
 align-items: center;
+margin: 0;
+min-height: 36px;
+padding: 0 12px;
 }
 
 .in-profile-grid {
@@ -537,13 +695,14 @@ gap: 10px;
 }
 
 .in-profile-card {
-background: #f8fafc;
-border: 1px solid #edf2f7;
-border-radius: 10px;
-padding: 10px 12px;
+background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+border: 1px solid #e7edf5;
+border-radius: 14px;
+padding: 12px 14px;
 display: flex;
 flex-direction: column;
 gap: 5px;
+box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
 }
 
 .in-profile-label {
@@ -581,6 +740,18 @@ display: inline-flex;
 align-items: center;
 }
 
+.farm-location-chip {
+display: inline-flex;
+align-items: center;
+padding: 5px 10px;
+border-radius: 999px;
+background: #f5f7fb;
+border: 1px solid #e5e9f2;
+color: #526484;
+font-size: 12px;
+font-weight: 600;
+}
+
 .detail-pairs {
 display: grid;
 grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -592,8 +763,9 @@ display: flex;
 flex-direction: column;
 gap: 3px;
 padding: 10px 12px;
-border-radius: 8px;
-background: #f8fafc;
+border-radius: 12px;
+background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+border: 1px solid #e7edf5;
 }
 
 .detail-pairs strong {
@@ -625,8 +797,9 @@ text-decoration: none;
 
 .internal-info-card {
 box-shadow: none !important;
-border-radius: 12px;
-border: none !important;
+border-radius: 16px;
+border: 1px solid #e7edf5 !important;
+background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
 }
 
 .farm-dialog-head {
@@ -704,6 +877,20 @@ border-top: 1px solid #edf2f7;
 }
 
 @media (max-width: 991px) {
+.head-section {
+flex-direction: column;
+align-items: flex-start;
+}
+
+.farmer-page-header {
+flex-direction: column;
+align-items: flex-start;
+}
+
+.farmer-page-actions {
+justify-content: flex-start;
+}
+
 .detail-pairs {
 grid-template-columns: 1fr;
 }
@@ -734,6 +921,10 @@ padding: 8px 9px;
   .farm-section-head {
   align-items: flex-start;
   flex-direction: column;
+  }
+
+  .farm-section-actions {
+  justify-content: flex-start;
   }
 
   :deep(.farm-create-dialog .el-dialog) {
