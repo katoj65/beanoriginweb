@@ -6,10 +6,12 @@ use App\Models\Batch;
 use App\Models\BatchStatusList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\CommodityResource;
+use App\Http\Resources\BatchAttachedCommodityResource;
 use App\Http\Resources\BatchResource;
 use App\Models\CommodityBatch;
 use App\Models\BatchProcessingData;
+use App\Models\Token;
+use App\Http\Resources\TokenResource;
 use Inertia\Inertia;
 
 
@@ -33,7 +35,7 @@ $commodityIds = CommodityBatch::query()
 ->values();
 
 // Build attached commodity and activity timelines for verification page.
-$attachedCommodities = CommodityResource::collection(
+$attachedCommodities = BatchAttachedCommodityResource::collection(
 Commodity::query()
 ->whereIn('id', $commodityIds)
 ->latest('id')
@@ -70,10 +72,10 @@ $batchProcessingData = BatchProcessingData::query()
 ])
 ->values();
 
-
-
-
-
+$batchToken= Token::query()
+->where('batch_id', $batch->id)
+->latest('id')
+->get(['id', 'token_index', 'event_type', 'current_hash', 'metadata', 'status', 'created_at']) ;
 
 
 
@@ -87,6 +89,7 @@ return Inertia::render('BatchPage', [
 'batch_activities' => $batchActivities,
 'batch_processing_metadata' => $batchProcessingMetadata,
 'batch_processing_data' => $batchProcessingData,
+'batch_tokens' => TokenResource::collection($batchToken),
 'batch_status_list' => BatchStatusList::query()->where('name','!=','created')->orderBy('id')->pluck('name')->values(),
 
 
@@ -118,7 +121,6 @@ return false;
 
 
 }
-
 
 
 

@@ -147,100 +147,9 @@ const formatSustainabilityDate = (value) => {
 
 <div class="row g-gs">
 <div class="col-12 col-lg-8">
-<div class="card farm-profile-card h-100">
+<div class="card farm-map-card-shell">
 
 <div class="card-inner">
-<div class="details-grid">
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-home mr-1"></em>Farm Name</span>
-<strong>{{ farm.farm_name || 'N/A' }}</strong>
-</div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-map-pin mr-1"></em>Location</span>
-<strong>{{ farm.location || 'N/A' }}</strong>
-</div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-list-check mr-1"></em>Sustainability Entries</span>
-<strong>{{ sustainabilityCount }}</strong>
-</div>
-<div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-grid-alt mr-1"></em>Area (Acres)</span>
-<strong>{{ formattedFarmArea }}</strong>
-</div>
-</div>
-</div>
-<div class="card-inner">
-<div class="sustainability-header">
-<div>
-<h6 class="title mb-1">
-<em class="icon ni ni-leaf mr-1"></em>
-Farm Sustainability Data </h6>
-<p class="sub-text mb-2">Capture and track sustainability activity records for this farm.</p>
-
-</div>
-</div>
-
-<div class="sustainability-table-wrap mt-3">
-<el-table
-:data="farmSustainabilityData"
-row-key="id"
-class="sustainability-table"
-empty-text="No sustainability data added yet."
-size="small"
-table-layout="fixed"
-:fit="true"
-:header-cell-style="{ background: '#f8fafc', color: '#526484', fontWeight: '600' }"
->
-<el-table-column prop="activity" min-width="170" show-overflow-tooltip>
-<template #header>
-    <span class="sustainability-table-head">
-    <em class="icon ni ni-list mr-1"></em>Activity
-    </span>
-</template>
-<template #default="{ row }">
-    <span class="sustainability-activity-badge text-capitalize">
-    <em class="icon ni ni-check-circle mr-1"></em>{{ row.activity || 'N/A' }}
-    </span>
-</template>
-</el-table-column>
-
-<el-table-column prop="value" min-width="150" show-overflow-tooltip>
-<template #header>
-    <span class="sustainability-table-head">
-    <em class="icon ni ni-pen2 mr-1"></em>Value
-    </span>
-</template>
-<template #default="{ row }">
-    <span class="sustainability-value-chip">{{ row.value || 'N/A' }}</span>
-</template>
-</el-table-column>
-
-<el-table-column prop="created_at" width="140" show-overflow-tooltip>
-<template #header>
-    <span class="sustainability-table-head">
-    <em class="icon ni ni-calendar mr-1"></em>Date
-    </span>
-</template>
-<template #default="{ row }">
-    <span class="sustainability-date">{{ formatSustainabilityDate(row.created_at) }}</span>
-</template>
-</el-table-column>
-
-<el-table-column width="74" align="center">
-<template #header>
-    <span class="sustainability-table-head">
-    <em class="icon ni ni-trash"></em>
-    </span>
-</template>
-<template #default="{ row }">
-<el-button type="danger" text class="sustainability-delete-btn" @click="destroySustainabilityData(row)">
-<em class="icon ni ni-trash"></em>
-</el-button>
-</template>
-</el-table-column>
-</el-table>
-</div>
-
 <AddMap
 :farm-id="farm.id"
 :farm-name="farm.farm_name"
@@ -251,8 +160,76 @@ table-layout="fixed"
 :map-data="page.props.map_data"
 />
 </div>
+
+<div class="card-inner border-top">
+<div class="sustainability-header">
+<div class="sustainability-copy">
+<h6 class="title mb-1">
+<em class="icon ni ni-leaf mr-1"></em>
+Farm Sustainability Data </h6>
+<p class="sub-text mb-0">Capture and track sustainability activity records for this farm.</p>
+</div>
+<div class="sustainability-overview">
+<span class="sustainability-stat-pill">
+<em class="icon ni ni-list-check mr-1"></em>{{ sustainabilityCount }} Record(s)
+</span>
+<span class="sustainability-stat-pill">
+<em class="icon ni ni-calendar mr-1"></em>{{ formattedLatestSustainabilityDate }}
+</span>
 </div>
 </div>
+
+<div class="sustainability-list">
+<div v-if="farmSustainabilityData.length === 0" class="sustainability-empty">
+<div class="sustainability-empty-icon"><em class="icon ni ni-leaf"></em></div>
+<strong>No sustainability data added yet.</strong>
+<p class="mb-0">Use the add data action to start documenting sustainability activity for this farm.</p>
+</div>
+<div v-else class="sustainability-grid">
+<div
+v-for="row in farmSustainabilityData"
+:key="row.id"
+class="sustainability-list-item"
+>
+<div class="sustainability-list-top">
+<span class="sustainability-activity-badge text-capitalize">
+<em class="icon ni ni-check-circle mr-1"></em>{{ row.activity || 'N/A' }}
+</span>
+<el-button type="danger" text class="sustainability-delete-btn" @click="destroySustainabilityData(row)">
+<em class="icon ni ni-trash"></em>
+</el-button>
+</div>
+<div class="sustainability-meta">
+<span class="sustainability-date">
+<em class="icon ni ni-calendar mr-1"></em>{{ formatSustainabilityDate(row.created_at) }}
+</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <div class="col-12 col-lg-4">
 <div class="card farm-owner-card h-100">
@@ -391,7 +368,7 @@ Save Data
   border-radius: 18px;
   border: 1px solid #e7edf5 !important;
   background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 
 .farm-topbar {
@@ -437,6 +414,7 @@ Save Data
   text-decoration: none;
 }
 
+.farm-map-card-shell,
 .farm-profile-card,
 .farm-owner-card {
   border-radius: 18px;
@@ -454,7 +432,7 @@ Save Data
 .details-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 8px;
 }
 
 .details-grid-single {
@@ -464,7 +442,7 @@ Save Data
 .detail-item {
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   border-radius: 14px;
-  padding: 14px;
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -491,7 +469,7 @@ Save Data
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px;
+  padding: 10px 12px;
   border: 1px solid #e7edf5;
   border-radius: 16px;
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
@@ -562,6 +540,19 @@ Save Data
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
+  margin-bottom: 10px;
+}
+
+.sustainability-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sustainability-overview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .sustainability-stats {
@@ -604,35 +595,90 @@ Save Data
   overflow: hidden;
 }
 
-.sustainability-table-wrap {
-  border: 1px solid #e5e9f2;
-  border-radius: 16px;
-  overflow: hidden;
-  background: #fff;
+.sustainability-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.sustainability-table-head {
+.sustainability-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sustainability-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 18px;
+  border: 1px dashed #dbe4f0;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+  color: #8094ae;
+  font-size: 13px;
+}
+
+.sustainability-empty strong {
+  color: #364a63;
+  font-size: 14px;
+}
+
+.sustainability-empty-icon {
   display: inline-flex;
   align-items: center;
-  color: #526484;
-  font-size: 12px;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #ecfdf3;
+  color: #166534;
+  font-size: 18px;
+}
+
+.sustainability-list-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid #e7edf5;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.sustainability-list-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px;
+  margin-bottom: 6px;
+  width: 100%;
 }
 
 .sustainability-activity-badge {
   display: inline-flex;
   align-items: center;
-  max-width: 100%;
+  max-width: none;
   border: 1px solid #e5e9f2;
-  border-radius: 999px;
-  padding: 2px 8px;
+  border-radius: 14px;
+  padding: 6px 10px;
   background: #f8fafc;
   color: #364a63;
   font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.sustainability-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .sustainability-value-chip {
@@ -653,15 +699,12 @@ Save Data
 .sustainability-date {
   color: #8094ae;
   font-size: 12px;
+  white-space: nowrap;
 }
 
 .sustainability-delete-btn {
-  padding: 0;
-  width: 36px;
-  height: 36px;
-  min-height: 36px;
-  border-radius: 8px;
-  font-size: 18px;
+  flex-shrink: 0;
+  align-self: start;
 }
 
 .sustainability-hint {
@@ -691,28 +734,14 @@ Save Data
   text-overflow: ellipsis;
 }
 
-:deep(.sustainability-table .el-table__header th) {
-  border-bottom: 1px solid #edf2f7;
-  padding-top: 6px;
-  padding-bottom: 6px;
-}
-
-:deep(.sustainability-table .el-table__row td) {
-  border-bottom: 1px solid #f1f3f7;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
-:deep(.sustainability-table .el-table__cell) {
-  font-size: 13px;
-}
-
-:deep(.sustainability-table .el-table__row:hover td) {
-  background: #fafcff;
-}
-
-:deep(.sustainability-table .el-table__inner-wrapper::before) {
-  height: 0;
+.sustainability-delete-btn {
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  border-radius: 8px;
+  font-size: 18px;
+  flex-shrink: 0;
 }
 
 :deep(.sustainability-modal .el-dialog) {
@@ -766,6 +795,24 @@ Save Data
   .sustainability-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .sustainability-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sustainability-list-top {
+    grid-template-columns: 1fr;
+  }
+
+  .sustainability-overview {
+    width: 100%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .sustainability-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 </style>

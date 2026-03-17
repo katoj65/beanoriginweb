@@ -11,8 +11,8 @@ class MapService
     {
         $lat = trim((string) $latitude);
         $lng = trim((string) $longitude);
-        $apiKey = (string) config('services.google_maps.key');
-        $zoom = (int) config('services.google_maps.zoom', 15);
+        $apiKey = (string) (config('services.google_maps.key') ?: env('GOOGLE_MAPS_API_KEY'));
+        $zoom = (int) (config('services.google_maps.zoom', env('GOOGLE_MAPS_DEFAULT_ZOOM', 15)));
         $fallbackUrl = 'https://www.google.com/maps/search/?api=1&query=' . urlencode($lat . ',' . $lng);
 
         if ($lat === '' || $lng === '') {
@@ -43,6 +43,9 @@ class MapService
             ];
         }
 
+        $embedUrl = $this->buildEmbedUrl($apiKey, $lat, $lng);
+        $staticMapUrl = $this->buildStaticMapUrl($apiKey, $lat, $lng, $zoom);
+
         try {
             $response = Http::acceptJson()
                 ->timeout(10)
@@ -58,19 +61,8 @@ class MapService
                 'address' => null,
                 'place_id' => null,
                 'google_maps_url' => $fallbackUrl,
-                'embed_url' => 'https://www.google.com/maps/embed/v1/view?' . http_build_query([
-                    'key' => $apiKey,
-                    'center' => $lat . ',' . $lng,
-                    'zoom' => $zoom,
-                ]),
-                'static_map_url' => 'https://maps.googleapis.com/maps/api/staticmap?' . http_build_query([
-                    'center' => $lat . ',' . $lng,
-                    'zoom' => $zoom,
-                    'size' => '1200x600',
-                    'maptype' => 'roadmap',
-                    'markers' => 'color:red|' . $lat . ',' . $lng,
-                    'key' => $apiKey,
-                ]),
+                'embed_url' => $embedUrl,
+                'static_map_url' => $staticMapUrl,
                 'raw' => null,
             ];
         }
@@ -88,20 +80,35 @@ class MapService
             'address' => data_get($firstResult, 'formatted_address'),
             'place_id' => data_get($firstResult, 'place_id'),
             'google_maps_url' => $fallbackUrl,
-            'embed_url' => 'https://www.google.com/maps/embed/v1/view?' . http_build_query([
-                'key' => $apiKey,
-                'center' => $lat . ',' . $lng,
-                'zoom' => $zoom,
-            ]),
-            'static_map_url' => 'https://maps.googleapis.com/maps/api/staticmap?' . http_build_query([
-                'center' => $lat . ',' . $lng,
-                'zoom' => $zoom,
-                'size' => '1200x600',
-                'maptype' => 'roadmap',
-                'markers' => 'color:red|' . $lat . ',' . $lng,
-                'key' => $apiKey,
-            ]),
+            'embed_url' => data_get($firstResult, 'place_id')
+                ? $this->buildEmbedUrl($apiKey, $lat, $lng, (string) data_get($firstResult, 'place_id'))
+                : $embedUrl,
+            'static_map_url' => $staticMapUrl,
             'raw' => $payload,
         ];
+    }
+
+    private function buildEmbedUrl(string $apiKey, string $lat, string $lng, ?string $placeId = null): string
+    {
+        $queryValue = $placeId ? 'place_id:' . $placeId : $lat . ',' . $lng;
+
+        $query = [
+            'key' => $apiKey,
+            'q' => $queryValue,
+        ];
+
+        return 'https://www.google.com/maps/embed/v1/place?' . http_build_query($query);
+    }
+
+    private function buildStaticMapUrl(string $apiKey, string $lat, string $lng, int $zoom): string
+    {
+        return 'https://maps.googleapis.com/maps/api/staticmap?' . http_build_query([
+            'center' => $lat . ',' . $lng,
+            'zoom' => $zoom,
+            'size' => '1200x600',
+            'maptype' => 'roadmap',
+            'markers' => 'color:red|' . $lat . ',' . $lng,
+            'key' => $apiKey,
+        ]);
     }
 }

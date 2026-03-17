@@ -22,7 +22,7 @@ primary_crop: '',
 });
 
 const submit = () => {
-form.post(route('farmer.store'));
+form.post(route('cooperative.farmers.store'));
 };
 
 const goBack = () => {

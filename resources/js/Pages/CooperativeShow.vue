@@ -160,7 +160,7 @@ router.get(route('cooperative.farms.create'));
 };
 
 const goCreateFarmer = () => {
-router.get(route('cooperative.farmers.create'));
+router.get(route('farmer.create'));
 };
 
 
@@ -171,10 +171,7 @@ router.get(route('cooperative.farmers.create'));
 
 <template>
 <cooperative-layout>
-<div class="nk-block">
-
-
-
+<div class="nk-block p-3">
 
 <div class="row g-gs">
 <div class="col-12 col-md-3" v-for="(t,key) in tabs" :key="key">

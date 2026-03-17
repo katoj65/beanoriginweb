@@ -74,7 +74,7 @@ class FarmerController extends Controller
             'status' => $validated['status'] ?? 'pending',
         ]);
         return redirect()
-            ->route('cooperative.farmers.show', $farmer->id)
+            ->route('farmer.show', $farmer->id)
             ->with('success', 'Farmer added successfully.');
     }
 

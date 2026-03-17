@@ -42,11 +42,18 @@ const form = useForm({
   longitude: props.longitude ?? '',
 });
 
-const coordinateSummary = computed(() => {
-  const lat = props.latitude ?? '';
-  const lng = props.longitude ?? '';
-  if (lat === '' || lat === null || lng === '' || lng === null) return 'No coordinates added yet';
-  return `${lat}, ${lng}`;
+const mapSubtitle = computed(() => {
+  if (hasCoordinates.value) {
+    return `Mapped location for ${props.farmName || 'this farm'}.`;
+  }
+
+  return 'Add latitude and longitude to pin this farm on the map.';
+});
+
+const farmTitle = computed(() => {
+  const value = String(props.farmName || 'Farm').trim();
+  if (!value) return 'Farm';
+  return value.charAt(0).toUpperCase() + value.slice(1);
 });
 
 const mapAddress = computed(() => {
@@ -57,28 +64,25 @@ const mapEmbedUrl = computed(() => {
   return props.mapData?.embed_url || null;
 });
 
-const mapStatusMessage = computed(() => {
-  return props.mapData?.message || null;
+const googleMapsUrl = computed(() => {
+  return props.mapData?.google_maps_url || null;
 });
 
-const coordinateNote = computed(() => {
-  if (hasCoordinates.value) {
-    return 'This map area is ready for farm location display and coordinate-based reference.';
-  }
-
-  return 'Add accurate latitude and longitude to prepare this section for farm map display.';
+const mapStatusMessage = computed(() => {
+  return props.mapData?.message || null;
 });
 
 const hasCoordinates = computed(() => {
   return !(props.latitude === '' || props.latitude === null || props.longitude === '' || props.longitude === null);
 });
 
-const latitudeLabel = computed(() => {
-  return props.latitude === '' || props.latitude === null ? 'Not added' : props.latitude;
+const locationSummary = computed(() => {
+  return props.location || 'Location not added yet';
 });
 
-const longitudeLabel = computed(() => {
-  return props.longitude === '' || props.longitude === null ? 'Not added' : props.longitude;
+const areaSummary = computed(() => {
+  if (props.areaAcres === '' || props.areaAcres === null) return 'Area not added';
+  return `${props.areaAcres} Acres`;
 });
 
 const openModal = () => {
@@ -131,24 +135,42 @@ const updateLocation = () => {
 
 <template>
   <div class="farm-map-card">
-    <div class="farm-map-main">
-      <div class="farm-map-intro">
-        <div class="farm-map-icon">
-          <em class="icon ni ni-map-pin-fill"></em>
-        </div>
-        <div class="farm-map-copy">
-          <div class="farm-map-heading">
-            <span class="farm-map-label">Farm Coordinates</span>
-            <span :class="['farm-map-status', { active: hasCoordinates }]">
-              {{ hasCoordinates ? 'Mapped' : 'Pending' }}
-            </span>
+    <div class="farm-map-head">
+      <div class="farm-map-copy">
+        <div class="farm-map-heading">
+          <div class="farm-map-icon">
+            <em class="icon ni ni-map-pin-fill"></em>
           </div>
-          <strong>{{ coordinateSummary }}</strong>
-          <p class="farm-map-description">{{ coordinateNote }}</p>
+          <div class="farm-map-heading-copy">
+            <span class="farm-map-label">{{ farmTitle }}</span>
+            <p class="farm-map-subtitle mb-0">{{ mapSubtitle }}</p>
+          </div>
+          <span :class="['farm-map-status', { active: hasCoordinates }]">
+            {{ hasCoordinates ? 'Mapped' : 'Pending' }}
+          </span>
         </div>
       </div>
+      <div class="farm-map-action">
+        <el-button type="primary" class="farm-map-open-btn" @click="openModal">
+          <em class="icon ni ni-map mr-1"></em>{{ latitude && longitude ? 'Update Map' : 'Add Map' }}
+        </el-button>
+      </div>
+    </div>
 
+    <div class="farm-map-main">
       <div class="farm-map-stage">
+        <div class="farm-map-stage-overlay">
+          <span class="farm-map-stage-badge"><em class="icon ni ni-map mr-1"></em>Live Map</span>
+        </div>
+        <a
+          v-if="googleMapsUrl"
+          :href="googleMapsUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="farm-map-stage-link"
+        >
+          <em class="icon ni ni-arrow-up-right mr-1"></em>Open in Google Maps
+        </a>
         <iframe
           v-if="mapEmbedUrl"
           :src="mapEmbedUrl"
@@ -169,18 +191,20 @@ const updateLocation = () => {
         </template>
       </div>
 
-      <div class="farm-map-values">
-        <span class="farm-map-chip"><em class="icon ni ni-navigation mr-1"></em>Lat: {{ latitudeLabel }}</span>
-        <span class="farm-map-chip"><em class="icon ni ni-navigation-fill mr-1"></em>Lng: {{ longitudeLabel }}</span>
-        <span class="farm-map-chip farm-map-address-chip"><em class="icon ni ni-building mr-1"></em>{{ mapAddress }}</span>
+      <div class="farm-map-summary">
+        <div class="farm-map-summary-card farm-map-summary-address">
+          <span class="farm-map-summary-label">Resolved Address</span>
+          <strong>{{ mapAddress }}</strong>
+        </div>
+        <div class="farm-map-summary-card">
+          <span class="farm-map-summary-label">Map Status</span>
+          <strong>{{ hasCoordinates ? 'Pinned and ready' : 'Awaiting coordinates' }}</strong>
+          <span class="farm-map-summary-text">
+            {{ hasCoordinates ? 'The current map is using the saved farm coordinates.' : 'Add latitude and longitude to display this farm on the map.' }}
+          </span>
+        </div>
+      
       </div>
-    </div>
-
-    <div class="farm-map-action">
-      <el-button type="primary" class="farm-map-open-btn" @click="openModal">
-        <em class="icon ni ni-map mr-1"></em>{{ latitude && longitude ? 'Update Map' : 'Add Map' }}
-      </el-button>
-      <span class="farm-map-action-text">Latitude and longitude are required.</span>
     </div>
   </div>
 
@@ -225,68 +249,82 @@ const updateLocation = () => {
 <style scoped>
 .farm-map-card {
   display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid #e5e9f2;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.05);
+}
+
+.farm-map-head {
+  display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 18px;
-  margin-top: 14px;
-  padding: 18px 20px;
-  border: 1px solid #e5e9f2;
-  border-radius: 16px;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+  gap: 14px;
 }
 
 .farm-map-main {
   display: flex;
-  flex: 1;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   min-width: 0;
-}
-
-.farm-map-intro {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
 }
 
 .farm-map-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: #eef6ff;
-  color: #1d4ed8;
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #eff6ff 0%, #eef2ff 100%);
+  color: #2563eb;
   font-size: 18px;
   flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px #dbeafe;
 }
 
 .farm-map-copy {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
 }
 
 .farm-map-heading {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 12px;
   flex-wrap: wrap;
+}
+
+.farm-map-heading-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
 .farm-map-label {
   color: #364a63;
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
   letter-spacing: 0.01em;
+}
+
+.farm-map-subtitle {
+  color: #8094ae;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .farm-map-status {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
+  padding: 6px 11px;
   border-radius: 999px;
   background: #fef3c7;
   color: #92400e;
@@ -299,39 +337,71 @@ const updateLocation = () => {
   color: #166534;
 }
 
-.farm-map-copy strong {
-  color: #364a63;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.farm-map-description {
-  margin: 0;
-  color: #6b7a90;
-  font-size: 13px;
-  line-height: 1.6;
-}
-
 .farm-map-stage {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  width: 100%;
   min-height: 160px;
-  padding: 18px;
   border: 1px solid #e5e9f2;
-  border-radius: 16px;
+  border-radius: 18px;
   background:
     linear-gradient(135deg, rgba(238, 246, 255, 0.9) 0%, rgba(251, 252, 254, 0.95) 100%);
   text-align: center;
+  overflow: hidden;
+}
+
+.farm-map-stage-overlay {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+}
+
+.farm-map-stage-link {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(219, 228, 240, 0.95);
+  color: #364a63;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+}
+
+.farm-map-stage-link:hover {
+  color: #1d4ed8;
+  text-decoration: none;
+}
+
+.farm-map-stage-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(219, 228, 240, 0.95);
+  color: #364a63;
+  font-size: 12px;
+  font-weight: 700;
+  backdrop-filter: blur(10px);
 }
 
 .farm-map-frame {
   width: 100%;
-  min-height: 320px;
+  min-height: 380px;
+  display: block;
   border: 0;
-  border-radius: 12px;
   background: #f8fafc;
 }
 
@@ -362,9 +432,47 @@ const updateLocation = () => {
   line-height: 1.7;
 }
 
+.farm-map-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.farm-map-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid #e5e9f2;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.farm-map-summary-label {
+  color: #8094ae;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.farm-map-summary-card strong {
+  color: #364a63;
+  font-size: 13px;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.farm-map-summary-text {
+  color: #8094ae;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
 .farm-map-values {
   display: flex;
   flex-wrap: wrap;
+  align-content: flex-start;
   gap: 8px;
 }
 
@@ -380,30 +488,18 @@ const updateLocation = () => {
   font-weight: 600;
 }
 
-.farm-map-address-chip {
-  max-width: 100%;
-  border-radius: 12px;
-  white-space: normal;
-}
-
 :deep(.farm-map-open-btn) {
   color: #fff;
-  min-width: 132px;
+  min-width: 144px;
+  min-height: 40px;
+  border-radius: 12px;
+  font-weight: 700;
 }
 
 .farm-map-action {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  justify-content: flex-end;
   gap: 8px;
-  min-width: 132px;
-}
-
-.farm-map-action-text {
-  color: #8094ae;
-  font-size: 11px;
-  line-height: 1.5;
-  text-align: right;
 }
 
 .farm-map-modal-copy {
@@ -464,26 +560,29 @@ const updateLocation = () => {
 }
 
 @media (max-width: 768px) {
-  .farm-map-card {
+  .farm-map-head {
+    width: 100%;
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .farm-map-intro {
-    width: 100%;
+  .farm-map-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .farm-map-stage-link {
+    top: auto;
+    right: 12px;
+    bottom: 12px;
   }
 
   .farm-map-action {
     width: 100%;
-    align-items: stretch;
+    justify-content: stretch;
   }
 
   :deep(.farm-map-open-btn) {
     width: 100%;
-  }
-
-  .farm-map-action-text {
-    text-align: left;
   }
 
   .farm-map-footer {

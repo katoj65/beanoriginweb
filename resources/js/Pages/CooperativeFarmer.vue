@@ -37,7 +37,7 @@ return [farmer.village, farmer.sub_county, farmer.district].filter(Boolean).join
 <h6 class="title mb-1">Registered Farmers</h6>
 <p class="sub-text mb-0">Farmers currently registered under your cooperative.</p>
 </div>
-<Link :href="route('cooperative.farmers.create')" class="btn btn-primary btn-sm">
+<Link :href="route('farmer.create')" class="btn btn-primary btn-sm">
 <em class="icon ni ni-plus mr-1"></em>
 Add Farmer
 </Link>

@@ -28,8 +28,6 @@ return Inertia::render('IndexPage', [
 'marketBoard'=>HomeController::priceIndex(),
 'batchListed'=>HomeController::batchesListed(),
 
-
-
 ]);
 
 
@@ -185,10 +183,16 @@ include_once('market.php');
 
 //farmer prefix
 Route::middleware(['auth'])->prefix('farmer')->name('farmer.')->group(function () {
+Route::middleware(['role:cooperative'])->group(function () {
+Route::get('/create', [FarmerController::class, 'create'])->name('create');
+Route::post('/', [FarmerController::class, 'store'])->name('store');
+Route::get('/{id}', [FarmerController::class, 'show'])->whereNumber('id')->name('show');
+});
 Route::get('/{id}/update', [FarmerController::class, 'farmerUpdatePage'])->whereNumber('id')->name('update.page');
 Route::put('/{id}', [FarmerController::class, 'update'])->whereNumber('id')->name('update');
 Route::get('/farm/{id}/update', [FarmController::class, 'farmUpdatePage'])->whereNumber('id')->name('farms.update.page');
 Route::put('/farm/{id}', [FarmController::class, 'update'])->whereNumber('id')->name('farms.update');
+Route::put('/farm/{id}/location', [FarmController::class, 'updateLocation'])->whereNumber('id')->name('farms.location.update');
 Route::post('/farm/{id}/sustainability-data', [FarmController::class, 'storeFarmSustainabilityData'])->whereNumber('id')->name('farms.sustainability.store');
 Route::delete('/farm/{id}/sustainability-data/{sustainabilityId}', [FarmController::class, 'destroySustainabilityData'])->whereNumber('id')->whereNumber('sustainabilityId')->name('farms.sustainability.destroy');
 Route::delete('/farm/{id}', [FarmController::class, 'destroy'])->whereNumber('id')->name('farms.destroy');

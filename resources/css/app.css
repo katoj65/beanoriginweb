@@ -54,6 +54,10 @@ body {
   background: #f4f6f9;
 }
 
+.font-large {
+  font-size: larger;
+}
+
 /* Theme default: remove horizontal padding from .container everywhere */
 .container {
   --bs-gutter-x: calc(var(--app-container-padding-x) * 2) !important;

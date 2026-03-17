@@ -1,1379 +1,1450 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import heroImage from '../../images/testpage-hero.webp';
 
-const currentYear = new Date().getFullYear();
-const billingCycle = ref('monthly');
-const activeFaq = ref('0');
-
-const marketRows = [
-    { commodity: 'Arabica AA', region: 'Kilimanjaro', volume: '42 MT', bid: '$3.39/kg', ask: '$3.46/kg', spread: '2.1%' },
-    { commodity: 'Cocoa Grade 1', region: 'Ashanti', volume: '30 MT', bid: '$4.80/kg', ask: '$4.92/kg', spread: '2.4%' },
-    { commodity: 'Sesame Premium', region: 'Dodoma', volume: '18 MT', bid: '$1.70/kg', ask: '$1.76/kg', spread: '3.4%' },
-    { commodity: 'Robusta FAQ', region: 'Bukoba', volume: '27 MT', bid: '$2.68/kg', ask: '$2.74/kg', spread: '2.2%' },
-];
-
-const metrics = [
-    { label: 'Active Buyers', value: '1,850+' },
-    { label: 'Listed Lots', value: '9,200+' },
-    { label: 'Monthly Volume', value: '48,000 MT' },
-    { label: 'Avg Settlement', value: 'T+2 Days' },
-];
-
-const partners = [
-    'Atlas Roasters',
-    'Greenline Commodities',
-    'Harvest Guild',
-    'Northstar Foods',
-    'Horizon Export',
-    'Summit Trading',
-];
-
-const features = [
+const challengeCards = [
     {
-        title: 'Verified Counterparties',
-        text: 'Every cooperative, supplier, and buyer is screened before they can trade.',
-        icon: 'bi-shield-check',
+        title: 'Limited Visibility',
+        copy: 'Buyers cannot easily verify where coffee comes from or confirm sustainable practices on the ground.',
     },
     {
-        title: 'Live Price Discovery',
-        text: 'Monitor bid and ask movement in real time across commodity categories.',
-        icon: 'bi-graph-up-arrow',
+        title: 'Fragmented Records',
+        copy: "Paper-based systems create disconnected information that's difficult to access or validate across the supply chain.",
     },
     {
-        title: 'Digital Contracts',
-        text: 'Generate and sign trade contracts with clear terms and milestone tracking.',
-        icon: 'bi-file-earmark-text',
+        title: 'Weak Trust',
+        copy: 'Without transparent data, market actors struggle to build confidence in sourcing claims and quality promises.',
     },
     {
-        title: 'Settlement Workflows',
-        text: 'Track payment, delivery, and completion steps from one dashboard.',
-        icon: 'bi-check2-circle',
-    },
-    {
-        title: 'Quality Metadata',
-        text: 'Store grade, moisture, origin, and process details on each lot.',
-        icon: 'bi-award',
-    },
-    {
-        title: 'Audit Trail',
-        text: 'All status updates are recorded for transparent reporting and compliance.',
-        icon: 'bi-journal-check',
+        title: 'Market Barriers',
+        copy: 'Small producers and cooperatives lack the tools to prove value and access premium buyers willing to pay more.',
     },
 ];
 
-const steps = [
+const infrastructureFeatures = [
     {
-        title: 'List Commodity Lots',
-        text: 'Publish quantity, grade, location, and reserve terms with document attachments.',
+        title: 'Verified Origins',
+        copy: 'Every coffee batch includes verifiable information about farm location, producer details, and harvest practices.',
     },
     {
-        title: 'Receive and Negotiate',
-        text: 'Buyers compare lots and negotiate through structured offer threads.',
+        title: 'Connected Network',
+        copy: 'Farmers, cooperatives, exporters, and buyers access the same trusted data in one unified platform.',
     },
     {
-        title: 'Confirm Contracts',
-        text: 'Lock final pricing, payment conditions, and delivery milestones.',
-    },
-    {
-        title: 'Settle and Close',
-        text: 'Track fulfillment and close trades with immutable transaction history.',
+        title: 'Market Access',
+        copy: 'Producers gain visibility with premium buyers actively seeking responsibly sourced coffee.',
     },
 ];
 
-const plans = [
+const processFlow = [
+    { title: 'Register', copy: 'Farmers add origin details' },
+    { title: 'Record', copy: 'Harvest and processing logged' },
+    { title: 'Batch', copy: 'Organize lots with quality data' },
+    { title: 'Source', copy: 'Buyers discover verified coffee' },
+];
+
+const processDetails = [
     {
-        name: 'Starter',
-        monthly: '$0',
-        annual: '$0',
-        note: 'For small cooperatives',
-        points: ['Up to 20 monthly lots', 'Basic market dashboard', 'Email support'],
-        featured: false,
+        title: 'Register & Record',
+        copy: 'Farmers and cooperatives create profiles and document coffee origin, farming practices, and initial quality assessments.',
     },
     {
-        name: 'Growth',
-        monthly: '$149',
-        annual: '$129',
-        note: 'For active trading teams',
-        points: ['Unlimited listings', 'Counteroffer workflows', 'Contract templates'],
-        featured: true,
+        title: 'Document Processing',
+        copy: 'Harvest dates, milling methods, fermentation processes, and quality scores are added to each batch record.',
     },
     {
-        name: 'Enterprise',
-        monthly: 'Custom',
-        annual: 'Custom',
-        note: 'For regional exchanges',
-        points: ['Dedicated onboarding', 'Custom settlement stages', 'Priority SLA support'],
-        featured: false,
+        title: 'Batch Organization',
+        copy: 'Coffee is grouped into traceable batches with complete production history, certifications, and lab results visible.',
+    },
+    {
+        title: 'Discover & Trade',
+        copy: 'Buyers search for specific origins, qualities, and ethical attributes, sourcing directly with verified information.',
     },
 ];
 
-const displayPlans = computed(() =>
-    plans.map((plan) => {
-        const isEnterprise = plan.monthly === 'Custom';
-
-        return {
-            ...plan,
-            price: billingCycle.value === 'annual' ? plan.annual : plan.monthly,
-            period: isEnterprise ? '' : billingCycle.value === 'annual' ? '/month, billed annually' : '/month',
-        };
-    }),
-);
-
-const testimonials = [
+const platformFeatures = [
     {
-        name: 'Amina J.',
-        role: 'Export Lead, Umoja Coop',
-        quote: 'We moved from spreadsheet chaos to clean lot-level execution in under two weeks.',
+        title: 'Coffee Batch Traceability',
+        copy: 'Every batch includes GPS coordinates, farm details, and complete journey from harvest to export with timestamped records.',
+        icon: 'geo-alt',
     },
     {
-        name: 'Daniel R.',
-        role: 'Procurement Manager, Gulf Roasters',
-        quote: 'The live board and clear contract milestones drastically reduced back-and-forth.',
+        title: 'Origin & Producer Visibility',
+        copy: 'Farmers and cooperatives create profiles showcasing their practices, certifications, and unique value propositions to buyers.',
+        icon: 'eyeglasses',
     },
     {
-        name: 'Susan K.',
-        role: 'Operations Director, TraceBean',
-        quote: 'Traceability and settlement visibility gave our compliance team exactly what it needed.',
-    },
-];
-
-const faqs = [
-    {
-        q: 'Who can list commodities?',
-        a: 'Approved cooperatives and verified suppliers can create and manage lots.',
+        title: 'Quality & Sourcing Records',
+        copy: 'Cupping scores, lab analyses, moisture content, and grading data are stored digitally for easy reference and comparison.',
+        icon: 'clipboard2-check',
     },
     {
-        q: 'Can buyers compare multiple listings?',
-        a: 'Yes. Buyers can compare grade, quantity, price, and origin side by side.',
+        title: 'Exchange Marketplace',
+        copy: 'Buyers and sellers connect directly through a trusted platform with transparent pricing, availability, and negotiation tools.',
+        icon: 'handshake',
     },
     {
-        q: 'Does the platform support contracts and milestones?',
-        a: 'Yes. Contract terms and milestone checkpoints are tracked in each trade lifecycle.',
+        title: 'Ethical Sourcing Support',
+        copy: 'Certifications, sustainability claims, and social impact metrics are verified and displayed to support responsible buying decisions.',
+        icon: 'leaf',
     },
     {
-        q: 'Which commodities are supported?',
-        a: 'Coffee, cocoa, sesame, and multiple staple/export crops are supported by default.',
+        title: 'Transparent Supply Chain',
+        copy: 'Real-time updates on coffee movement, storage conditions, and ownership transfers build confidence at every stage.',
+        icon: 'cup-straw',
     },
 ];
 
-const faqTopics = ['Accounts', 'Trading', 'Contracts', 'Settlement', 'Compliance'];
+const whyItems = [
+    {
+        title: 'Builds Buyer Confidence',
+        copy: 'Verified data eliminates guesswork and supports informed purchasing decisions with reduced risk.',
+    },
+    {
+        title: 'Encourages Fairer Participation',
+        copy: 'Transparent pricing and access levels the playing field for small producers competing in global markets.',
+    },
+    {
+        title: 'Rewards Transparency',
+        copy: 'Producers who invest in quality and sustainability practices receive recognition and premium pricing opportunities.',
+    },
+    {
+        title: 'Strengthens Communities',
+        copy: 'Direct relationships between buyers and farmers support long-term partnerships and community investment.',
+    },
+];
 
-const supportChannels = [
-    { title: 'Live Chat', detail: 'Avg response: < 5 min', icon: 'bi-chat-dots' },
-    { title: 'Help Center', detail: 'Guides and onboarding docs', icon: 'bi-life-preserver' },
-    { title: 'Email Support', detail: 'support@tradeharbor.com', icon: 'bi-envelope' },
+const impactStats = [
+    {
+        value: '3X',
+        title: 'Producer Visibility',
+        copy: 'Farmers reach three times more potential buyers through platform discovery tools and marketplace exposure.',
+    },
+    {
+        value: '25%',
+        title: 'Faster Transactions',
+        copy: 'Digitized records and transparent pricing reduce negotiation time and accelerate coffee sales cycles.',
+    },
+    {
+        value: '85%',
+        title: 'Data Accuracy',
+        copy: 'Digital documentation eliminates manual errors and provides reliable information for quality assurance.',
+    },
+];
+
+const impactOutcomes = [
+    {
+        title: 'More Visibility for Farmers',
+        copy: 'Smallholders and cooperatives gain profiles that showcase their unique coffee and sustainable practices to global buyers.',
+    },
+    {
+        title: 'Stronger Value Chain Trust',
+        copy: 'Shared access to verifiable data builds confidence between all market actors and reduces disputes over quality or origin.',
+    },
+    {
+        title: 'Better Sourcing Decisions',
+        copy: 'Buyers identify responsibly sourced coffee faster and with greater confidence in ethical claims and quality consistency.',
+    },
+];
+
+const roadmap = [
+    {
+        label: 'Today',
+        copy: 'Platform connects farmers, cooperatives, exporters, and buyers with verified coffee data and transparent pricing.',
+    },
+    {
+        label: 'Next Phase',
+        copy: 'Expand coverage across African coffee regions, integrate payment systems, and support traceability from farm to roaster.',
+    },
+    {
+        label: 'Long-term Vision',
+        copy: 'Establish Bean Origin as the global standard for ethical coffee sourcing with immutable records and AI-powered matching.',
+    },
+];
+
+const userGroups = [
+    {
+        title: 'Farmers & Cooperatives',
+        copy: 'Smallholders and farming groups gain visibility, prove quality, and access premium buyers willing to pay more for responsibly sourced coffee.',
+    },
+    {
+        title: 'Exporters',
+        copy: 'Export companies streamline documentation, verify batch origins, and match supply with buyer demand efficiently through the marketplace.',
+    },
+    {
+        title: 'Roasters & Buyers',
+        copy: 'Roasters and retailers identify verified coffee sources, confirm ethical claims, and build direct relationships with producers they trust.',
+    },
+    {
+        title: 'Partners & Investors',
+        copy: 'Sustainability partners, development agencies, and investors support transparent trade that delivers measurable social and environmental impact.',
+    },
+];
+
+const ctaCards = [
+    {
+        title: 'Source Ethical Coffee',
+        copy: 'Find verified, traceable coffee from farms and cooperatives committed to quality and sustainability.',
+    },
+    {
+        title: 'Gain Market Access',
+        copy: 'Showcase your coffee to buyers actively seeking responsibly sourced beans from your region.',
+    },
+    {
+        title: 'Partner With Us',
+        copy: 'Collaborate on development initiatives, technology integration, or regional expansion programs.',
+    },
 ];
 </script>
 
 <template>
-    <div class="modern-exchange">
-        <header class="site-nav">
-            <div class="container">
-                <nav class="navbar navbar-expand-lg py-3">
-                    <Link class="navbar-brand brandmark" href="/">
-                        <img src="../../images/logo.png" alt="Commodity Origin logo" class="brand-logo" />
-                        <span class="brand-title">Commodity Origin</span>
-                    </Link>
-                    <div class="header-right">
-                        <div class="header-auth">
-                            <Link href="/login" class="header-auth-link">Login</Link>
-                            <Link href="/register" class="header-auth-link register-link">Register</Link>
-                        </div>
-                        <button
-                            class="navbar-toggler ms-2"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#modernNav"
-                            aria-controls="modernNav"
-                            aria-expanded="false"
-                            aria-label="Toggle navigation"
-                        >
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                    </div>
-                    <div id="modernNav" class="collapse navbar-collapse">
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item"><a class="nav-link" href="#markets">Markets</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
-                        </ul>
-                    </div>
-                </nav>
-            </div>
-        </header>
+    <main class="coffee-deck">
+        <section class="slide slide-cover">
+            <div class="cover-copy">
+                <h1>Ethical Coffee Sourcing, Powered by Transparency</h1>
+                <p class="cover-lead">
+                    Bean Origin connects farmers, cooperatives, exporters, and buyers through a trusted digital exchange
+                    built for traceability, accountability, and better market access.
+                </p>
 
-        <section class="hero-section">
-            <div class="container">
-                <div class="row align-items-center g-4">
-                    <div class="col-lg-6">
-                        <div class="hero-copy reveal">
-                            <p class="hero-kicker">Modern Commodity Exchange</p>
-                            <h1 class="hero-focus-title">Trade Agricultural Commodities With Speed and Trust</h1>
-                            <p class="hero-lead">
-                                A modern digital marketplace for cooperatives, suppliers, and buyers to list lots, negotiate
-                                prices, and settle trades with full transparency.
-                            </p>
-                            <div class="d-flex flex-wrap gap-2 mt-4">
-                                <Link href="/register" class="btn btn-brand btn-lg">Start Trading</Link>
-                                <a href="#markets" class="btn btn-soft btn-lg">View Live Markets</a>
-                            </div>
+                <div class="button-row">
+                    <Link href="/register" class="btn-main">Source Coffee</Link>
+                    <a href="#challenge" class="btn-outline">Request Demo</a>
+                    <a href="#cta" class="btn-outline">Partner With Us</a>
+                </div>
+            </div>
+
+            <div class="cover-media">
+                <img :src="heroImage" alt="Coffee producer holding a tablet" class="cover-image" />
+            </div>
+        </section>
+
+        <section id="challenge" class="slide slide-green slide-challenge">
+            <h2>The Coffee Sourcing Challenge</h2>
+            <p class="section-lead challenge-lead">
+                The coffee industry faces critical transparency gaps that limit trust and market access. Without verifiable
+                records, buyers struggle to confirm ethical claims while producers lack visibility into premium markets.
+            </p>
+
+            <div class="challenge-grid">
+                <article v-for="item in challengeCards" :key="item.title" class="challenge-card">
+                    <h3>{{ item.title }}</h3>
+                    <p>{{ item.copy }}</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="slide slide-green slide-infrastructure">
+            <h2>Building the Digital Infrastructure for Ethical Trade</h2>
+            <p class="section-lead">
+                Bean Origin is a coffee exchange built specifically for ethical sourcing. We digitize coffee batch records and
+                link them to a transparent system, making supply chains more accountable and efficient.
+            </p>
+
+            <div class="infrastructure-grid">
+                <div class="infra-illustration-panel">
+                    <div class="desk-illustration">
+                        <div class="desk-screen">
+                            <div class="desk-note note-a"></div>
+                            <div class="desk-note note-b"></div>
+                            <div class="desk-line line-a"></div>
+                            <div class="desk-line line-b"></div>
+                            <div class="desk-line line-c"></div>
+                        </div>
+                        <div class="desk-base"></div>
+                        <div class="desk-cup"></div>
+                        <div class="desk-plant">
+                            <span></span>
+                            <span></span>
+                            <span></span>
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="card hero-panel reveal delay-1">
-                            <div class="card-body p-4">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h5 class="mb-0">Live Market Board</h5>
-                                    <span class="badge badge-live">Live</span>
-                                </div>
-                                <div class="table-responsive">
-                                    <table class="table align-middle mb-0 market-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Commodity</th>
-                                                <th>Bid</th>
-                                                <th>Ask</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-for="row in marketRows.slice(0, 3)" :key="row.commodity">
-                                                <td>
-                                                    <strong class="d-block">{{ row.commodity }}</strong>
-                                                    <small class="text-muted">{{ row.region }}</small>
-                                                </td>
-                                                <td>{{ row.bid }}</td>
-                                                <td>{{ row.ask }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="row g-2 mt-2">
-                                    <div v-for="metric in metrics.slice(0, 2)" :key="metric.label" class="col-6">
-                                        <div class="metric-box">
-                                            <small>{{ metric.label }}</small>
-                                            <strong>{{ metric.value }}</strong>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                </div>
+
+                <div class="infra-feature-list">
+                    <article v-for="item in infrastructureFeatures" :key="item.title" class="infra-feature">
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.copy }}</p>
+                    </article>
                 </div>
             </div>
         </section>
 
-        <section class="ticker-section">
-            <div class="container">
-                <div class="ticker-shell">
-                    <div class="ticker-track">
-                        <span v-for="(row, index) in [...marketRows, ...marketRows]" :key="`${row.commodity}-${index}`">
-                            {{ row.commodity }} · {{ row.region }} · Bid {{ row.bid }} · Ask {{ row.ask }}
-                        </span>
-                    </div>
+        <section class="slide slide-white slide-how">
+            <h2>How Bean Origin Works</h2>
+            <p class="section-lead">
+                From farm to buyer, every step is documented and accessible. This simple flow transforms coffee sourcing into a
+                transparent, trustworthy process.
+            </p>
+
+            <div class="process-flow">
+                <svg class="process-wave" viewBox="0 0 1560 360" aria-hidden="true">
+                    <defs>
+                        <marker id="process-arrow" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+                            <path d="M0,0 L14,7 L0,14" fill="none" stroke="#5e667b" stroke-width="1.8" />
+                        </marker>
+                    </defs>
+                    <circle cx="42" cy="210" r="16" fill="#495062" />
+                    <path d="M58 210 H168" fill="none" stroke="#5e667b" stroke-width="6" stroke-linecap="round" />
+                    <path
+                        d="M168 210 C168 38 486 38 486 210"
+                        fill="none"
+                        stroke="#5e667b"
+                        stroke-width="6"
+                        stroke-linecap="round"
+                        marker-end="url(#process-arrow)"
+                    />
+                    <path
+                        d="M486 210 C486 350 804 350 804 210"
+                        fill="none"
+                        stroke="#61697f"
+                        stroke-width="6"
+                        stroke-linecap="round"
+                        marker-end="url(#process-arrow)"
+                    />
+                    <path
+                        d="M804 210 C804 54 1122 54 1122 210"
+                        fill="none"
+                        stroke="#697187"
+                        stroke-width="6"
+                        stroke-linecap="round"
+                        marker-end="url(#process-arrow)"
+                    />
+                    <path
+                        d="M1122 210 C1122 346 1440 346 1440 210"
+                        fill="none"
+                        stroke="#727b92"
+                        stroke-width="6"
+                        stroke-linecap="round"
+                    />
+                    <path
+                        d="M1440 210 H1532"
+                        fill="none"
+                        stroke="#727b92"
+                        stroke-width="6"
+                        stroke-linecap="round"
+                        marker-end="url(#process-arrow)"
+                    />
+                </svg>
+
+                <div class="process-steps">
+                    <article v-for="(item, index) in processFlow" :key="item.title" :class="['process-step', `step-${index}`]">
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.copy }}</p>
+                    </article>
                 </div>
             </div>
-        </section>
 
-        <section class="partners-section">
-            <div class="container">
-                <p class="partners-label">Trusted by cooperatives, exporters, and procurement teams</p>
-                <div class="partners-grid">
-                    <span v-for="partner in partners" :key="partner" class="partner-pill">{{ partner }}</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="metrics-section">
-            <div class="container">
-                <div class="row g-3">
-                    <div v-for="metric in metrics" :key="metric.label" class="col-6 col-lg-3">
-                        <div class="metric-card reveal">
-                            <p>{{ metric.label }}</p>
-                            <h3>{{ metric.value }}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="markets" class="section-block">
-            <div class="container">
-                <div class="section-head reveal">
-                    <p class="eyebrow">Markets</p>
-                    <h2>Active Lots and Price Discovery</h2>
-                    <p>Track live bids, asks, and spread movement across high-demand commodities.</p>
-                </div>
-                <div class="card glass-card reveal delay-1">
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Commodity</th>
-                                        <th>Region</th>
-                                        <th>Volume</th>
-                                        <th>Best Bid</th>
-                                        <th>Best Ask</th>
-                                        <th>Spread</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="row in marketRows" :key="row.commodity + row.region">
-                                        <td><strong>{{ row.commodity }}</strong></td>
-                                        <td>{{ row.region }}</td>
-                                        <td>{{ row.volume }}</td>
-                                        <td>{{ row.bid }}</td>
-                                        <td>{{ row.ask }}</td>
-                                        <td><span class="spread-pill">{{ row.spread }}</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="features" class="section-block alt-block">
-            <div class="container">
-                <div class="section-head reveal">
-                    <p class="eyebrow">Platform Features</p>
-                    <h2>Everything Needed to Run Modern Trade Operations</h2>
-                    <p>From listing and negotiation to contract execution and settlement visibility.</p>
-                </div>
-                <div class="row g-3">
-                    <div v-for="item in features" :key="item.title" class="col-md-6 col-xl-4">
-                        <article class="feature-card reveal">
-                            <div class="icon-wrap">
-                                <i :class="['bi', item.icon]"></i>
-                            </div>
-                            <h5>{{ item.title }}</h5>
-                            <p>{{ item.text }}</p>
-                        </article>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section-block">
-            <div class="container">
-                <div class="row g-4 align-items-start">
-                    <div class="col-lg-6">
-                        <div class="section-head reveal">
-                            <p class="eyebrow">How It Works</p>
-                            <h2>From Listing to Settlement in Four Steps</h2>
-                        </div>
-                        <div class="timeline">
-                            <article v-for="(step, idx) in steps" :key="step.title" class="timeline-step reveal">
-                                <span class="step-badge">{{ idx + 1 }}</span>
-                                <div>
-                                    <h5>{{ step.title }}</h5>
-                                    <p>{{ step.text }}</p>
-                                </div>
-                            </article>
-                        </div>
-                    </div>
-                    <div id="pricing" class="col-lg-6">
-                        <div class="section-head reveal">
-                            <p class="eyebrow">Pricing</p>
-                            <h2>Plans for Every Trading Team</h2>
-                            <div class="billing-toggle" role="group" aria-label="Billing cycle toggle">
-                                <button
-                                    type="button"
-                                    class="toggle-btn"
-                                    :class="{ active: billingCycle === 'monthly' }"
-                                    @click="billingCycle = 'monthly'"
-                                >
-                                    Monthly
-                                </button>
-                                <button
-                                    type="button"
-                                    class="toggle-btn"
-                                    :class="{ active: billingCycle === 'annual' }"
-                                    @click="billingCycle = 'annual'"
-                                >
-                                    Annual <span>Save 13%</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="row g-3">
-                            <div v-for="plan in displayPlans" :key="plan.name" class="col-md-6 col-xl-4 col-lg-12">
-                                <article :class="['plan-card reveal', { featured: plan.featured }]">
-                                    <span v-if="plan.featured" class="featured-tag">Most Popular</span>
-                                    <h5>{{ plan.name }}</h5>
-                                    <div class="price-line">
-                                        <span class="price">{{ plan.price }}</span>
-                                        <span class="period">{{ plan.period }}</span>
-                                    </div>
-                                    <p class="plan-note">{{ plan.note }}</p>
-                                    <ul class="plan-list">
-                                        <li v-for="point in plan.points" :key="point">{{ point }}</li>
-                                    </ul>
-                                    <button class="btn btn-sm w-100" :class="plan.featured ? 'btn-brand' : 'btn-soft'">
-                                        Choose Plan
-                                    </button>
-                                </article>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section-block alt-block">
-            <div class="container">
-                <div class="section-head reveal">
-                    <p class="eyebrow">Testimonials</p>
-                    <h2>Trusted by Cooperative and Procurement Teams</h2>
-                </div>
-                <div class="row g-3">
-                    <div v-for="quote in testimonials" :key="quote.name" class="col-lg-4">
-                        <article class="testimonial-card reveal">
-                            <p>"{{ quote.quote }}"</p>
-                            <strong>{{ quote.name }}</strong>
-                            <small>{{ quote.role }}</small>
-                        </article>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="faq" class="section-block">
-            <div class="container">
-                <div class="section-head reveal">
-                    <p class="eyebrow">FAQ</p>
-                    <h2>Common Questions</h2>
-                    <p>Answers to the most common onboarding, trading, and settlement questions.</p>
-                </div>
-                <div class="row g-4 faq-layout">
-                    <div class="col-lg-8">
-                        <div class="faq-topic-list reveal">
-                            <span v-for="topic in faqTopics" :key="topic" class="faq-topic-pill">{{ topic }}</span>
-                        </div>
-                        <el-collapse v-model="activeFaq" accordion class="custom-accordion reveal">
-                            <el-collapse-item
-                                v-for="(item, index) in faqs"
-                                :key="item.q"
-                                :name="String(index)"
-                                class="faq-collapse-item"
-                            >
-                                <template #title>
-                                    <span class="faq-item-title">
-                                        <span class="faq-index">Q{{ index + 1 }}</span>
-                                        <span>{{ item.q }}</span>
-                                    </span>
-                                </template>
-                                <div class="faq-answer">
-                                    {{ item.a }}
-                                </div>
-                            </el-collapse-item>
-                        </el-collapse>
-                    </div>
-                    <div class="col-lg-4">
-                        <aside class="faq-help-card reveal delay-1">
-                            <p class="help-kicker">Need more help?</p>
-                            <h4>Talk to our support team</h4>
-                            <p class="help-copy">Get tailored guidance for setup, compliance, and trade operations.</p>
-                            <div class="help-list">
-                                <article v-for="channel in supportChannels" :key="channel.title" class="help-item">
-                                    <div class="help-icon"><i :class="['bi', channel.icon]"></i></div>
-                                    <div>
-                                        <strong>{{ channel.title }}</strong>
-                                        <small>{{ channel.detail }}</small>
-                                    </div>
-                                </article>
-                            </div>
-                            <Link href="/register" class="btn btn-brand w-100 mt-2">Contact Support</Link>
-                        </aside>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="final-cta">
-            <div class="container">
-                <div class="cta-box reveal">
+            <div class="detail-grid">
+                <article v-for="item in processDetails" :key="item.title" class="detail-item">
+                    <div class="detail-icon"><i class="bi bi-bag-check"></i></div>
                     <div>
-                        <p class="eyebrow mb-2">Ready to Trade Better?</p>
-                        <h2>Launch Your Commodity Marketplace Workflow Today</h2>
-                        <p>Onboard teams, list verified lots, and execute contracts with confidence.</p>
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.copy }}</p>
                     </div>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <Link href="/register" class="btn btn-brand btn-lg">Create Account</Link>
-                        <Link href="/login" class="btn btn-outline-brand btn-lg">Sign In</Link>
-                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="slide slide-white slide-features">
+            <h2>Key Platform Features</h2>
+
+            <div class="feature-grid">
+                <article v-for="item in platformFeatures" :key="item.title" class="feature-item">
+                    <div class="feature-icon"><i :class="`bi bi-${item.icon}`"></i></div>
+                    <h3>{{ item.title }}</h3>
+                    <p>{{ item.copy }}</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="slide slide-white slide-why">
+            <div class="why-art">
+                <svg viewBox="0 0 520 980" class="branch-svg" aria-hidden="true">
+                    <g fill="none" stroke="#676f86" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M164 950 C176 830 192 720 240 598 C294 460 312 330 298 204" />
+                        <path d="M0 248 C70 232 120 236 166 276 C208 312 234 352 250 420" />
+                        <path d="M214 518 C272 470 334 446 410 462 C458 474 490 500 520 548" />
+                        <path d="M248 760 C314 720 376 706 468 730" />
+                        <path d="M118 920 C92 896 72 866 58 832" />
+                        <path d="M114 286 C132 230 170 186 224 156" />
+                        <path d="M286 246 C334 216 376 206 430 214" />
+                        <path d="M320 572 C352 530 392 512 446 512" />
+                        <path d="M372 840 C400 812 432 794 470 788" />
+                        <path d="M32 240 C18 206 6 188 -18 170" />
+                        <ellipse cx="92" cy="238" rx="22" ry="42" />
+                        <ellipse cx="184" cy="194" rx="24" ry="52" />
+                        <ellipse cx="258" cy="148" rx="26" ry="54" />
+                        <ellipse cx="358" cy="220" rx="26" ry="50" />
+                        <ellipse cx="438" cy="234" rx="24" ry="44" />
+                        <ellipse cx="362" cy="500" rx="24" ry="44" />
+                        <ellipse cx="460" cy="500" rx="22" ry="40" />
+                        <ellipse cx="384" cy="806" rx="22" ry="40" />
+                        <ellipse cx="40" cy="826" rx="22" ry="42" />
+                        <ellipse cx="316" cy="564" rx="18" ry="28" />
+                        <ellipse cx="292" cy="584" rx="18" ry="30" />
+                        <ellipse cx="334" cy="592" rx="18" ry="30" />
+                    </g>
+                </svg>
+            </div>
+
+            <div class="why-copy">
+                <h2>Why Ethical Sourcing Matters</h2>
+                <p class="section-lead">
+                    Ethical sourcing transforms the coffee economy from transactional to relational. When producers are
+                    recognized for quality and sustainability, everyone benefits.
+                </p>
+
+                <div class="why-list">
+                    <article v-for="item in whyItems" :key="item.title" class="why-item">
+                        <div class="why-marker"></div>
+                        <div>
+                            <h3>{{ item.title }}</h3>
+                            <p>{{ item.copy }}</p>
+                        </div>
+                    </article>
                 </div>
             </div>
         </section>
 
-        <footer class="site-footer">
-            <div class="container py-4 d-flex flex-column flex-lg-row justify-content-between gap-2">
-                <p class="mb-0">© {{ currentYear }} Commodity Origin. All rights reserved.</p>
-                <div class="d-flex gap-3">
-                    <a href="#">Privacy</a>
-                    <a href="#">Terms</a>
-                    <a href="#">Support</a>
+        <section class="slide slide-white slide-impact">
+            <h2>Measurable Impact</h2>
+            <p class="section-lead">
+                Bean Origin creates tangible value across the coffee value chain, from increased visibility for producers to
+                better decision-making for buyers.
+            </p>
+
+            <div class="impact-stats">
+                <article v-for="item in impactStats" :key="item.title" class="impact-stat">
+                    <div class="impact-value">{{ item.value }}</div>
+                    <h3>{{ item.title }}</h3>
+                    <p>{{ item.copy }}</p>
+                </article>
+            </div>
+
+            <div class="impact-line">
+                <div class="impact-dot"></div>
+                <div class="impact-dot"></div>
+                <div class="impact-dot"></div>
+            </div>
+
+            <div class="impact-notes">
+                <article v-for="item in impactOutcomes" :key="item.title" class="impact-note">
+                    <h3>{{ item.title }}</h3>
+                    <p>{{ item.copy }}</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="slide slide-white slide-future">
+            <h2>The Future of Coffee Trade</h2>
+
+            <div class="future-quote">
+                "Bean Origin is building the future of ethical coffee trade by creating digital infrastructure that supports
+                transparency, trust, and inclusive participation across coffee supply chains."
+            </div>
+
+            <div class="future-grid">
+                <div class="pyramid">
+                    <div class="pyramid-level level-1"><span>1</span></div>
+                    <div class="pyramid-level level-2"><span>2</span></div>
+                    <div class="pyramid-level level-3"><span>3</span></div>
+                </div>
+
+                <div class="roadmap-list">
+                    <article v-for="item in roadmap" :key="item.label" class="roadmap-item">
+                        <h3>{{ item.label }}</h3>
+                        <p>{{ item.copy }}</p>
+                    </article>
                 </div>
             </div>
-        </footer>
-    </div>
+        </section>
+
+        <section class="slide slide-white slide-users">
+            <h2>Who Uses Bean Origin</h2>
+            <p class="section-lead">
+                From origin to cup, every stakeholder benefits from transparent, accountable coffee exchange. Our platform
+                serves the entire value chain.
+            </p>
+
+            <div class="user-grid">
+                <article v-for="item in userGroups" :key="item.title" class="user-card">
+                    <h3>{{ item.title }}</h3>
+                    <p>{{ item.copy }}</p>
+                </article>
+            </div>
+
+            <div class="user-arc">
+                <svg viewBox="0 0 1100 460" class="user-arc-svg" aria-hidden="true">
+                    <path
+                        d="M140 402 A 410 410 0 0 1 345 118"
+                        fill="none"
+                        stroke="#e1e3e8"
+                        stroke-width="138"
+                        stroke-linecap="round"
+                    />
+                    <path
+                        d="M390 108 A 320 320 0 0 1 520 42"
+                        fill="none"
+                        stroke="#e1e3e8"
+                        stroke-width="132"
+                        stroke-linecap="round"
+                    />
+                    <path
+                        d="M580 42 A 320 320 0 0 1 710 108"
+                        fill="none"
+                        stroke="#e1e3e8"
+                        stroke-width="132"
+                        stroke-linecap="round"
+                    />
+                    <path
+                        d="M755 118 A 410 410 0 0 1 960 402"
+                        fill="none"
+                        stroke="#e1e3e8"
+                        stroke-width="138"
+                        stroke-linecap="round"
+                    />
+                </svg>
+
+                <div class="user-arc-icon arc-icon-a"><i class="bi bi-person"></i></div>
+                <div class="user-arc-icon arc-icon-b"><i class="bi bi-box-arrow-up"></i></div>
+                <div class="user-arc-icon arc-icon-c"><i class="bi bi-cup-hot"></i></div>
+                <div class="user-arc-icon arc-icon-d"><i class="bi bi-file-earmark-check"></i></div>
+            </div>
+        </section>
+
+        <section id="cta" class="slide slide-white slide-cta">
+            <h2>Join the Coffee Exchange Built for Tomorrow</h2>
+            <p class="section-lead">
+                Whether you're sourcing coffee, growing beans, or supporting ethical trade, Bean Origin provides the digital
+                infrastructure to connect, verify, and trade with confidence.
+            </p>
+
+            <div class="cta-grid">
+                <article v-for="item in ctaCards" :key="item.title" class="cta-card">
+                    <h3>{{ item.title }}</h3>
+                    <p>{{ item.copy }}</p>
+                </article>
+            </div>
+
+            <div class="button-row">
+                <a href="#challenge" class="btn-main">Request a Demo</a>
+                <Link href="/login" class="btn-outline">Contact Sales</Link>
+            </div>
+        </section>
+    </main>
 </template>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap');
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css');
 
-.modern-exchange {
-    --mx-bg: #f4f9fb;
-    --mx-bg-2: #eef4f7;
-    --mx-text: #102a43;
-    --mx-muted: #5f7386;
-    --mx-brand: #0e8a7d;
-    --mx-brand-dark: #0b6f65;
-    --mx-accent: #f2a74b;
-    --mx-border: #dbe7ee;
-    --mx-card: #ffffff;
-    background:
-        radial-gradient(900px 400px at 0% -10%, rgba(14, 138, 125, 0.16), transparent 70%),
-        radial-gradient(800px 380px at 100% 0%, rgba(242, 167, 75, 0.15), transparent 70%),
-        linear-gradient(180deg, var(--mx-bg), var(--mx-bg-2) 60%, #ffffff);
-    color: var(--mx-text);
-    font-family: 'Manrope', sans-serif;
+.coffee-deck {
+    background: #f6f5ef;
+    color: #50586d;
+    font-family: 'Instrument Sans', sans-serif;
 }
 
-.modern-exchange h1,
-.modern-exchange h2,
-.modern-exchange h3,
-.modern-exchange h4,
-.modern-exchange h5 {
+.slide {
+    width: min(100%, 2048px);
+    min-height: 100vh;
+    padding: 72px 76px;
+    background: #fafaf7;
+    border-bottom: 1px solid rgba(87, 95, 114, 0.06);
+    overflow: hidden;
+}
+
+.slide h1,
+.slide h2,
+.slide h3 {
+    margin: 0;
     font-family: 'Space Grotesk', sans-serif;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.05em;
+    color: #40485b;
 }
 
-.site-nav {
-    position: sticky;
-    top: 0;
-    z-index: 40;
-    backdrop-filter: blur(8px);
-    background: rgba(244, 249, 251, 0.88);
-    border-bottom: 1px solid rgba(219, 231, 238, 0.9);
+.slide h2 {
+    font-size: clamp(3rem, 5vw, 5rem);
+    line-height: 1.05;
 }
 
-.navbar-toggler {
-    border-color: #b6c8d5;
+.section-lead {
+    max-width: 90%;
+    margin: 34px 0 0;
+    font-size: 1.18rem;
+    line-height: 1.75;
+    color: #5d657b;
 }
 
-.navbar-toggler:focus {
-    box-shadow: none;
-}
-
-.navbar-toggler-icon {
-    width: 1.1rem;
-    height: 1.1rem;
-    background-image: none;
-    position: relative;
-}
-
-.navbar-toggler-icon::before,
-.navbar-toggler-icon::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: #1f3a56;
-    border-radius: 2px;
-}
-
-.navbar-toggler-icon::before {
-    top: 3px;
-    box-shadow: 0 5px 0 #1f3a56;
-}
-
-.navbar-toggler-icon::after {
-    top: 13px;
-}
-
-.brandmark {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 700;
-    color: var(--mx-text);
-}
-
-.brand-logo {
-    width: 34px;
-    height: 34px;
-    object-fit: contain;
-    border-radius: 10px;
-    background: #fff;
-    border: 1px solid #d7e7ef;
-    padding: 3px;
-}
-
-.brand-title {
-    line-height: 1;
-}
-
-.header-right {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-    order: 2;
-}
-
-.header-auth {
-    display: inline-flex;
-    gap: 12px;
-    align-items: center;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.site-nav #modernNav {
-    order: 3;
-    width: 100%;
-}
-
-.header-auth-link {
-    color: #334e68;
-    font-size: 0.92rem;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.header-auth-link:hover {
-    color: #0b6f65;
-}
-
-.header-auth-link.register-link {
-    color: #0b6f65;
-}
-
-.nav-link {
-    color: var(--mx-muted);
-    font-weight: 600;
-}
-
-.nav-link:hover {
-    color: var(--mx-brand-dark);
-}
-
-.btn-brand {
-    background: linear-gradient(135deg, var(--mx-brand), var(--mx-brand-dark));
-    border: none;
-    color: #fff;
-    font-weight: 700;
-}
-
-.btn-brand:hover {
-    color: #fff;
-    transform: translateY(-1px);
-}
-
-.btn-outline-brand {
-    border: 1px solid var(--mx-brand);
-    color: var(--mx-brand-dark);
-    font-weight: 700;
-    background: #fff;
-}
-
-.btn-soft {
-    background: #e8f4f2;
-    border: 1px solid #c6e7e2;
-    color: var(--mx-brand-dark);
-    font-weight: 700;
-}
-
-.hero-section {
-    padding: 4.5rem 0 2rem;
-}
-
-.ticker-section {
-    padding: 0 0 1rem;
-}
-
-.ticker-shell {
-    border: 1px solid var(--mx-border);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.8);
-    overflow: hidden;
-}
-
-.ticker-track {
-    white-space: nowrap;
-    display: inline-flex;
-    gap: 22px;
-    padding: 10px 18px;
-    min-width: 100%;
-    animation: tickerSlide 26s linear infinite;
-}
-
-.ticker-track span {
-    color: #486581;
-    font-size: 0.84rem;
-    font-weight: 600;
-}
-
-.partners-section {
-    padding: 0.3rem 0 1rem;
-}
-
-.partners-label {
-    font-size: 0.82rem;
-    color: #627d98;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 0.7rem;
-}
-
-.partners-grid {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 10px;
-}
-
-.partner-pill {
-    border: 1px solid var(--mx-border);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.88);
-    color: #334e68;
-    font-size: 0.84rem;
-    font-weight: 700;
-    padding: 10px 12px;
-    text-align: center;
-}
-
-.hero-copy h1 {
-    font-size: clamp(1.85rem, 3.2vw, 2.85rem);
-    margin-bottom: 1rem;
-}
-
-.hero-focus-title {
-    font-family: 'Manrope', sans-serif !important;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-}
-
-.hero-kicker,
-.eyebrow {
-    color: var(--mx-brand-dark);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-size: 0.74rem;
-    margin-bottom: 0.75rem;
-}
-
-.hero-lead,
-.section-head p {
-    color: var(--mx-muted);
-    max-width: 62ch;
-}
-
-.hero-panel {
-    border: 1px solid var(--mx-border);
-    border-radius: 18px;
-    background: linear-gradient(180deg, #ffffff, #f9fcfd);
-    box-shadow: 0 16px 30px rgba(16, 42, 67, 0.08);
-    --hero-inner-radius: 14px;
-}
-
-.hero-panel .card-body {
-    border-radius: 16px;
-}
-
-.hero-panel .table-responsive {
-    border: 1px solid #d7e7ef;
-    border-radius: var(--hero-inner-radius);
-    overflow: hidden;
-    background: #fff;
-}
-
-.badge-live {
-    background: #daf7f2;
-    color: #0b6f65;
-    border: 1px solid #b7eadf;
-    font-weight: 700;
-}
-
-.market-table th {
-    color: #486581;
-    font-weight: 700;
-    font-size: 0.84rem;
-}
-
-.market-table td {
-    font-size: 0.92rem;
-}
-
-.metric-box {
-    background: #f2f8fb;
-    border: 1px solid var(--mx-border);
-    border-radius: 12px;
-    padding: 10px;
-    display: grid;
-    gap: 2px;
-}
-
-.hero-panel .metric-box {
-    border-radius: var(--hero-inner-radius);
-}
-
-.metric-box small {
-    color: #627d98;
-}
-
-.metrics-section {
-    padding: 1.4rem 0 2rem;
-}
-
-.metric-card {
-    border: 1px solid var(--mx-border);
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 16px;
-    height: 100%;
-}
-
-.metric-card p {
-    margin: 0;
-    color: #627d98;
-    font-weight: 600;
-    font-size: 0.86rem;
-}
-
-.metric-card h3 {
-    margin: 6px 0 0;
-    font-size: 1.45rem;
-}
-
-.section-block {
-    padding: 3.4rem 0;
-}
-
-.alt-block {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(244, 249, 251, 0.9));
-    border-top: 1px solid #e7eff4;
-    border-bottom: 1px solid #e7eff4;
-}
-
-.section-head {
-    margin-bottom: 1.4rem;
-}
-
-.section-head h2 {
-    font-size: clamp(1.4rem, 2.4vw, 2.05rem);
-    margin-bottom: 0.7rem;
-}
-
-.billing-toggle {
-    display: inline-flex;
-    align-items: center;
-    border: 1px solid var(--mx-border);
-    background: #fff;
-    border-radius: 999px;
-    overflow: hidden;
-}
-
-.toggle-btn {
-    border: 0;
-    background: transparent;
-    color: #486581;
-    font-weight: 700;
-    font-size: 0.82rem;
-    padding: 8px 14px;
-}
-
-.toggle-btn span {
-    color: #0b6f65;
-    margin-left: 4px;
-}
-
-.toggle-btn.active {
-    background: #e7f7f3;
-    color: #0b6f65;
-}
-
-.glass-card {
-    border: 1px solid var(--mx-border);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
-    background: rgba(255, 255, 255, 0.86);
-}
-
-.table thead th {
-    background: #f5f9fc;
-    border-bottom-width: 1px;
-    color: #486581;
-    font-size: 0.82rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-
-.table td {
-    vertical-align: middle;
-}
-
-.spread-pill {
-    background: #e6f6f4;
-    color: #0b6f65;
-    border: 1px solid #b7eadf;
-    border-radius: 999px;
-    padding: 5px 10px;
-    font-size: 0.8rem;
-    font-weight: 700;
-}
-
-.feature-card {
-    height: 100%;
-    border: 1px solid var(--mx-border);
-    border-radius: 14px;
-    background: var(--mx-card);
-    padding: 18px;
-    box-shadow: 0 10px 24px rgba(16, 42, 67, 0.06);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.feature-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 32px rgba(16, 42, 67, 0.1);
-}
-
-.icon-wrap {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #e8f5f3, #fff2df);
-    color: var(--mx-brand-dark);
-    display: grid;
-    place-items: center;
-    margin-bottom: 10px;
-    font-size: 1.1rem;
-}
-
-.feature-card h5 {
-    margin-bottom: 8px;
-}
-
-.feature-card p {
-    margin: 0;
-    color: var(--mx-muted);
-}
-
-.timeline {
-    display: grid;
-    gap: 12px;
-}
-
-.timeline-step {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 12px;
-    align-items: flex-start;
-    border: 1px solid var(--mx-border);
-    border-radius: 14px;
-    background: #fff;
-    padding: 14px;
-}
-
-.step-badge {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: var(--mx-brand);
-    color: #fff;
-    display: grid;
-    place-items: center;
-    font-size: 0.8rem;
-    font-weight: 700;
-}
-
-.timeline-step p {
-    margin: 4px 0 0;
-    color: var(--mx-muted);
-}
-
-.plan-card {
-    height: 100%;
-    border: 1px solid var(--mx-border);
-    border-radius: 14px;
-    background: #fff;
-    padding: 16px;
-    position: relative;
-}
-
-.plan-card.featured {
-    border-color: #9ddad2;
-    background: linear-gradient(180deg, #ffffff, #f0fbf8);
-    box-shadow: 0 12px 24px rgba(14, 138, 125, 0.12);
-}
-
-.price-line {
-    display: flex;
-    align-items: baseline;
-    gap: 5px;
-    margin: 8px 0;
-}
-
-.price {
-    font-size: 1.6rem;
-    font-weight: 800;
-}
-
-.period {
-    color: #627d98;
-}
-
-.plan-note {
-    color: #627d98;
-    margin-bottom: 10px;
-    font-size: 0.9rem;
-}
-
-.featured-tag {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    border-radius: 999px;
-    background: #0f766e;
-    color: #fff;
-    font-size: 0.68rem;
-    font-weight: 700;
-    padding: 4px 9px;
-}
-
-.plan-list {
-    margin: 0 0 12px;
-    padding-left: 18px;
-    color: #334e68;
-    display: grid;
-    gap: 6px;
-    font-size: 0.9rem;
-}
-
-.testimonial-card {
-    height: 100%;
-    border: 1px solid var(--mx-border);
-    border-radius: 14px;
-    background: #fff;
-    padding: 16px;
-}
-
-.testimonial-card p {
-    color: #334e68;
-}
-
-.testimonial-card strong {
-    display: block;
-}
-
-.testimonial-card small {
-    color: #627d98;
-}
-
-.faq-layout {
-    align-items: flex-start;
-}
-
-.custom-accordion {
-    border: 0;
-}
-
-.custom-accordion :deep(.el-collapse) {
-    border-top: 0;
-    border-bottom: 0;
-    background: transparent;
-}
-
-.custom-accordion :deep(.el-collapse-item) {
-    border: 1px solid var(--mx-border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 10px;
-    background: #fff;
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
-}
-
-.custom-accordion :deep(.el-collapse-item__header) {
-    border-bottom: 0;
-    height: auto;
-    min-height: 56px;
-    padding: 12px 16px;
-    font-weight: 700;
-    color: #243b53;
-    background: #fff;
-    line-height: 1.3;
-}
-
-.custom-accordion :deep(.el-collapse-item__header.is-active) {
-    color: #0b6f65;
-    background: #ecfaf7;
-}
-
-.custom-accordion :deep(.el-collapse-item__arrow) {
-    color: #486581;
-    font-weight: 700;
-}
-
-.custom-accordion :deep(.el-collapse-item__wrap) {
-    border-bottom: 0;
-}
-
-.custom-accordion :deep(.el-collapse-item__content) {
-    padding: 0 16px 14px;
-    color: #486581;
-    line-height: 1.65;
-}
-
-.faq-item-title {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.96rem;
-    white-space: normal;
-}
-
-.faq-answer {
-    font-size: 0.95rem;
-}
-
-.faq-topic-list {
+.button-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 14px;
+    gap: 14px;
 }
 
-.faq-topic-pill {
-    border: 1px solid var(--mx-border);
-    background: #fff;
-    color: #486581;
-    border-radius: 999px;
-    padding: 6px 11px;
-    font-size: 0.76rem;
-    font-weight: 700;
-}
-
-.faq-index {
+.btn-main,
+.btn-outline {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 42px;
-    border-radius: 999px;
-    padding: 3px 10px;
-    background: #e7f7f3;
-    color: #0b6f65;
-    font-size: 0.72rem;
-    font-weight: 800;
-}
-
-.faq-help-card {
-    border: 1px solid var(--mx-border);
-    border-radius: 16px;
-    background: linear-gradient(180deg, #ffffff, #f6fbfc);
-    padding: 18px;
-    position: sticky;
-    top: 90px;
-}
-
-.help-kicker {
-    margin: 0 0 8px;
-    color: #0b6f65;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    font-size: 0.72rem;
-    font-weight: 800;
-}
-
-.faq-help-card h4 {
-    margin-bottom: 8px;
-}
-
-.help-copy {
-    margin: 0 0 12px;
-    color: #627d98;
-    font-size: 0.92rem;
-}
-
-.help-list {
-    display: grid;
-    gap: 8px;
-    margin-bottom: 10px;
-}
-
-.help-item {
-    border: 1px solid var(--mx-border);
+    min-height: 58px;
+    padding: 0 28px;
     border-radius: 12px;
-    background: #fff;
-    padding: 10px;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 10px;
-    align-items: center;
-}
-
-.help-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    background: #e7f7f3;
-    color: #0b6f65;
-    display: grid;
-    place-items: center;
-}
-
-.help-item strong {
-    display: block;
-    font-size: 0.88rem;
-    color: #243b53;
-}
-
-.help-item small {
-    color: #627d98;
-    font-size: 0.78rem;
-}
-
-.final-cta {
-    padding: 3.5rem 0;
-}
-
-.cta-box {
-    border-radius: 18px;
-    background:
-        radial-gradient(500px 220px at 0% 0%, rgba(255, 255, 255, 0.22), transparent 70%),
-        linear-gradient(135deg, #0f766e, #0b6f65 52%, #115f8f);
-    color: #fff;
-    padding: 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
-.cta-box p {
-    margin: 0;
-    color: rgba(255, 255, 255, 0.88);
-}
-
-.site-footer {
-    border-top: 1px solid #dbe7ee;
-    background: #fff;
-    color: #627d98;
-}
-
-.site-footer a {
-    color: #486581;
+    font-size: 1rem;
+    font-weight: 700;
     text-decoration: none;
 }
 
-.reveal {
-    opacity: 0;
-    transform: translateY(12px);
-    animation: revealUp 0.6s ease forwards;
+.btn-main {
+    background: #40485b;
+    color: #ffffff;
 }
 
-.delay-1 {
-    animation-delay: 0.14s;
+.btn-outline {
+    background: transparent;
+    color: #40485b;
+    border: 2px solid rgba(64, 72, 91, 0.42);
 }
 
-@keyframes revealUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.slide-cover {
+    display: grid;
+    grid-template-columns: minmax(0, 1.65fr) minmax(420px, 1fr);
+    align-items: stretch;
+    padding: 0;
+    background: #fafaf7;
 }
 
-@keyframes tickerSlide {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-50%);
-    }
+.cover-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 90px 76px;
 }
 
-@media (max-width: 991.98px) {
-    .hero-section {
-        padding-top: 2.6rem;
-    }
-
-    .site-nav .navbar-collapse {
-        padding-top: 10px;
-    }
-
-    .partners-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .cta-box {
-        padding: 1.4rem;
-    }
-
-    .faq-help-card {
-        margin-top: 4px;
-        position: static;
-    }
+.cover-copy h1 {
+    max-width: 10.8ch;
+    font-size: clamp(4rem, 6vw, 5.7rem);
+    line-height: 1.03;
 }
 
-@media (min-width: 992px) {
-    .site-nav #modernNav {
-        order: 2;
-        width: auto;
-    }
-
-    .header-right {
-        order: 3;
-        margin-left: 16px;
-    }
+.cover-lead {
+    max-width: 37ch;
+    margin: 40px 0 0;
+    font-size: 1.22rem;
+    line-height: 1.72;
 }
 
-@media (max-width: 575.98px) {
-    .section-block {
-        padding: 2.6rem 0;
+.cover-copy .button-row {
+    margin-top: 36px;
+}
+
+.cover-media {
+    min-height: 100vh;
+}
+
+.cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.slide-green {
+    background:
+        radial-gradient(circle at 22% 25%, rgba(202, 255, 202, 0.45), transparent 24%),
+        radial-gradient(circle at 72% 64%, rgba(183, 247, 181, 0.42), transparent 24%),
+        #a5ef9b;
+}
+
+.slide-challenge h2,
+.slide-infrastructure h2 {
+    max-width: 14ch;
+}
+
+.challenge-lead {
+    max-width: 96%;
+    color: #0f151e;
+}
+
+.challenge-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 28px;
+    margin-top: 38px;
+}
+
+.challenge-card {
+    min-height: 248px;
+    padding: 30px 34px 28px;
+    border-left: 12px solid #3a3f51;
+    border-radius: 12px;
+    background: rgba(165, 239, 155, 0.12);
+    box-shadow: inset 0 0 0 2px rgba(218, 190, 244, 0.9);
+}
+
+.challenge-card h3 {
+    font-size: 2rem;
+    line-height: 1.04;
+    color: #11171f;
+}
+
+.challenge-card p,
+.infra-feature p,
+.detail-item p,
+.feature-item p,
+.why-item p,
+.impact-stat p,
+.impact-note p,
+.roadmap-item p,
+.user-card p,
+.cta-card p {
+    margin: 22px 0 0;
+    font-size: 1.12rem;
+    line-height: 1.7;
+    color: #11171f;
+}
+
+.infrastructure-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(380px, 0.95fr);
+    gap: 52px;
+    align-items: start;
+    margin-top: 40px;
+}
+
+.infra-illustration-panel {
+    min-height: 720px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.24);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 42px;
+}
+
+.desk-illustration {
+    position: relative;
+    width: min(100%, 560px);
+    padding-bottom: 40px;
+}
+
+.desk-screen {
+    position: relative;
+    width: 68%;
+    height: 250px;
+    margin: 0 auto;
+    background: transparent;
+    border: 5px solid #0d1115;
+    border-radius: 14px 14px 6px 6px;
+}
+
+.desk-screen::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    bottom: -2px;
+    width: calc(100% + 72px);
+    height: 4px;
+    background: #0d1115;
+    transform: translateX(-36px);
+}
+
+.desk-note {
+    position: absolute;
+    width: 64px;
+    height: 88px;
+    border: 4px solid #0d1115;
+    border-radius: 6px;
+}
+
+.desk-note::before {
+    content: '';
+    position: absolute;
+    left: 12px;
+    top: 18px;
+    width: 26px;
+    height: 4px;
+    background: #0d1115;
+    box-shadow: 0 18px 0 #0d1115, 0 36px 0 #0d1115;
+}
+
+.note-a {
+    left: 94px;
+    top: 48px;
+}
+
+.note-b {
+    left: 138px;
+    top: 112px;
+}
+
+.desk-line {
+    position: absolute;
+    height: 4px;
+    border-radius: 999px;
+    background: #0d1115;
+}
+
+.line-a {
+    top: 92px;
+    left: 228px;
+    width: 72px;
+}
+
+.line-b {
+    top: 132px;
+    left: 240px;
+    width: 156px;
+}
+
+.line-c {
+    top: 168px;
+    left: 254px;
+    width: 118px;
+}
+
+.desk-base {
+    width: 76%;
+    height: 60px;
+    margin: 18px auto 0;
+    border: 5px solid #0d1115;
+    border-top: 0;
+    clip-path: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
+}
+
+.desk-cup {
+    position: absolute;
+    left: 12px;
+    bottom: 86px;
+    width: 56px;
+    height: 68px;
+    border: 4px solid #0d1115;
+    border-radius: 0 0 16px 16px;
+}
+
+.desk-cup::before {
+    content: '';
+    position: absolute;
+    right: -20px;
+    top: 16px;
+    width: 20px;
+    height: 20px;
+    border: 4px solid #0d1115;
+    border-left: 0;
+    border-radius: 0 12px 12px 0;
+}
+
+.desk-cup::after {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: -18px;
+    width: 18px;
+    height: 24px;
+    border-top: 4px solid #0d1115;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-radius: 50%;
+}
+
+.desk-plant {
+    position: absolute;
+    right: 18px;
+    bottom: 72px;
+    width: 78px;
+    height: 84px;
+    border: 4px solid #0d1115;
+    border-radius: 6px 6px 18px 18px;
+}
+
+.desk-plant span {
+    position: absolute;
+    bottom: 62px;
+    width: 18px;
+    border: 4px solid #0d1115;
+    border-radius: 18px;
+}
+
+.desk-plant span:nth-child(1) {
+    left: 12px;
+    height: 48px;
+}
+
+.desk-plant span:nth-child(2) {
+    left: 30px;
+    height: 72px;
+}
+
+.desk-plant span:nth-child(3) {
+    left: 48px;
+    height: 58px;
+}
+
+.infra-feature-list {
+    display: grid;
+    gap: 56px;
+    padding-top: 18px;
+}
+
+.infra-feature {
+    padding-left: 30px;
+    border-left: 8px solid #394051;
+}
+
+.infra-feature h3 {
+    font-size: 2rem;
+    color: #11171f;
+}
+
+.slide-how h2,
+.slide-features h2,
+.slide-why h2,
+.slide-impact h2,
+.slide-future h2,
+.slide-users h2,
+.slide-cta h2 {
+    max-width: 14ch;
+}
+
+.slide-white {
+    background: #fafaf7;
+}
+
+.process-flow {
+    position: relative;
+    margin-top: 56px;
+    min-height: 360px;
+    overflow-x: auto;
+}
+
+.process-wave {
+    width: 1560px;
+    height: 300px;
+    display: block;
+}
+
+.process-steps {
+    position: relative;
+    width: 1560px;
+    height: 0;
+}
+
+.process-step {
+    position: absolute;
+    width: 238px;
+    text-align: center;
+}
+
+.step-0 {
+    left: 190px;
+    top: -208px;
+}
+
+.step-1 {
+    left: 500px;
+    top: -192px;
+}
+
+.step-2 {
+    left: 820px;
+    top: -208px;
+}
+
+.step-3 {
+    left: 1134px;
+    top: -192px;
+}
+
+.process-step h3 {
+    font-size: 2rem;
+    line-height: 1.04;
+}
+
+.process-step p {
+    margin: 14px 0 0;
+    font-size: 1rem;
+    line-height: 1.34;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 42px 64px;
+    margin-top: 56px;
+}
+
+.detail-item {
+    display: grid;
+    grid-template-columns: 82px 1fr;
+    gap: 22px;
+    align-items: start;
+}
+
+.detail-icon {
+    width: 64px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: #e6e7ea;
+    color: #c5c7cf;
+    font-size: 1.6rem;
+}
+
+.detail-item h3 {
+    font-size: 1.9rem;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 50px 100px;
+    margin-top: 54px;
+}
+
+.feature-item {
+    display: grid;
+    gap: 16px;
+    align-content: start;
+}
+
+.feature-icon {
+    color: #8df07f;
+    font-size: 3rem;
+    line-height: 1;
+}
+
+.feature-item h3 {
+    font-size: 1.9rem;
+}
+
+.slide-why {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.88fr) minmax(0, 1.12fr);
+    gap: 64px;
+    align-items: stretch;
+}
+
+.why-art {
+    min-height: 980px;
+    display: flex;
+    align-items: stretch;
+    padding-right: 12px;
+}
+
+.branch-svg {
+    width: 100%;
+    height: 100%;
+    opacity: 0.92;
+}
+
+.why-copy {
+    padding-top: 10px;
+}
+
+.why-list {
+    display: grid;
+    gap: 42px;
+    margin-top: 36px;
+}
+
+.why-item {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 22px;
+}
+
+.why-marker {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    background: #e5e7ec;
+    box-shadow: inset 0 0 0 2px rgba(92, 100, 118, 0.08);
+}
+
+.why-item h3,
+.impact-stat h3,
+.impact-note h3,
+.roadmap-item h3,
+.user-card h3,
+.cta-card h3 {
+    font-size: 1.9rem;
+    line-height: 1.08;
+}
+
+.impact-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 34px;
+    margin-top: 62px;
+    text-align: center;
+}
+
+.impact-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(4rem, 7vw, 5.8rem);
+    line-height: 1;
+    color: #5c637a;
+}
+
+.impact-stat h3 {
+    margin-top: 22px;
+}
+
+.impact-stat p {
+    margin-top: 18px;
+}
+
+.impact-line {
+    position: relative;
+    height: 88px;
+    margin-top: 30px;
+    border-top: 4px solid #d0d2d8;
+}
+
+.impact-dot {
+    position: absolute;
+    top: -14px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #3f4659;
+}
+
+.impact-dot::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: 4px;
+    height: 58px;
+    background: #d0d2d8;
+    transform: translateX(-50%);
+}
+
+.impact-dot:nth-child(1) {
+    left: 15.5%;
+}
+
+.impact-dot:nth-child(2) {
+    left: 49%;
+}
+
+.impact-dot:nth-child(3) {
+    right: 15.5%;
+}
+
+.impact-notes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 34px;
+    margin-top: 10px;
+}
+
+.impact-note {
+    text-align: center;
+}
+
+.future-quote {
+    max-width: 96%;
+    margin-top: 54px;
+    padding-left: 38px;
+    border-left: 4px solid #4c5468;
+    font-size: 1.12rem;
+    line-height: 1.9;
+    color: #5d657b;
+}
+
+.future-grid {
+    display: grid;
+    grid-template-columns: minmax(360px, 0.95fr) minmax(0, 1.05fr);
+    gap: 42px;
+    align-items: end;
+    margin-top: 38px;
+}
+
+.pyramid {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    padding-top: 28px;
+}
+
+.pyramid-level {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #596178;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3rem;
+    background: #dde0e6;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.level-1 {
+    width: 310px;
+    height: 230px;
+}
+
+.level-2 {
+    width: 460px;
+    height: 290px;
+}
+
+.level-3 {
+    width: 620px;
+    height: 330px;
+}
+
+.roadmap-list {
+    display: grid;
+}
+
+.roadmap-item {
+    padding: 36px 0;
+    border-top: 2px solid #d5d7de;
+}
+
+.roadmap-item:first-child {
+    border-top: 0;
+}
+
+.roadmap-item p {
+    max-width: 96%;
+}
+
+.slide-users {
+    position: relative;
+}
+
+.user-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 34px;
+    margin-top: 52px;
+}
+
+.user-card {
+    text-align: center;
+}
+
+.user-arc {
+    position: relative;
+    width: min(100%, 1100px);
+    height: 430px;
+    margin: 40px auto 0;
+}
+
+.user-arc-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.user-arc-icon {
+    position: absolute;
+    width: 72px;
+    height: 72px;
+    display: grid;
+    place-items: center;
+    border-radius: 22px;
+    background: #eceef2;
+    color: #6a738a;
+    font-size: 2rem;
+    box-shadow: inset 0 0 0 2px rgba(110, 117, 135, 0.06);
+}
+
+.arc-icon-a {
+    left: 150px;
+    bottom: 102px;
+}
+
+.arc-icon-b {
+    left: 390px;
+    bottom: 238px;
+}
+
+.arc-icon-c {
+    right: 390px;
+    bottom: 238px;
+}
+
+.arc-icon-d {
+    right: 150px;
+    bottom: 102px;
+}
+
+.slide-cta .section-lead {
+    max-width: 86%;
+}
+
+.cta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 38px;
+    border: 2px solid #cfd2da;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #e5e7ec;
+}
+
+.cta-card {
+    min-height: 234px;
+    padding: 28px 32px;
+    background: #e5e7ec;
+    border-right: 2px solid #cfd2da;
+}
+
+.cta-card:last-child {
+    border-right: 0;
+}
+
+.slide-cta .button-row {
+    margin-top: 38px;
+}
+
+@media (max-width: 1200px) {
+    .slide-cover,
+    .slide-why,
+    .future-grid,
+    .infrastructure-grid,
+    .challenge-grid,
+    .detail-grid,
+    .impact-stats,
+    .impact-notes,
+    .user-grid,
+    .feature-grid,
+    .cta-grid {
+        grid-template-columns: 1fr;
     }
 
-    .hero-copy h1 {
-        font-size: 1.62rem;
+    .slide-cover {
+        min-height: auto;
     }
 
-    .header-auth {
-        gap: 8px;
+    .cover-media {
+        min-height: 520px;
     }
 
-    .header-auth-link {
-        font-size: 0.84rem;
+    .impact-line {
+        display: none;
     }
 
-    .ticker-track {
+    .user-arc {
+        display: none;
+    }
+
+    .process-flow {
+        min-height: auto;
+    }
+
+    .process-wave {
+        display: none;
+    }
+
+    .process-steps {
+        width: 100%;
+        height: auto;
+        display: grid;
         gap: 16px;
-        padding: 8px 14px;
     }
 
-    .partners-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+    .process-step {
+        position: static;
+        width: 100%;
+        padding: 18px 20px;
+        border-radius: 16px;
+        background: #eef0f4;
+        text-align: left;
     }
 
-    .billing-toggle {
+    .feature-grid,
+    .impact-notes,
+    .impact-stats,
+    .user-grid,
+    .detail-grid,
+    .challenge-grid,
+    .cta-grid {
+        gap: 22px;
+    }
+
+    .cta-grid {
+        border: 0;
+        background: transparent;
+    }
+
+    .cta-card {
+        border: 2px solid #cfd2da;
+        border-radius: 12px;
+    }
+}
+
+@media (max-width: 780px) {
+    .slide {
+        padding: 34px 18px;
+    }
+
+    .slide h2 {
+        font-size: 2.55rem;
+    }
+
+    .cover-copy {
+        padding: 42px 18px 28px;
+    }
+
+    .cover-copy h1 {
+        max-width: none;
+        font-size: 3rem;
+    }
+
+    .cover-lead,
+    .section-lead,
+    .challenge-card p,
+    .infra-feature p,
+    .detail-item p,
+    .feature-item p,
+    .why-item p,
+    .impact-stat p,
+    .impact-note p,
+    .roadmap-item p,
+    .user-card p,
+    .cta-card p {
+        font-size: 1rem;
+    }
+
+    .btn-main,
+    .btn-outline {
         width: 100%;
     }
 
-    .toggle-btn {
-        flex: 1;
+    .cover-media {
+        min-height: 360px;
     }
 
-    .plan-list {
-        padding-left: 15px;
+    .infra-illustration-panel,
+    .why-art {
+        min-height: auto;
     }
 
-    .faq-index {
-        min-width: 36px;
+    .pyramid {
+        overflow: hidden;
+    }
+
+    .level-1 {
+        width: 210px;
+        height: 160px;
+    }
+
+    .level-2 {
+        width: 300px;
+        height: 180px;
+    }
+
+    .level-3 {
+        width: 390px;
+        height: 210px;
     }
 }
 </style>
