@@ -304,6 +304,11 @@ Sign Out
 </Link>
 </li>
 <li class="nk-menu-item">
+<Link :href="route('farm.index')" class="nk-menu-link">
+<span class="nk-menu-text">Farms</span>
+</Link>
+</li>
+<li class="nk-menu-item">
 <Link :href="route('token.index')" class="nk-menu-link">
 <span class="nk-menu-text">Tokenized Batches</span>
 </Link>

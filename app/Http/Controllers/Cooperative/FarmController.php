@@ -22,7 +22,29 @@ class FarmController extends Controller
      */
     public function index()
     {
-        //
+        $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+
+        $farms = Farm::query()
+            ->whereHas('farmer', function ($query) use ($cooperativeId) {
+                $query->where('cooperative_id', $cooperativeId);
+            })
+            ->with('farmer')
+            ->latest('id')
+            ->get();
+
+        return Inertia::render('FarmPage', [
+            'title' => 'Farms',
+            'farms' => $farms->map(fn ($farm) => [
+                'id' => $farm->id,
+                'farm_name' => $farm->farm_name,
+                'location' => $farm->location,
+                'area_acres' => $farm->area_acres,
+                'latitude' => $farm->latitude,
+                'longitude' => $farm->longitude,
+                'created_at' => optional($farm->created_at)->format('Y-m-d H:i:s'),
+                'farmer_name' => trim(($farm->farmer?->first_name ?? '') . ' ' . ($farm->farmer?->last_name ?? '')) ?: 'N/A',
+            ])->values(),
+        ]);
     }
 
     /**
@@ -88,6 +110,51 @@ class FarmController extends Controller
             : null;
 
         return Inertia::render('FarmShow', [
+            'title' => 'Farm Details',
+            'farm' => new FarmResource($farm),
+            'owner' => new CooperativeFarmerResource($farm->farmer),
+            'map_data' => $mapData,
+            'sustainability_metadata' => SustainabilityMetadata::query()
+                ->orderBy('activity')
+                ->pluck('activity')
+                ->values(),
+            'farm_sustainability_data' => FarmSustainabilityData::query()
+                ->where('farm_id', $farm->id)
+                ->latest('id')
+                ->get()
+                ->map(fn ($item) => [
+                    'id' => $item->id,
+                    'activity' => $item->activity,
+                    'value' => $item->value,
+                    'created_at' => optional($item->created_at)->format('Y-m-d H:i:s'),
+                ])
+                ->values(),
+        ]);
+    }
+
+
+
+
+
+
+    public function showCooperative(string $id, MapService $mapService)
+    {
+        $cooperativeId = Cooperative::where('user_id', auth()->id())->value('id');
+
+        $farm = Farm::query()
+            ->whereHas('farmer', function ($query) use ($cooperativeId) {
+                $query->where('cooperative_id', $cooperativeId);
+            })
+            ->with('farmer')
+            ->findOrFail($id);
+
+        // Build the cooperative-facing map payload for the farm profile view.
+        $mapData = ($farm->latitude !== null && $farm->longitude !== null)
+            ? $mapService->map($farm->latitude, $farm->longitude)
+            : null;
+
+        // Reuse the same farm details page for the cooperative-specific route entry point.
+        return Inertia::render('FarmShowCooperative', [
             'title' => 'Farm Details',
             'farm' => new FarmResource($farm),
             'owner' => new CooperativeFarmerResource($farm->farmer),
