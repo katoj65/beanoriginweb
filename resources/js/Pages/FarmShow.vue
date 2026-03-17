@@ -24,6 +24,14 @@ const formattedFarmArea = computed(() => {
   if (Number.isNaN(value)) return farm.value?.area_acres ?? '0';
   return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 });
+const farmSubtitle = computed(() => {
+  const parts = [];
+  if (farm.value?.location) parts.push(`Located in ${farm.value.location}`);
+  if (farm.value?.area_acres !== undefined && farm.value?.area_acres !== null && farm.value?.area_acres !== '') {
+    parts.push(`${formattedFarmArea.value} acres under cultivation`);
+  }
+  return parts.join(' • ') || 'Registered farm details and field information.';
+});
 
 const sustainabilityForm = useForm({
   activity: '',
@@ -132,7 +140,20 @@ const formatSustainabilityDate = (value) => {
 <h4 class="mb-1 font-large text-capitalize">
 {{ farm.farm_name || 'N/A' }}
 </h4>
-<p class="sub-text mb-0">Registered farm details, linked farmer information, and sustainability records.</p>
+<p class="sub-text mb-0">
+<template v-if="farm.location">
+<em class="icon ni ni-map-fill mr-1"></em>{{ farm.location }}
+</template>
+<template v-if="farm.location && farm.area_acres !== undefined && farm.area_acres !== null && farm.area_acres !== ''">
+<span class="mx-1">•</span>
+</template>
+<template v-if="farm.area_acres !== undefined && farm.area_acres !== null && farm.area_acres !== ''">
+<em class="icon ni ni-property mr-1"></em>{{ formattedFarmArea }} acres
+</template>
+<template v-if="!farm.location && (farm.area_acres === undefined || farm.area_acres === null || farm.area_acres === '')">
+<em class="icon ni ni-info mr-1"></em>{{ farmSubtitle }}
+</template>
+</p>
 </div>
 <el-button-group class="farm-head-actions">
 <el-button :icon="EditPen" @click="goToFarmUpdatePage">Edit Farm</el-button>
