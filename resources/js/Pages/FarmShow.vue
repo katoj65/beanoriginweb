@@ -214,7 +214,7 @@ class="sustainability-list-item"
 >
 <div class="sustainability-list-top">
 <span class="sustainability-activity-badge text-capitalize">
-<em class="icon ni ni-check-circle mr-1"></em>{{ row.activity || 'N/A' }}
+<em class="icon ni ni-leaf mr-1"></em>{{ row.activity || 'N/A' }}
 </span>
 <el-button type="danger" text class="sustainability-delete-btn" @click="destroySustainabilityData(row)">
 <em class="icon ni ni-trash"></em>
@@ -661,13 +661,12 @@ Save Data
 .sustainability-list-item {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 12px 14px;
+  gap: 12px;
+  padding: 14px;
   border: 1px solid #e7edf5;
   border-radius: 16px;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
 }
 
 .sustainability-list-top {
@@ -682,13 +681,11 @@ Save Data
 .sustainability-activity-badge {
   display: inline-flex;
   align-items: center;
-  max-width: none;
-  border: 1px solid #e5e9f2;
-  border-radius: 14px;
-  padding: 6px 10px;
-  background: #f8fafc;
+  max-width: 100%;
+  padding: 0;
+  background: transparent;
   color: #364a63;
-  font-weight: 600;
+  font-weight: 700;
   white-space: normal;
   overflow: visible;
   text-overflow: unset;
@@ -700,6 +697,8 @@ Save Data
   display: flex;
   align-items: center;
   gap: 8px;
+  color: #8094ae;
+  font-size: 12px;
 }
 
 .sustainability-value-chip {
@@ -757,12 +756,15 @@ Save Data
 
 .sustainability-delete-btn {
   padding: 0;
-  width: 36px;
-  height: 36px;
-  min-height: 36px;
+  width: 30px;
+  height: 30px;
+  min-height: 30px;
   border-radius: 8px;
-  font-size: 18px;
+  font-size: 15px;
   flex-shrink: 0;
+  background: #f8fafc;
+  color: #8094ae;
+  border: 0;
 }
 
 :deep(.sustainability-modal .el-dialog) {
@@ -835,5 +837,6 @@ Save Data
   .sustainability-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
 }
 </style>

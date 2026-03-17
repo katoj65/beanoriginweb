@@ -178,6 +178,7 @@ const updateLocation = () => {
           loading="lazy"
           referrerpolicy="no-referrer-when-downgrade"
           allowfullscreen
+        
         ></iframe>
 
         <template v-else>
@@ -191,19 +192,46 @@ const updateLocation = () => {
         </template>
       </div>
 
-      <div class="farm-map-summary">
+      <div class="farm-map-summary mt-1">
         <div class="farm-map-summary-card farm-map-summary-address">
-          <span class="farm-map-summary-label">Resolved Address</span>
+          <div class="farm-map-summary-top">
+            <span class="farm-map-summary-icon">
+              <em class="icon ni ni-map-pin"></em>
+            </span>
+            <span class="farm-map-summary-label">Resolved Address</span>
+          </div>
           <strong>{{ mapAddress }}</strong>
         </div>
         <div class="farm-map-summary-card">
-          <span class="farm-map-summary-label">Map Status</span>
+          <div class="farm-map-summary-top">
+            <span class="farm-map-summary-icon">
+              <em class="icon ni ni-activity"></em>
+            </span>
+            <span class="farm-map-summary-label">Map Status</span>
+          </div>
           <strong>{{ hasCoordinates ? 'Pinned and ready' : 'Awaiting coordinates' }}</strong>
           <span class="farm-map-summary-text">
             {{ hasCoordinates ? 'The current map is using the saved farm coordinates.' : 'Add latitude and longitude to display this farm on the map.' }}
           </span>
         </div>
-      
+        <div class="farm-map-summary-card">
+          <div class="farm-map-summary-top">
+            <span class="farm-map-summary-icon">
+              <em class="icon ni ni-location"></em>
+            </span>
+            <span class="farm-map-summary-label">Farm Location</span>
+          </div>
+          <strong>{{ locationSummary }}</strong>
+        </div>
+        <div class="farm-map-summary-card">
+          <div class="farm-map-summary-top">
+            <span class="farm-map-summary-icon">
+              <em class="icon ni ni-property"></em>
+            </span>
+            <span class="farm-map-summary-label">Farm Size</span>
+          </div>
+          <strong>{{ areaSummary }}</strong>
+        </div>
       </div>
     </div>
   </div>
@@ -252,11 +280,8 @@ const updateLocation = () => {
   flex-direction: column;
   align-items: stretch;
   gap: 16px;
-  padding: 18px;
-  border: 1px solid #e5e9f2;
   border-radius: 20px;
   background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
-  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.05);
 }
 
 .farm-map-head {
@@ -434,7 +459,7 @@ const updateLocation = () => {
 
 .farm-map-summary {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -446,6 +471,25 @@ const updateLocation = () => {
   border: 1px solid #e5e9f2;
   border-radius: 16px;
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.farm-map-summary-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.farm-map-summary-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  background: #eef4ff;
+  color: #2563eb;
+  font-size: 13px;
+  flex-shrink: 0;
 }
 
 .farm-map-summary-label {
