@@ -171,7 +171,7 @@ router.get(route('farmer.create'));
 
 <template>
 <cooperative-layout>
-<div class="nk-block p-3">
+<div class="nk-block p-3 cooperative-dashboard-page">
 
 <div class="row g-gs">
 <div class="col-12 col-md-3" v-for="(t,key) in tabs" :key="key">
@@ -454,7 +454,7 @@ font-size: 0.86rem;
 
 .stats-matrix-card {
 background: var(--card-bg, #ffffff);
---stats-border-color: var(--bs-border-color, #dbdfea);
+--stats-border-color: #eef2f7;
 border: 1px solid var(--stats-border-color);
 border-radius: 12px;
 padding: 0;
@@ -561,16 +561,67 @@ font-size: 1.1rem;
 color: #334155;
 }
 
+.cooperative-dashboard-page :deep(.border),
+.cooperative-dashboard-page :deep(.card-bordered),
+.cooperative-dashboard-page :deep(.border-bottom),
+.cooperative-dashboard-page :deep(.border-top),
+.cooperative-dashboard-page :deep(.border-start),
+.cooperative-dashboard-page :deep(.border-end) {
+border-color: #e5e9f2 !important;
+}
+
+.cooperative-dashboard-page :deep(.card),
+.cooperative-dashboard-page :deep(.card-bordered),
+.cooperative-dashboard-page :deep(.border:not(.border-bottom):not(.border-top):not(.border-start):not(.border-end)) {
+border-radius: 12px !important;
+}
+
+.cooperative-dashboard-page :deep(.card-header),
+.cooperative-dashboard-page :deep(.card-body),
+.cooperative-dashboard-page :deep(.card-inner),
+.cooperative-dashboard-page :deep(.pricing),
+.cooperative-dashboard-page :deep(.pricing-head),
+.cooperative-dashboard-page :deep(.pricing-body),
+.cooperative-dashboard-page :deep(.invest-ov),
+.cooperative-dashboard-page :deep(.invest-ov-details),
+.cooperative-dashboard-page :deep(.el-table),
+.cooperative-dashboard-page :deep(.el-table__inner-wrapper),
+.cooperative-dashboard-page :deep(.el-table__header-wrapper),
+.cooperative-dashboard-page :deep(.el-table__body-wrapper) {
+border-radius: 12px !important;
+}
+
+.cooperative-dashboard-page :deep(.progress),
+.cooperative-dashboard-page :deep(.progress-bar),
+.cooperative-dashboard-page :deep(.el-progress-bar__outer) {
+border-radius: 999px !important;
+}
+
 .modern-panel {
+border: 1px solid #e5e9f2 !important;
 border-radius: 12px;
 box-shadow: 0 6px 22px rgba(15, 23, 42, 0.05);
 overflow: hidden;
+}
+
+.modern-panel .border-bottom,
+.modern-panel .card-header.border-bottom,
+.modern-panel .card-title.border-bottom,
+.modern-panel .card-inner.border-bottom,
+.modern-panel .card-body.border-bottom,
+.modern-panel .pl-4.pr-4.py-2.border-bottom {
+border-color: #e5e9f2 !important;
 }
 
 .modern-panel .card-header,
 .modern-panel .card-inner,
 .modern-panel .card-body {
 border-radius: inherit;
+}
+
+.stats-matrix-cell,
+.cooperative-dashboard-page :deep(.pl-4.pr-4.py-2.border-bottom) {
+border-radius: 12px;
 }
 
 :deep(.modern-panel .el-table),
@@ -597,10 +648,11 @@ border-bottom-right-radius: 12px;
 .nk-order-ovwg-data.card.border {
 border-radius: 12px;
 padding: 0.875rem;
-border: none;
+border: 1px solid #e5e9f2 !important;
 transition: all 0.3s ease;
 overflow: hidden;
 backdrop-filter: blur(10px);
+background: #ffffff;
 }
 
 .nk-order-ovwg-data.card.border:hover {
