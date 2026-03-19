@@ -396,7 +396,7 @@ Sign Out
 <style scoped>
 .nk-apps-sidebar.is-silver {
   background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%) !important;
-  border-right: 1px solid #d1d5db;
+  border-right: 0;
 }
 
 .nk-apps-sidebar.is-silver .nk-menu-link {
