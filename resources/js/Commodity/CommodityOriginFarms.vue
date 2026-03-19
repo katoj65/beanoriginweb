@@ -14,12 +14,9 @@ const props = defineProps({
 });
 
 const goToOriginFarmDetails = (farmId) => {
-    if (!props.commodityId || !farmId) return;
+    if (!farmId) return;
 
-    router.get(route('commodity.origin-farms.show', {
-        commodity: props.commodityId,
-        farm: farmId,
-    }));
+    router.get(route('farm.show', { id: farmId }));
 };
 
 const totalAcres = computed(() => {

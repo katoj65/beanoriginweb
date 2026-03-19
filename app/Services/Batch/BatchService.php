@@ -25,7 +25,7 @@ class BatchService {
 // Build all payload data needed for BatchCommodityVerification page.
 public function batch(Request $request, string $id)
 {
-// Fetch batch owned by current user.
+// Fetch batch by ID.
 $batch = Batch::query()
 ->where('id', $id)
 ->firstOrFail();

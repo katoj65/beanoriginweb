@@ -135,25 +135,26 @@ const formatSustainabilityDate = (value) => {
 
 
 <div class="card farm-top-card">
-<div class="card-inner border-bottom farm-topbar">
-<div>
+<div class="card-inner farm-topbar">
+<div class="farm-topbar-main">
+<span class="farm-topbar-kicker">Farm Profile</span>
+<div class="farm-topbar-copy">
 <h4 class="mb-1 font-large text-capitalize">
 {{ farm.farm_name || 'N/A' }}
 </h4>
-<p class="sub-text mb-0">
-<template v-if="farm.location">
+<p class="sub-text mb-0">{{ farmSubtitle }}</p>
+</div>
+<div class="farm-topbar-meta">
+<span v-if="farm.location" class="farm-topbar-chip">
 <em class="icon ni ni-map-fill mr-1"></em>{{ farm.location }}
-</template>
-<template v-if="farm.location && farm.area_acres !== undefined && farm.area_acres !== null && farm.area_acres !== ''">
-<span class="mx-1">•</span>
-</template>
-<template v-if="farm.area_acres !== undefined && farm.area_acres !== null && farm.area_acres !== ''">
+</span>
+<span v-if="farm.area_acres !== undefined && farm.area_acres !== null && farm.area_acres !== ''" class="farm-topbar-chip">
 <em class="icon ni ni-property mr-1"></em>{{ formattedFarmArea }} acres
-</template>
-<template v-if="!farm.location && (farm.area_acres === undefined || farm.area_acres === null || farm.area_acres === '')">
-<em class="icon ni ni-info mr-1"></em>{{ farmSubtitle }}
-</template>
-</p>
+</span>
+<span v-if="farm.latitude && farm.longitude" class="farm-topbar-chip">
+<em class="icon ni ni-map-pin-fill mr-1"></em>Mapped
+</span>
+</div>
 </div>
 <el-button-group class="farm-head-actions">
 <el-button :icon="EditPen" @click="goToFarmUpdatePage">Edit Farm</el-button>
@@ -396,15 +397,79 @@ Save Data
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 14px;
+  gap: 18px;
+  padding: 20px 22px;
   background:
     linear-gradient(135deg, rgba(111, 78, 55, 0.08), rgba(255, 255, 255, 0) 38%),
     linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
 }
 
+.farm-topbar-main {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.farm-topbar-kicker {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid #e6ebf2;
+  background: rgba(255, 255, 255, 0.92);
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.farm-topbar-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.farm-topbar-copy h4 {
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: #162033;
+}
+
+.farm-topbar-copy .sub-text {
+  max-width: 760px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #66758c;
+}
+
+.farm-topbar-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.farm-topbar-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid #e5e9f2;
+  background: rgba(255, 255, 255, 0.96);
+  color: #445269;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .farm-head-actions {
   display: inline-flex;
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .farm-header-pills {
@@ -788,10 +853,15 @@ Save Data
   .farm-topbar {
     flex-direction: column;
     align-items: flex-start;
+    padding: 18px;
   }
 
   .farm-head-actions {
     width: 100%;
+  }
+
+  .farm-topbar-copy .sub-text {
+    max-width: none;
   }
 
   .heading {

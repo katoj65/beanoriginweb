@@ -26,7 +26,7 @@ const formatDate = (value) => {
 
     <div class="container">
       <div class="card farm-page-card">
-        <div class="card-inner border-bottom farm-page-head">
+        <div class="card-inner farm-page-head">
           <div>
             <h4 class="mb-1 font-large text-capitalize">Farms</h4>
             <p class="sub-text mb-0">Registered farms for your cooperative.</p>

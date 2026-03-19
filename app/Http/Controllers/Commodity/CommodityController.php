@@ -531,11 +531,6 @@ $batchTokens = Token::query()
 
 
 
-
-
-
-
-
 return Inertia::render('BatchCommodityVerification', [
 'title' => 'Batch Commodity Verification',
 'batch' => new BatchResource($batch),

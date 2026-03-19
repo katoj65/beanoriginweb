@@ -182,6 +182,7 @@ align-items: center;
 justify-content: space-between;
 gap: 12px;
 flex-wrap: wrap;
+border-bottom: 0 !important;
 }
 
 .header-actions {
@@ -195,19 +196,21 @@ display: flex;
 align-items: flex-start;
 justify-content: space-between;
 gap: 16px;
+padding: 2px 2px 4px;
 }
 
 .commodity-details-pill {
 display: inline-flex;
 align-items: center;
-padding: 7px 12px;
+padding: 8px 12px;
 border-radius: 999px;
-background: #f8fafc;
-border: 1px solid #edf2f7;
-color: #526484;
+background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+border: 1px solid #e7edf5;
+color: #475569;
 font-size: 12px;
 font-weight: 600;
 white-space: nowrap;
+box-shadow: 0 1px 0 rgba(255, 255, 255, 0.95) inset;
 }
 
 .commodity-tab-label {
@@ -223,14 +226,36 @@ gap: 12px;
 }
 
 .detail-item {
+position: relative;
 background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-border: 1px solid #e8eef5;
-border-radius: 14px;
-padding: 14px;
+border: 1px solid #e7edf5;
+border-radius: 16px;
+padding: 16px;
 display: flex;
 flex-direction: column;
-gap: 6px;
-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.95) inset;
+gap: 8px;
+box-shadow:
+0 1px 0 rgba(255, 255, 255, 0.98) inset,
+0 8px 18px rgba(15, 23, 42, 0.03);
+overflow: hidden;
+transition: transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.detail-item::before {
+content: "";
+position: absolute;
+inset: 0 0 auto 0;
+height: 48px;
+background: linear-gradient(90deg, rgba(59, 130, 246, 0.045) 0%, rgba(16, 185, 129, 0.025) 100%);
+pointer-events: none;
+}
+
+.detail-item:hover {
+transform: translateY(-1px);
+border-color: #d8e2ec;
+box-shadow:
+0 1px 0 rgba(255, 255, 255, 1) inset,
+0 12px 24px rgba(15, 23, 42, 0.045);
 }
 
 .detail-item-label {
@@ -240,14 +265,20 @@ font-size: 11px;
 font-weight: 700;
 letter-spacing: 0.06em;
 text-transform: uppercase;
-color: #94a3b8;
+color: #7c8aa5;
+position: relative;
+z-index: 1;
 }
 
 .detail-item strong {
-font-size: 16px;
+position: relative;
+z-index: 1;
+font-size: 17px;
 line-height: 1.35;
 color: #162033;
-letter-spacing: -0.01em;
+letter-spacing: -0.015em;
+font-weight: 700;
+text-wrap: balance;
 }
 
 .detail-item-full {

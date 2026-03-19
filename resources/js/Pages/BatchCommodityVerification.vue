@@ -196,7 +196,7 @@ const activeVerificationTab = ref('commodities');
 
 <div class="container">
 <div class="card verification-shell">
-<div class="card-inner border-bottom verification-head">
+<div class="card-inner verification-head">
 <div>
 <h6 class="title mb-1"><em class="icon ni ni-shield-check mr-1"></em>Batch Commodity Verification</h6>
 <p class="sub-text mb-0">Review this batch and proceed to add commodities under it.</p>
