@@ -66,41 +66,48 @@ router.get(route('commodity.origin-farms.create', { id: commodity.value.id }));
 </div>
 
 <div class="card-inner">
+<div class="commodity-details-head mb-3">
+<div>
+<h6 class="title mb-1"><em class="icon ni ni-info mr-1"></em>Commodity Details</h6>
+<p class="sub-text mb-0">Core profile, quality indicators, and market-ready information for this commodity record.</p>
+</div>
+<span class="commodity-details-pill">Snapshot</span>
+</div>
 <div class="details-grid">
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-tag mr-1"></em>Commodity Name</span>
+<span class="detail-item-label"><em class="icon ni ni-tag mr-1"></em>Commodity Name</span>
 <strong>{{ commodity.commodity_name ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-layers mr-1"></em>Commodity Type</span>
+<span class="detail-item-label"><em class="icon ni ni-layers mr-1"></em>Commodity Type</span>
 <strong>{{ commodity.commodity_type ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-award mr-1"></em>Grade</span>
+<span class="detail-item-label"><em class="icon ni ni-award mr-1"></em>Grade</span>
 <strong>{{ commodity.grade ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-package mr-1"></em>Weight</span>
+<span class="detail-item-label"><em class="icon ni ni-package mr-1"></em>Weight</span>
 <strong>{{ commodity.weight ?? 'N/A' }} kg</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-coins mr-1"></em>Price</span>
+<span class="detail-item-label"><em class="icon ni ni-coins mr-1"></em>Price</span>
 <strong>UGX {{ formatMoney(commodity.price) }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-growth mr-1"></em>Ripe Percentage</span>
+<span class="detail-item-label"><em class="icon ni ni-growth mr-1"></em>Ripe Percentage</span>
 <strong>{{ commodity.ripe_percentage === null || commodity.ripe_percentage === undefined ? 'N/A' : `${commodity.ripe_percentage}%` }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-drop mr-1"></em>Density Percentage</span>
+<span class="detail-item-label"><em class="icon ni ni-drop mr-1"></em>Density Percentage</span>
 <strong>{{ (commodity.density_percentage ?? commodity.desity_percentage) === null || (commodity.density_percentage ?? commodity.desity_percentage) === undefined ? 'N/A' : `${commodity.density_percentage ?? commodity.desity_percentage}%` }}</strong>
 </div>
 <div class="detail-item detail-item-span-2">
-<span class="sub-text"><em class="icon ni ni-calendar mr-1"></em>Date of Harvest</span>
+<span class="detail-item-label"><em class="icon ni ni-calendar mr-1"></em>Date of Harvest</span>
 <strong>{{ commodity.harvest_date ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item detail-item-full">
-<span class="sub-text"><em class="icon ni ni-flag mr-1"></em>Status</span>
+<span class="detail-item-label"><em class="icon ni ni-flag mr-1"></em>Status</span>
 <strong><span :class="statusClass">{{ commodity.status ?? 'created' }}</span></strong>
 </div>
 </div>
@@ -183,6 +190,26 @@ align-items: center;
 gap: 8px;
 }
 
+.commodity-details-head {
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+gap: 16px;
+}
+
+.commodity-details-pill {
+display: inline-flex;
+align-items: center;
+padding: 7px 12px;
+border-radius: 999px;
+background: #f8fafc;
+border: 1px solid #edf2f7;
+color: #526484;
+font-size: 12px;
+font-weight: 600;
+white-space: nowrap;
+}
+
 .commodity-tab-label {
 display: inline-flex;
 align-items: center;
@@ -196,13 +223,31 @@ gap: 12px;
 }
 
 .detail-item {
-background: #f8fafc;
-border: 1px solid #f2f5f9;
-border-radius: 10px;
-padding: 12px;
+background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+border: 1px solid #e8eef5;
+border-radius: 14px;
+padding: 14px;
 display: flex;
 flex-direction: column;
-gap: 3px;
+gap: 6px;
+box-shadow: 0 1px 0 rgba(255, 255, 255, 0.95) inset;
+}
+
+.detail-item-label {
+display: inline-flex;
+align-items: center;
+font-size: 11px;
+font-weight: 700;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+color: #94a3b8;
+}
+
+.detail-item strong {
+font-size: 16px;
+line-height: 1.35;
+color: #162033;
+letter-spacing: -0.01em;
 }
 
 .detail-item-full {
@@ -216,6 +261,10 @@ grid-column: span 2;
 @media (max-width: 767px) {
 .header-actions {
 width: 100%;
+}
+
+.commodity-details-head {
+flex-direction: column;
 }
 
 .header-actions :deep(.el-button-group) {
