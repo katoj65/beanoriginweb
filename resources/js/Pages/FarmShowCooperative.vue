@@ -126,18 +126,6 @@ const formatSustainabilityDate = (value) => {
   if (Number.isNaN(date.getTime())) return value;
   return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: '2-digit' });
 };
-
-// role
-const is_owner=computed(()=>page.props.can ?? null);
-
-
-
-
-
-
-
-
-
 </script>
 
 <template>
@@ -167,7 +155,7 @@ const is_owner=computed(()=>page.props.can ?? null);
 </template>
 </p>
 </div>
-<el-button-group class="farm-head-actions" v-if="is_owner">
+<el-button-group class="farm-head-actions">
 <el-button :icon="EditPen" @click="goToFarmUpdatePage">Edit Farm</el-button>
 <el-button type="primary" @click="openSustainabilityModal">
 <em class="icon ni ni-plus mr-1"></em>Add Data
@@ -228,8 +216,7 @@ class="sustainability-list-item"
 <span class="sustainability-activity-badge text-capitalize">
 <em class="icon ni ni-leaf mr-1"></em>{{ row.activity || 'N/A' }}
 </span>
-<el-button type="danger" text class="sustainability-delete-btn" @click="destroySustainabilityData(row)" v-if="is_owner">
-
+<el-button type="danger" text class="sustainability-delete-btn" @click="destroySustainabilityData(row)">
 <em class="icon ni ni-trash"></em>
 </el-button>
 </div>

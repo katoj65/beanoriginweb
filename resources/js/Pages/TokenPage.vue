@@ -113,7 +113,7 @@ isFilterOpen.value = !isFilterOpen.value;
 <div class="card token-page-card">
 <div class="card-inner border-bottom token-head">
 <div class="token-head-title">
-<h6 class="title mb-1">Marketplace </h6>
+<h6 class="title mb-1 font-large">Marketplace </h6>
 <p class="sub-text mb-0">Batches available on the market.</p>
 </div>
 <el-button plain size="small" class="head-filter-btn" :icon="Filter" @click="toggleFilterPanel">

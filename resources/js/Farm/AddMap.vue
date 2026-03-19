@@ -1,8 +1,9 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm,usePage } from '@inertiajs/vue3';
 import { ElNotification } from 'element-plus';
 import InputError from '@/Components/InputError.vue';
+
 
 const props = defineProps({
   farmId: {
@@ -60,8 +61,8 @@ const mapAddress = computed(() => {
   return props.mapData?.address || 'Address details will appear after the map lookup succeeds.';
 });
 
-const mapEmbedUrl = computed(() => {
-  return props.mapData?.embed_url || null;
+const mapStaticUrl = computed(() => {
+  return props.mapData?.static_map_url || null;
 });
 
 const googleMapsUrl = computed(() => {
@@ -131,6 +132,16 @@ const updateLocation = () => {
     },
   });
 };
+
+
+//role
+const page = usePage();
+const is_owner=computed(()=>page.props.can ?? null);
+
+
+
+
+
 </script>
 
 <template>
@@ -150,7 +161,7 @@ const updateLocation = () => {
           </span>
         </div>
       </div>
-      <div class="farm-map-action">
+      <div class="farm-map-action" v-if="is_owner">
         <el-button type="primary" class="farm-map-open-btn" @click="openModal">
           <em class="icon ni ni-map mr-1"></em>{{ latitude && longitude ? 'Update Map' : 'Add Map' }}
         </el-button>
@@ -171,15 +182,12 @@ const updateLocation = () => {
         >
           <em class="icon ni ni-arrow-up-right mr-1"></em>Open in Google Maps
         </a>
-        <iframe
-          v-if="mapEmbedUrl"
-          :src="mapEmbedUrl"
+        <img
+          v-if="mapStaticUrl"
+          :src="mapStaticUrl"
+          :alt="`${farmTitle} map`"
           class="farm-map-frame"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          allowfullscreen
-        
-        ></iframe>
+        />
 
         <template v-else>
           <div class="farm-map-stage-icon">
@@ -424,10 +432,11 @@ const updateLocation = () => {
 
 .farm-map-frame {
   width: 100%;
-  min-height: 380px;
+  height: 380px;
   display: block;
   border: 0;
   background: #f8fafc;
+  object-fit: cover;
 }
 
 .farm-map-stage-icon {

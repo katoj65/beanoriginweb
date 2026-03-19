@@ -5,6 +5,7 @@ import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
 
 const page = usePage();
 const farms = computed(() => page.props.farms ?? []);
+const can = computed(() => page.props.can ?? {});
 
 const formatArea = (value) => {
   const number = Number(value ?? 0);
@@ -22,6 +23,7 @@ const formatDate = (value) => {
 
 <template>
   <CooperativeLayout>
+
     <div class="container">
       <div class="card farm-page-card">
         <div class="card-inner border-bottom farm-page-head">
@@ -29,7 +31,7 @@ const formatDate = (value) => {
             <h4 class="mb-1 font-large text-capitalize">Farms</h4>
             <p class="sub-text mb-0">Registered farms for your cooperative.</p>
           </div>
-          <Link :href="route('farm.create')" class="btn btn-primary">
+          <Link v-if="can.is_cooperative" :href="route('farm.create')" class="btn btn-primary">
             <em class="icon ni ni-plus mr-1"></em>Add Farm
           </Link>
         </div>
@@ -45,7 +47,7 @@ const formatDate = (value) => {
             <Link
               v-for="farm in farms"
               :key="farm.id"
-              :href="route('farm.show.cooperative', { id: farm.id })"
+              :href="route('farm.show', { id: farm.id })"
               class="farm-card-item"
             >
               <div class="farm-card-top">

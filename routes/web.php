@@ -204,21 +204,21 @@ Route::delete('/farm/{id}', [FarmController::class, 'destroy'])->whereNumber('id
 
 //farm prefix
 Route::middleware(['auth'])->prefix('farm')->name('farm.')->group(function () {
-Route::get('/', [FarmController::class, 'index'])->middleware('role:cooperative')->name('index');
-Route::get('/create', [FarmController::class, 'create'])->name('create');
+Route::get('/', [FarmController::class, 'index'])->name('index');
+Route::get('/create', [FarmController::class, 'create'])->middleware('role:cooperative,farmer,admin')->name('create');
 Route::post('/', [FarmController::class, 'store'])->name('store');
 Route::get('/{id}', [FarmController::class, 'show'])->whereNumber('id')->name('show');
-// Cooperative-facing farm details entry point under the new farm prefix.
-Route::get('/{id}/cooperative', [FarmController::class, 'showCooperative'])
-    ->middleware('role:cooperative')->whereNumber('id')->name('show.cooperative');
-
-Route::get('/{id}/update', [FarmController::class, 'farmUpdatePage'])->whereNumber('id')->name('update.page');
+Route::get('/{id}/update', [FarmController::class, 'farmUpdatePage'])->whereNumber('id')->middleware('role:cooperative,farmer,admin')->name('update.page');
 Route::put('/{id}', [FarmController::class, 'update'])->whereNumber('id')->name('update');
-Route::put('/{id}/location', [FarmController::class, 'updateLocation'])->whereNumber('id')->name('location.update');
+Route::put('/{id}/location', [FarmController::class, 'updateLocation'])->whereNumber('id')->middleware('role:cooperative,farmer,admin')->name('location.update');
 Route::post('/{id}/sustainability-data', [FarmController::class, 'storeFarmSustainabilityData'])->whereNumber('id')->name('sustainability.store');
 Route::delete('/{id}/sustainability-data/{sustainabilityId}', [FarmController::class, 'destroySustainabilityData'])->whereNumber('id')->whereNumber('sustainabilityId')->name('sustainability.destroy');
 Route::delete('/{id}', [FarmController::class, 'destroy'])->whereNumber('id')->name('destroy');
 });
+
+
+
+
 
 
 

@@ -50,6 +50,12 @@ return date.toLocaleString();
 };
 
 const activeVerificationTab = ref('commodities');
+
+//policy
+const policy=computed(()=>page.props.can);
+
+
+
 </script>
 
 <template>
@@ -59,11 +65,17 @@ const activeVerificationTab = ref('commodities');
 <div class="card verification-shell">
 <div class="card-inner border-bottom verification-head">
 <div>
-<h6 class="title mb-1"><em class="icon ni ni-shield-check mr-1"></em>Batch</h6>
+<h6 class="title mb-1 font-large"><em class="icon ni ni-shield-check mr-1"></em>Batch</h6>
 <p class="sub-text mb-0">Batch details and specifications</p>
 </div>
 
-<buy-button :item="batch" />
+<div class="verification-head-actions">
+<span v-if="policy.owns_batch === true" class="batch-owner-indicator">
+<em class="icon ni ni-check-circle"></em>
+</span>
+<buy-button :item="batch" v-if="policy.owns_batch==false"/>
+</div>
+
 </div>
 
 <div class="card-inner border-bottom">
@@ -209,6 +221,28 @@ flex-wrap: wrap;
 display: inline-flex;
 align-items: center;
 font-weight: 600;
+}
+
+.verification-head-actions {
+display: inline-flex;
+align-items: center;
+justify-content: flex-end;
+gap: 10px;
+margin-left: auto;
+}
+
+.batch-owner-indicator {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+width: 34px;
+height: 34px;
+padding: 6px 10px;
+border-radius: 999px;
+background: #ecfdf3;
+border: 1px solid #bbf7d0;
+color: #166534;
+font-size: 16px;
 }
 
 .details-grid {

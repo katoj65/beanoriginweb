@@ -34,6 +34,7 @@ use App\Models\QualityMetadata;
 use App\Models\Block;
 use App\Models\Token;
 use App\Http\Resources\BlockResource;
+use App\Services\Commodity\CommodityService;
 use App\Services\Token\TokenService;
 use Inertia\Inertia;
 
@@ -174,49 +175,9 @@ return redirect()
 /**
  * Display the specified resource.
  */
-public function show(Request $request, string $id)
+public function show(Request $request, string $id, CommodityService $commodityService)
 {
-
-// Scope commodity visibility to the logged-in user's cooperative.
-$cooperativeId = Cooperative::where('user_id', $request->user()->id)->value('id');
-$commodity = Commodity::with('farms:id,cooperative_farmer_id,farm_name,location,area_acres')
-->where('id', $id)
-->where('cooperative_id', $cooperativeId)
-->firstOrFail();
-
-// Return commodity details, linked farms, and quality data for the page.
-return Inertia::render('CommodityShow', [
-'commodity' => new CommodityResource($commodity),
-'origin_farms' => $commodity->farms
-->map(fn ($farm) => [
-'id' => $farm->id,
-'cooperative_farmer_id' => $farm->cooperative_farmer_id,
-'farm_name' => $farm->farm_name,
-'location' => $farm->location,
-'latitude' => $farm->latitude,
-'longitude' => $farm->longitude,
-'area_acres' => $farm->area_acres,
-
-])
-->values(),
-// Provide selectable quality activity metadata for the quality form.
-'quality_metadata' => QualityMetadata::query()
-->orderBy('activity')
-->pluck('activity')
-->values(),
-// Provide saved commodity quality rows for on-page quality table.
-'commodity_quality_data' => CommodityQualityData::query()
-->where('commodity_id', (int) $id)
-->latest('id')
-->get(['id', 'activity', 'value', 'created_at'])
-->map(fn ($item) => [
-'id' => $item->id,
-'activity' => $item->activity,
-'value' => $item->value,
-'created_at' => $item->created_at?->toDateTimeString(),
-])
-->values(),
-]);
+return $commodityService->show($request, $id);
 }
 
 

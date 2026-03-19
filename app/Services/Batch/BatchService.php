@@ -91,7 +91,14 @@ return Inertia::render('BatchPage', [
 'batch_processing_data' => $batchProcessingData,
 'batch_tokens' => TokenResource::collection($batchToken),
 'batch_status_list' => BatchStatusList::query()->where('name','!=','created')->orderBy('id')->pluck('name')->values(),
-
+'can'=>[
+'view' => $request->user()?->can('view', $batch) ?? false,
+'update' => $request->user()?->can('update', $batch) ?? false,
+'delete' => $request->user()?->can('delete', $batch) ?? false,
+'create' => $request->user()?->can('create', Batch::class) ?? false,
+'view_any' => $request->user()?->can('viewAny', Batch::class) ?? false,
+'owns_batch' => $request->user()?->can('ownsBatch', $batch) ?? false,
+]
 
 ]);
 }
@@ -121,6 +128,3 @@ return false;
 
 
 }
-
-
-

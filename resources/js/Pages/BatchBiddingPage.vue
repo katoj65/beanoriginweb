@@ -149,7 +149,7 @@ type: 'error',
 <div class="card buy-batch-card">
 <div class="card-inner border-bottom page-head">
 <div>
-<h6 class="title mb-1"><em class="icon ni ni-gavel mr-1"></em>Batch Bidding</h6>
+<h6 class="title mb-1 font-large"><em class="icon ni ni-gavel mr-1"></em>Batch Bidding</h6>
 <p class="sub-text mb-0">Review bidding lot details and submit your offer.</p>
 </div>
 </div>

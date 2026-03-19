@@ -10,6 +10,7 @@ use App\Models\Farmer;
 use App\Models\Farm;
 use App\Models\FarmSustainabilityData;
 use App\Models\SustainabilityMetadata;
+use App\Models\User;
 use App\Services\Map\MapService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -44,6 +45,14 @@ class FarmController extends Controller
                 'created_at' => optional($farm->created_at)->format('Y-m-d H:i:s'),
                 'farmer_name' => trim(($farm->farmer?->first_name ?? '') . ' ' . ($farm->farmer?->last_name ?? '')) ?: 'N/A',
             ])->values(),
+            'can' => [
+                'access_platform' => request()->user()?->can('accessPlatform', User::class) ?? false,
+                'is_cooperative' => request()->user()?->can('isCooperative', User::class) ?? false,
+                'is_admin' => request()->user()?->can('isAdmin', User::class) ?? false,
+                'is_buyer' => request()->user()?->can('isBuyer', User::class) ?? false,
+                'is_investor' => request()->user()?->can('isInvestor', User::class) ?? false,
+                'is_organisation' => request()->user()?->can('isOrganisation', User::class) ?? false,
+            ],
         ]);
     }
 
@@ -90,6 +99,9 @@ class FarmController extends Controller
         ]);
     }
 
+
+
+
     /**
      * Display the specified resource.
      */
@@ -129,6 +141,9 @@ class FarmController extends Controller
                     'created_at' => optional($item->created_at)->format('Y-m-d H:i:s'),
                 ])
                 ->values(),
+            'can' => [
+                'is_owner' => request()->user()?->can('isOwner', $farm) ?? false,
+            ],
         ]);
     }
 

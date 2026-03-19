@@ -74,7 +74,7 @@ router.get(route('commodity.batches.create'));
 <div class="card-inner border-bottom">
 <div class="row g-2 align-items-center">
 <div class="col-12 col-md">
-<h6 class="title mb-1"><em class="icon ni ni-bag mr-1"></em>Commodities</h6>
+<h6 class="title mb-1 font-large"><em class="icon ni ni-bag mr-1"></em>Commodities</h6>
 <p class="sub-text mb-0">Current coffee lots available to buyers.</p>
 </div>
 <div class="col-12 col-md-auto">

@@ -142,7 +142,7 @@ const activeBiddingTab = ref('bidding_batches');
 <div class="table-heading">
 <div class="title-line">
 <el-icon class="title-icon"><Tickets /></el-icon>
-<h6 class="mb-0">Bidding Batches</h6>
+<h6 class="mb-0 font-large">Bidding Batches</h6>
 </div>
 <p class="subtitle mb-0">
 

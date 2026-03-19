@@ -15,14 +15,11 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, $role): Response
     {
+        $allowedRoles = array_map('trim', explode(',', (string) $role));
 
-
-if (!$request->user() || $request->user()->role !== $role) {
-        abort(403);
-    }
-
-
-
+        if (!$request->user() || !in_array($request->user()->role, $allowedRoles, true)) {
+            abort(403);
+        }
 
         return $next($request);
     }

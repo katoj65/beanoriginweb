@@ -67,7 +67,7 @@ router.get(route('cooperative.produce'));
 <div class="card-inner border-bottom batch-create-head">
 <div class="batch-create-head-content">
 <div class="batch-create-title-wrap">
-<h6 class="title mb-1"><em class="icon ni ni-plus-circle mr-1"></em>Add Batch</h6>
+<h6 class="title mb-1 font-large"><em class="icon ni ni-plus-circle mr-1"></em>Add Batch</h6>
 <p class="sub-text mb-0">Create a new batch using commodity details and warehouse information.</p>
 </div>
 <el-button plain class="back-btn" :icon="Back" @click="goBack">Back</el-button>
