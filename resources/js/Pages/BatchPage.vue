@@ -2,16 +2,20 @@
 import { computed, ref } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import CooperativeLayout from '@/Layouts/CooperativeLayout.vue';
-import BatchCommodity from '@/Batch/CommodityToBatch.vue';
-import BatchProcessing from '@/Batch/BatchProcess.vue';
-import BatchTokenData from '@/Batch/BatchTokenData.vue';
-import BuyButton from '@/Components/BuyButton.vue';
+import HarvestData from '@/Batch/HarvestData.vue';
+import LabMetricsData from '@/Batch/LabMetricsData.vue';
+import QRCodeData from '@/Batch/QRCodeData.vue';
+
 
 const page = usePage();
 const batch = computed(() => page.props.batch?.data ?? page.props.batch ?? {});
 const attachedCommodities = computed(() => page.props.attached_commodities ?? []);
 const batchActivities = computed(() => page.props.batch_activities ?? []);
 const batchProcessingData = computed(() => page.props.batch_processing_data ?? []);
+const batchLabMetricsMetadata = computed(() => page.props.batch_lab_metrics_metadata ?? []);
+const batchLabMetrics = computed(() => page.props.batch_lab_metrics ?? []);
+const batchQrCodeData = computed(() => page.props.batch_qr_code_data ?? []);
+const can = computed(() => page.props.can ?? {});
 const timelineActivities = computed(() => {
 const activities = Array.isArray(batchActivities.value) ? [...batchActivities.value] : [];
 const createdAt = batch.value?.created_at ?? null;
@@ -51,9 +55,6 @@ return date.toLocaleString();
 
 const activeVerificationTab = ref('commodities');
 
-//policy
-const policy=computed(()=>page.props.can);
-
 
 
 </script>
@@ -63,66 +64,65 @@ const policy=computed(()=>page.props.can);
 
 <div class="batch-page-shell">
 <div class="card verification-shell">
-<div class="card-inner border-bottom verification-head">
+<div class="card-inner verification-head">
 <div>
 <h6 class="title mb-1 font-large"><em class="icon ni ni-shield-check mr-1"></em>Batch</h6>
 <p class="sub-text mb-0">Batch details and specifications</p>
 </div>
 
-<div class="verification-head-actions">
-<span v-if="policy.owns_batch === true" class="batch-owner-indicator">
-<em class="icon ni ni-check-circle"></em>
-</span>
-<buy-button :item="batch" v-if="policy.owns_batch==false"/>
 </div>
 
+<div class="card-inner">
+<div class="batch-details-head mb-3">
+<div>
+<h6 class="title mb-1"><em class="icon ni ni-layers mr-1"></em>Batch Details</h6>
+<p class="sub-text mb-0">Core batch profile, quality indicators, and listing information for this lot.</p>
 </div>
-
-<div class="card-inner border-bottom">
-<h6 class="title mb-3"><em class="icon ni ni-layers mr-1"></em>Batch Details</h6>
+<span class="batch-details-pill">Snapshot</span>
+</div>
 <div class="details-grid">
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-hash mr-1"></em>Batch ID</span>
+<span class="detail-item-label"><em class="icon ni ni-hash mr-1"></em>Batch ID</span>
 <strong>{{ batch.id ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-tag mr-1"></em>Batch Code</span>
+<span class="detail-item-label"><em class="icon ni ni-tag mr-1"></em>Batch Code</span>
 <strong>{{ batch.batch_code ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-growth mr-1"></em>Commodity Name</span>
+<span class="detail-item-label"><em class="icon ni ni-growth mr-1"></em>Commodity Name</span>
 <strong class="text-capitalize">{{ batch.commodity_name ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-property mr-1"></em>Commodity Type</span>
+<span class="detail-item-label"><em class="icon ni ni-property mr-1"></em>Commodity Type</span>
 <strong class="text-capitalize">{{ batch.commodity_type ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-package mr-1"></em>Weight</span>
+<span class="detail-item-label"><em class="icon ni ni-package mr-1"></em>Weight</span>
 <strong>{{ batch.weight ?? 'N/A' }} kg</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-award mr-1"></em>Grade</span>
+<span class="detail-item-label"><em class="icon ni ni-award mr-1"></em>Grade</span>
 <strong class="text-capitalize">{{ batch.grade ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-drop mr-1"></em>Moisture</span>
+<span class="detail-item-label"><em class="icon ni ni-drop mr-1"></em>Moisture</span>
 <strong>{{ batch.moisture ?? 'N/A' }}%</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-home-fill mr-1"></em>Warehouse</span>
+<span class="detail-item-label"><em class="icon ni ni-home-fill mr-1"></em>Warehouse</span>
 <strong class="text-capitalize">{{ batch.warehouse ?? 'N/A' }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-coins mr-1"></em>Price</span>
+<span class="detail-item-label"><em class="icon ni ni-coins mr-1"></em>Price</span>
 <strong>{{ formatMoney(batch.price) }}</strong>
 </div>
 <div class="detail-item">
-<span class="sub-text"><em class="icon ni ni-calendar mr-1"></em>Created At</span>
+<span class="detail-item-label"><em class="icon ni ni-calendar mr-1"></em>Created At</span>
 <strong>{{ formatDateTime(batch.created_at) }}</strong>
 </div>
 <div class="detail-item detail-item-full">
-<span class="sub-text"><em class="icon ni ni-flag mr-1"></em>Status</span>
+<span class="detail-item-label"><em class="icon ni ni-flag mr-1"></em>Status</span>
 <strong><span :class="statusClass">{{ batch.status ?? 'created' }}</span></strong>
 </div>
 </div>
@@ -132,57 +132,34 @@ const policy=computed(()=>page.props.can);
 
 
 
-<div class="card-inner border-bottom">
+<div class="card-inner">
 <el-tabs v-model="activeVerificationTab" class="app-themed-tabs">
 <el-tab-pane name="commodities">
 <template #label>
-<span class="verification-tab-label"><em class="icon ni ni-package mr-1"></em>Batch Harvests</span>
+<span class="verification-tab-label"><em class="icon ni ni-package mr-1"></em>Harvests Data</span>
 </template>
-<batch-commodity :commodities="attachedCommodities" />
+<harvest-data :batch-id="batch.id" :is-owner="can.is_owner" :commodities="attachedCommodities" />
 </el-tab-pane>
 
-<el-tab-pane name="batch_processing">
+<el-tab-pane name="lab_metrics">
 <template #label>
-<span class="verification-tab-label"><em class="icon ni ni-setting-alt mr-1"></em>Batch Processing</span>
+<span class="verification-tab-label"><em class="icon ni ni-bar-chart-fill mr-1"></em>Lab Metrics</span>
 </template>
-<batch-processing
-:batch-processing-data="batchProcessingData"
-/>
-</el-tab-pane>
-
-<el-tab-pane name="batch_activities">
-<template #label>
-<span class="verification-tab-label"><em class="icon ni ni-activity mr-1"></em>Batch Activities</span>
-</template>
-<div class="activity-log-head">
-<h6 class="title mb-0"><em class="icon ni ni-activity mr-1"></em>Batch Activities</h6>
-<span class="activity-log-count">{{ timelineActivities.length }} activities</span>
-</div>
-
-<div v-if="timelineActivities.length" class="activity-log-list">
-<el-timeline class="activity-timeline">
-<el-timeline-item
-v-for="item in timelineActivities"
-:key="item.id"
-type="primary"
-:timestamp="formatDateTime(item.created_at)"
-placement="top"
->
-<div class="activity-timeline-content text-capitalize">{{ item.activity }}</div>
-</el-timeline-item>
-</el-timeline>
-</div>
-
-<div v-else class="empty-activity-log">
-No activities recorded for this batch yet.
-</div>
+<lab-metrics-data :metrics="batchLabMetrics" :metadata="batchLabMetricsMetadata" />
 </el-tab-pane>
 
 <el-tab-pane name="token">
 <template #label>
 <span class="verification-tab-label"><em class="icon ni ni-coins mr-1"></em>Token</span>
 </template>
-<batch-token-data />
+<!-- <batch-token-data /> -->
+</el-tab-pane>
+
+<el-tab-pane name="qr_code_data">
+<template #label>
+<span class="verification-tab-label"><em class="icon ni ni-qr mr-1"></em>QR Code Data</span>
+</template>
+<qr-code-data :qr-code-data="batchQrCodeData" />
 </el-tab-pane>
 </el-tabs>
 </div>
@@ -231,6 +208,28 @@ gap: 10px;
 margin-left: auto;
 }
 
+.batch-details-head {
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+gap: 16px;
+padding: 2px 2px 4px;
+}
+
+.batch-details-pill {
+display: inline-flex;
+align-items: center;
+padding: 8px 12px;
+border-radius: 999px;
+background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+border: 1px solid #e7edf5;
+color: #475569;
+font-size: 12px;
+font-weight: 600;
+white-space: nowrap;
+box-shadow: 0 1px 0 rgba(255, 255, 255, 0.95) inset;
+}
+
 .batch-owner-indicator {
 display: inline-flex;
 align-items: center;
@@ -252,13 +251,59 @@ gap: 12px;
 }
 
 .detail-item {
-background: #f8fafc;
-border: 1px solid #e5e9f2;
-border-radius: 10px;
-padding: 12px;
+position: relative;
+background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+border: 1px solid #e7edf5;
+border-radius: 16px;
+padding: 16px;
 display: flex;
 flex-direction: column;
-gap: 4px;
+gap: 8px;
+box-shadow:
+0 1px 0 rgba(255, 255, 255, 0.98) inset,
+0 8px 18px rgba(15, 23, 42, 0.03);
+overflow: hidden;
+transition: transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.detail-item::before {
+content: "";
+position: absolute;
+inset: 0 0 auto 0;
+height: 48px;
+background: linear-gradient(90deg, rgba(59, 130, 246, 0.045) 0%, rgba(16, 185, 129, 0.025) 100%);
+pointer-events: none;
+}
+
+.detail-item:hover {
+transform: translateY(-1px);
+border-color: #d8e2ec;
+box-shadow:
+0 1px 0 rgba(255, 255, 255, 1) inset,
+0 12px 24px rgba(15, 23, 42, 0.045);
+}
+
+.detail-item-label {
+display: inline-flex;
+align-items: center;
+font-size: 11px;
+font-weight: 700;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+color: #7c8aa5;
+position: relative;
+z-index: 1;
+}
+
+.detail-item strong {
+position: relative;
+z-index: 1;
+font-size: 17px;
+line-height: 1.35;
+color: #162033;
+letter-spacing: -0.015em;
+font-weight: 700;
+text-wrap: balance;
 }
 
 .detail-item-full {
@@ -353,6 +398,10 @@ color: #64748b;
 }
 
 @media (max-width: 767px) {
+.batch-details-head {
+flex-direction: column;
+}
+
 .details-grid {
 grid-template-columns: 1fr;
 }

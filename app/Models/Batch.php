@@ -88,4 +88,9 @@ class Batch extends Model
         return $this->hasMany(BatchLabMetric::class, 'batch_id');
     }
 
+    public function qrCodeData(): HasMany
+    {
+        return $this->hasMany(BatchQrCodeData::class, 'batch_id');
+    }
+
 }
