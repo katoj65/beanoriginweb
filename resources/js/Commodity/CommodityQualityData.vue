@@ -197,19 +197,15 @@ const destroyCommodityQualityData = (row) => {
             class="quality-grid-item"
         >
             <div class="quality-grid-main">
-                <div class="quality-card-top">
-                    <span class="quality-grid-label"><em class="icon ni ni-list mr-1"></em>Quality Metric</span>
-                    <span class="quality-grid-date"><em class="icon ni ni-calendar mr-1"></em>{{ formatDate(row.created_at) }}</span>
+                <div class="quality-value-wrap">
+                    <div class="quality-value-cell">{{ row.value }}</div>
                 </div>
-                <div class="quality-metric-row">
-                    <div class="text-capitalize quality-activity-cell quality-metric-title">
-                        {{ row.activity }}
-                    </div>
-                    <div class="quality-value-wrap">
-                        <span class="quality-value-label"><em class="icon ni ni-pen2 mr-1"></em>Recorded Value</span>
-                        <div class="quality-value-cell">{{ row.value }}</div>
-                    </div>
+                <div class="text-capitalize quality-activity-cell quality-metric-title">
+                    {{ row.activity }}
                 </div>
+                <p class="quality-card-copy mb-0">
+                    Recorded quality checkpoint for this commodity lot.
+                </p>
             </div>
 
             <el-button
@@ -374,51 +370,44 @@ font-weight: 600;
  position: relative;
  display: flex;
  flex-direction: column;
- gap: 6px;
+ gap: 8px;
  padding: 14px 42px 12px 14px;
- border: 1px solid #e6edf5;
- border-radius: 12px;
- background: #ffffff;
- box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+ border: 1px solid #e9eff6;
+ border-radius: 14px;
+ background:
+  linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+ box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.98);
  min-width: 0;
- transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+ overflow: hidden;
+ transition: transform 0.18s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quality-grid-item::before {
+ content: "";
+ position: absolute;
+ inset: 0 0 auto 0;
+ height: 56px;
+ background:
+  linear-gradient(90deg, rgba(99, 102, 241, 0.045) 0%, rgba(59, 130, 246, 0.02) 50%, rgba(16, 185, 129, 0.03) 100%);
+ pointer-events: none;
 }
 
 .quality-grid-item:hover {
- border-color: #d8e2ec;
- box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+ border-color: #d7e2ed;
+ background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+ box-shadow: inset 0 1px 0 rgba(255, 255, 255, 1);
+ transform: translateY(-1px);
 }
 
 .quality-grid-main {
+ position: relative;
+ z-index: 1;
  min-width: 0;
  display: flex;
  flex-direction: column;
- gap: 6px;
-}
-
-.quality-card-top {
-display: flex;
-align-items: center;
-justify-content: space-between;
-gap: 8px;
-}
-
-.quality-grid-label {
-font-size: 10px;
-font-weight: 700;
-letter-spacing: 0.08em;
-text-transform: uppercase;
-color: #94a3b8;
-}
-
-.quality-grid-date {
- font-size: 11px;
- color: #64748b;
- white-space: nowrap;
- padding: 2px 7px;
- border-radius: 999px;
- background: #f8fafc;
- border: 1px solid #f3f6fa;
+ gap: 12px;
+ align-items: center;
+ text-align: center;
 }
 
 .quality-activity-cell {
@@ -429,64 +418,71 @@ line-height: 1.35;
 .quality-metric-title {
 font-size: 14px;
 font-weight: 700;
-color: #0f172a;
-line-height: 1.4;
+color: #162033;
+line-height: 1.45;
 letter-spacing: -0.01em;
+max-width: 100%;
+text-wrap: balance;
+padding-inline: 6px;
 }
 
-.quality-metric-row {
-display: flex;
-align-items: flex-start;
-justify-content: space-between;
-gap: 8px;
+.quality-card-copy {
+font-size: 11px;
+line-height: 1.5;
+color: #7c8aa5;
+max-width: 100%;
+padding-inline: 10px;
 }
 
 .quality-value-wrap {
-display: flex;
-flex-direction: column;
-gap: 3px;
-min-width: fit-content;
-padding: 6px 8px;
-border-radius: 10px;
-background: #f8fafc;
-border: 1px solid #f2f5f9;
-align-items: flex-end;
-text-align: right;
-}
-
-.quality-value-label {
-font-size: 10px;
-font-weight: 700;
-letter-spacing: 0.06em;
-text-transform: uppercase;
-color: #94a3b8;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+min-width: 0;
+max-width: 100%;
+padding: 9px 16px;
+border-radius: 9999px;
+background:
+ linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+border: 1px solid #dde7f1;
+box-shadow:
+ inset 0 1px 0 rgba(255, 255, 255, 0.96),
+ 0 6px 12px rgba(148, 163, 184, 0.08);
+ backdrop-filter: blur(4px);
 }
 
 .quality-value-cell {
 color: #0f172a;
-line-height: 1.35;
+line-height: 1.3;
 font-size: 13px;
-font-weight: 600;
-white-space: nowrap;
+font-weight: 700;
+white-space: normal;
+text-align: center;
+letter-spacing: -0.015em;
 }
 
 .quality-row-delete-btn {
 position: absolute;
 top: 12px;
 right: 12px;
-color: #64748b;
+color: #7c8aa5;
 padding: 0;
 min-height: auto;
 height: 28px;
 width: 28px;
 border-radius: 999px;
-background: #ffffff;
-border: 1px solid #f0f4f8;
+background: rgba(255, 255, 255, 0.92);
+border: 1px solid #eef3f8;
+backdrop-filter: blur(6px);
+ z-index: 2;
+ opacity: 0.72;
 }
 
 .quality-row-delete-btn:hover {
 color: #334155;
 background: #f8fafc;
+border-color: #e2e8f0;
+ opacity: 0.98;
 }
 
 .quality-row-delete-btn .icon {
@@ -543,16 +539,6 @@ justify-content: space-between;
 
 .quality-form-head {
 align-items: center;
-}
-
-.quality-metric-row {
-flex-direction: column;
-align-items: flex-start;
-}
-
-.quality-value-wrap {
-align-items: flex-start;
-text-align: left;
 }
 
 .quality-grid-wrap {
