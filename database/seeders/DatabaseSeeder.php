@@ -38,6 +38,7 @@ class DatabaseSeeder extends Seeder
             BatchTradeActivityMetadataSeeder::class,
             SustainabilityMetadataSeeder::class,
             ProcessingMetadataSeeder::class,
+            LabMetricsMetadataSeeder::class,
         ]);
 
 

@@ -83,4 +83,9 @@ class Batch extends Model
         return $this->hasMany(Token::class, 'batch_id');
     }
 
+    public function labMetrics(): HasMany
+    {
+        return $this->hasMany(BatchLabMetric::class, 'batch_id');
+    }
+
 }
